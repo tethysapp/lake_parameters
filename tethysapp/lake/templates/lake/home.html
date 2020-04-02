@@ -45,7 +45,13 @@
   accessToken: 'pk.eyJ1IjoiYWJoaXNoZWthbWFsMTgiLCJhIjoiY2s1eTVxNGExMmQ5MDNubjExaWY5MjdvbSJ9.3nmdjWZmUCDNyRdlPo5gbg'
   }).addTo(mymap);
 
-  let CountriestoVisit = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
+  let Lake = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
+  layers: 'UtahLake', //Title name
+  format: 'image/png', //depends on what you want to load in
+  transparent: true,
+  }).addTo(mymap);
+
+  let Stations = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
   layers: 'Stations_XYTableToPoint7', //Title name
   format: 'image/png', //depends on what you want to load in
   transparent: true,
