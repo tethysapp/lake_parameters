@@ -14,6 +14,16 @@
 {% endblock %}
 
 {% block app_content %}
+<style>
+
+.column {
+float: left;
+width: 33.3%;
+margin-bottom: 16px;
+padding: 0 10px;
+}
+</style>
+
   <head>
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
@@ -22,7 +32,7 @@
       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
       crossorigin=""></script>
       <style>
-          #mapid { height: 500px; width: 400px; }
+          #mapid { height: 700px; width: 550px; }
       </style>
       <link href="HydroShare.css" type="text/css" rel="stylesheet" />
          <title>
@@ -30,25 +40,26 @@
          </title>
 
   </head>
-  <body>
-     <h3>Utah Lake Stations</h3>
 
-     <div id="mapid"></div>
+  <div class="column">
+    <h1>Welcome to Utah Lake Parameters  App!</h1>
+    The Ambient Water Quality Monitoring System (AWQMS) is a web-based data management system for ambient water quality data from Utah State.
+    This app displays in a map the AWQMS data from Utah Lake stations for a selected parameters.
+  </div>
+
+  <body>
+    <div class="column">
+       <div id="mapid"></div>
+    </div>
   </body>
 <script>
 
-  var mymap = L.map('mapid').setView([40.2, -111.8], 10);
+  var mymap = L.map('mapid').setView([40.2, -111.8], 11);
   L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
   maxZoom: 32,
   id: 'mapbox/streets-v11',
   accessToken: 'pk.eyJ1IjoiYWJoaXNoZWthbWFsMTgiLCJhIjoiY2s1eTVxNGExMmQ5MDNubjExaWY5MjdvbSJ9.3nmdjWZmUCDNyRdlPo5gbg'
-  }).addTo(mymap);
-
-  let Lake = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
-  layers: 'UtahLake', //Title name
-  format: 'image/png', //depends on what you want to load in
-  transparent: true,
   }).addTo(mymap);
 
   let Stations = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
@@ -60,14 +71,28 @@
   var marker = L.marker([40.2, -111.8]).addTo(mymap).bindPopup('<h1>Utah Lake</h1>' + '<img src = "{% static 'lake/images/lake.jpg' %}" width ="300" height="200">');
 
 </script>
-  <h1>Welcome to Utah Lake Parameters  App!</h1>
-  <p>Take advantage of beautiful typography to organize the content of your app:</p>
-  <h1>Heading 1</h1>
-  <h2>Heading 2</h2>
+<div class="column">
+  <br>
+  <br>
+  <h3>Utah Lake Stations</h3>
+  <p>* UTAH LAKE 0.5 MI W OF GENEVA DISCHARGE #15-A (4917<b>310</b>)</p>
+  <p>* UTAH LAKE 2 MILES WEST OF VINEYARD (4917<b>365</b>)</p>
+  <p>* UTAH LAKE 1 MI EAST OF PELICAN POINT (4917<b>370</b>)</p>
+  <p>* UTAH LAKE 1 MI WEST OF PROVO BOAT HARBOR (4917<b>390</b>)</p>
+  <p>* UTAH LAKE AT MIDDLE OF PROVO BAY (4917<b>450</b>)</p>
+  <p>* UTAH LAKE 3 MI WNW OF LINCOLN BEACH (4917<b>500</b>)</p>
+  <p>* UTAH LAKE 2 MI E OF SARATOGA SPRINGS #12 (4917<b>520</b>)</p>
+  <p>* UTAH LAKE GOSHEN BAY SOUTHWEST END (4917<b>600</b>)</p>
+  <p>* UTAH LAKE 2.5 MI NE OF LINCOLN POINT #02 (4917<b>700</b>)</p>
+  <p>* UTAH LAKE 1 MI NE OF LINCOLN POINT #03 (4917<b>710</b>)</p>
+  <p>* UTAH LAKE 1 MILE SOUTHEAST OF BIRD ISLAND (4917<b>715</b>)</p>
+  <p>* UTAH LAKE  OUTSIDE ENTRANCE TO PROVO BAY (4917<b>770</b>)</p>
+</div>
 {% endblock %}
 
 {# Use the after_app_content block for modals #}
 {% block after_app_content %}
+
   <!-- Example Modal -->
   <div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal-label">
     <div class="modal-dialog" role="document">
@@ -88,13 +113,4 @@
       </div>
     </div>
   </div>
-{% endblock %}
-
-{% block app_actions %}
-  {% gizmo add_data_button %}
-  {% gizmo save_button %}
-  {% gizmo edit_button %}
-  {% gizmo remove_button %}
-  {% gizmo previous_button %}
-  {% gizmo next_button %}
 {% endblock %}
