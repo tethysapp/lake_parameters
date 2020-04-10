@@ -32,15 +32,15 @@
   <li class="{% if request.path == add_data_url %}active{% endif %}"><a href="{{ add_data_url }}">Search Data</a></li>
   <li class="title">Select Parameter</li>
   <ul>
-    <li class="{% if request.path == chl_a %}active{% endif %}"><a href="{{ chl_a }}">Chlorophyll a</li>
-    <li class="{% if request.path == do %}active{% endif %}"><a href="{{ do }}">Dissolved Oxygen</li>
-    <li class="{% if request.path == nit %}active{% endif %}"><a href="{{ nit }}">Nitrogen</li>
-    <li class="{% if request.path == ph %}active{% endif %}"><a href="{{ ph }}">pH</li>
-    <li class="{% if request.path == phosp %}active{% endif %}"><a href="{{ phosp }}">Phospate-Phosphorus</li>
-    <li class="{% if request.path == water_temp %}active{% endif %}"><a href="{{ water_temp }}">Water Temperature</li>
-    <li class="{% if request.path == tds %}active{% endif %}"><a href="{{ tds }}">Total Dissolved Solids</li>
-    <li class="{% if request.path == turb %}active{% endif %}"><a href="{{ turb }}">Turbidity</li>
-    <li class="{% if request.path == secchi %}active{% endif %}"><a href="{{ secchi }}">Secchi Disk Depth</li>
+    <li class="{% if request.path == chl_a %}active{% endif %}"><a href="{{ chl_a_url }}">Chlorophyll a</li>
+    <li class="{% if request.path == do %}active{% endif %}"><a href="{{ do_url }}">Dissolved Oxygen</li>
+    <li class="{% if request.path == nit %}active{% endif %}"><a href="{{ nit_url }}">Nitrogen</li>
+    <li class="{% if request.path == ph %}active{% endif %}"><a href="{{ ph_url }}">pH</li>
+    <li class="{% if request.path == phosp %}active{% endif %}"><a href="{{ phosp_url }}">Phospate-Phosphorus</li>
+    <li class="{% if request.path == water_temp %}active{% endif %}"><a href="{{ water_temp_url }}">Water Temperature</li>
+    <li class="{% if request.path == tds %}active{% endif %}"><a href="{{ tds_url }}">Total Dissolved Solids</li>
+    <li class="{% if request.path == turb %}active{% endif %}"><a href="{{ turb_url }}">Turbidity</li>
+    <li class="{% if request.path == secchi %}active{% endif %}"><a href="{{ secchi_url }}">Secchi Disk Depth</li>
   </ul>
 {% endblock %}
 
@@ -62,6 +62,7 @@
 
   </head>
   <body>
+    <h1>Select Parameter</h1>
        <div id="mapid"></div>
   </body>
 <script>
@@ -113,13 +114,4 @@
       </div>
     </div>
   </div>
-{% endblock %}
-
-{% block app_actions %}
-  {% gizmo add_data_button %}
-  {% gizmo save_button %}
-  {% gizmo edit_button %}
-  {% gizmo remove_button %}
-  {% gizmo previous_button %}
-  {% gizmo next_button %}
 {% endblock %}

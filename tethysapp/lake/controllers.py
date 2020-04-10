@@ -2,7 +2,14 @@ from django.shortcuts import render
 from django.shortcuts import reverse
 from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import MapView, Button
+from tethys_sdk.gizmos import PlotlyView
+from django.http import HttpResponse, JsonResponse
 
+from csv import writer as csv_writer
+import plotly.graph_objs as go
+import requests
+import pandas as pd
+import io
 
 @login_required()
 def home(request):
@@ -195,20 +202,36 @@ def instructions(request):
 
 def chl_a(request):
     """
-    Controller for the Instructions page.
+    Controller for the Chlorophyll a  page.
     """
+    lake_map = MapView(
+        height='100%',
+        width='100%',
+        layers=[],
+        basemap='OpenStreetMap',
+    )
 
     context = {
+        'lake_map': lake_map,
     }
 
     return render(request, 'lake/chl_a.html', context)
+
 
 def do(request):
     """
     Controller for the Instructions page.
     """
 
+    lake_map = MapView(
+        height='100%',
+        width='100%',
+        layers=[],
+        basemap='OpenStreetMap',
+    )
+
     context = {
+        'lake_map': lake_map,
     }
 
     return render(request, 'lake/do.html', context)
@@ -218,7 +241,15 @@ def nit(request):
     Controller for the Instructions page.
     """
 
+    lake_map = MapView(
+        height='100%',
+        width='100%',
+        layers=[],
+        basemap='OpenStreetMap',
+    )
+
     context = {
+        'lake_map': lake_map,
     }
 
     return render(request, 'lake/nit.html', context)
@@ -228,7 +259,15 @@ def ph(request):
     Controller for the Instructions page.
     """
 
+    lake_map = MapView(
+        height='100%',
+        width='100%',
+        layers=[],
+        basemap='OpenStreetMap',
+    )
+
     context = {
+        'lake_map': lake_map,
     }
 
     return render(request, 'lake/ph.html', context)
@@ -238,7 +277,15 @@ def phosp(request):
     Controller for the Instructions page.
     """
 
+    lake_map = MapView(
+        height='100%',
+        width='100%',
+        layers=[],
+        basemap='OpenStreetMap',
+    )
+
     context = {
+        'lake_map': lake_map,
     }
 
     return render(request, 'lake/phosp.html', context)
@@ -248,7 +295,15 @@ def water_temp(request):
     Controller for the Instructions page.
     """
 
+    lake_map = MapView(
+        height='100%',
+        width='100%',
+        layers=[],
+        basemap='OpenStreetMap',
+    )
+
     context = {
+        'lake_map': lake_map,
     }
 
     return render(request, 'lake/water_temp.html', context)
@@ -257,8 +312,15 @@ def tds(request):
     """
     Controller for the Instructions page.
     """
+    lake_map = MapView(
+        height='100%',
+        width='100%',
+        layers=[],
+        basemap='OpenStreetMap',
+    )
 
     context = {
+        'lake_map': lake_map,
     }
 
     return render(request, 'lake/tds.html', context)
@@ -267,8 +329,15 @@ def turb(request):
     """
     Controller for the Instructions page.
     """
+    lake_map = MapView(
+        height='100%',
+        width='100%',
+        layers=[],
+        basemap='OpenStreetMap',
+    )
 
     context = {
+        'lake_map': lake_map,
     }
 
     return render(request, 'lake/turb.html', context)
@@ -277,8 +346,15 @@ def secchi(request):
     """
     Controller for the Instructions page.
     """
+    lake_map = MapView(
+        height='100%',
+        width='100%',
+        layers=[],
+        basemap='OpenStreetMap',
+    )
 
     context = {
+        'lake_map': lake_map,
     }
 
     return render(request, 'lake/secchi.html', context)
