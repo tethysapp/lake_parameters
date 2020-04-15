@@ -1,9 +1,9 @@
 {% load static %}
 
 requirejs.config({
-    'baseUrl': {% static "js/leaflet.wms-gh-pages/lib" %},
+    'baseUrl': "{% static 'js/leaflet.wms-gh-pages/lib' %}",
     'paths': {
-        'leaflet.wms': {% static 'js/leaflet.wms-gh-pages/dist/leaflet.wms' %} //.js'
+        'leaflet.wms': "{% static 'js/leaflet.wms-gh-pages/dist/leaflet.wms' %}" //.js'
         }
 });
 
