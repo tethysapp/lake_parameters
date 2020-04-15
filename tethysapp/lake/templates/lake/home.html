@@ -1,6 +1,7 @@
 {% extends "lake/base.html" %}
 {% load tethys_gizmos %}
 {% load tethys_gizmos static %}
+{% load static %}
 
 {% block styles %}
     {{ block.super }}
@@ -69,8 +70,32 @@ padding: 0 10px;
   }).addTo(mymap);
 
   var marker = L.marker([40.2, -111.8]).addTo(mymap).bindPopup('<h1>Utah Lake</h1>' + '<img src = "{% static 'lake/images/lake.jpg' %}" width ="300" height="200">');
-
 </script>
+
+<head>
+  <script src="js/leaflet.wms-gh-pages/lib/require.js" data-main="app"></script>
+  <link rel="stylesheet" type="text/css" href="js/leaflet.wms-gh-pages/lib/leaflet.css">
+  <style>
+
+    .leaflet-container {
+        background-color: #fff;
+        height: 400px;
+        margin: 1em;
+        border: 1px solid #999;
+    }
+  </style>
+</head>
+<body>
+
+  <h3>Overlay ("Single-Tile"/Untiled Mode)</h3>
+  <p>Click the map to get information about the underlying data.</p>
+  <div id="overlay-map"></div>
+  <h3>Tiled Layer</h3>
+  <p>Click the map to get information about the underlying data.</p>
+
+  <div id="tiled-map"></div>
+</body>
+
 <div class="column">
   <br>
   <br>

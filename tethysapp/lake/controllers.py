@@ -217,7 +217,6 @@ def chl_a(request):
 
     return render(request, 'lake/chl_a.html', context)
 
-
 def do(request):
     """
     Controller for the Instructions page.
