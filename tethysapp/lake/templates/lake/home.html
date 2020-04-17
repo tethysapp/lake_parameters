@@ -19,7 +19,7 @@
 
 .column {
 float: left;
-width: 33.3%;
+width: 25%;
 margin-bottom: 16px;
 padding: 0 10px;
 }
@@ -29,11 +29,15 @@ padding: 0 10px;
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
       crossorigin=""/>
+      <script type="text/javascript">
+        var dataUtahLake = {{jsonLake|safe}}
+      </script>
       <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
       crossorigin=""></script>
-      <style>
-          #mapid { height: 700px; width: 550px; }
+      <script src="{% static 'lake/js/L.TileLayer.BetterWMS.js' %}" type="text/javascript"></script>
+        <style>
+          #mapid { height: 700px; width: 850px; }
       </style>
       <link href="HydroShare.css" type="text/css" rel="stylesheet" />
          <title>
@@ -50,11 +54,13 @@ padding: 0 10px;
 
   <body>
     <div class="column">
-       <div id="mapid"></div>
+      <br>
+      <p>Click the map to get information about the station.</p>
+      <div id="mapid"></div>
     </div>
   </body>
 <script>
-
+  console.log(dataUtahLake);
   var mymap = L.map('mapid').setView([40.2, -111.8], 11);
   L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -63,7 +69,7 @@ padding: 0 10px;
   accessToken: 'pk.eyJ1IjoiYWJoaXNoZWthbWFsMTgiLCJhIjoiY2s1eTVxNGExMmQ5MDNubjExaWY5MjdvbSJ9.3nmdjWZmUCDNyRdlPo5gbg'
   }).addTo(mymap);
 
-  let Stations = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
+  let Stations = L.tileLayer.betterWms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
   layers: 'Stations_XYTableToPoint7', //Title name
   format: 'image/png', //depends on what you want to load in
   transparent: true,
@@ -72,30 +78,7 @@ padding: 0 10px;
   var marker = L.marker([40.2, -111.8]).addTo(mymap).bindPopup('<h1>Utah Lake</h1>' + '<img src = "{% static 'lake/images/lake.jpg' %}" width ="300" height="200">');
 </script>
 
-<head>
-  <script src="js/leaflet.wms-gh-pages/lib/require.js" data-main="app"></script>
-  <link rel="stylesheet" type="text/css" href="js/leaflet.wms-gh-pages/lib/leaflet.css">
-  <style>
-
-    .leaflet-container {
-        background-color: #fff;
-        height: 400px;
-        margin: 1em;
-        border: 1px solid #999;
-    }
-  </style>
-</head>
-<body>
-
-  <h3>Overlay ("Single-Tile"/Untiled Mode)</h3>
-  <p>Click the map to get information about the underlying data.</p>
-  <div id="overlay-map"></div>
-  <h3>Tiled Layer</h3>
-  <p>Click the map to get information about the underlying data.</p>
-
-  <div id="tiled-map"></div>
-</body>
-
+<div class="column"></div>
 <div class="column">
   <br>
   <br>

@@ -42,6 +42,7 @@
     <li class="{% if request.path == turb %}active{% endif %}"><a href="{{ turb_url }}">Turbidity</li>
     <li class="{% if request.path == secchi %}active{% endif %}"><a href="{{ secchi_url }}">Secchi Disk Depth</li>
   </ul>
+
 {% endblock %}
 
 {% block app_content %}
