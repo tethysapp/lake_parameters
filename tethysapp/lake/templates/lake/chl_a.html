@@ -1,6 +1,7 @@
 {% extends "lake/base.html" %}
 {% load tethys_gizmos %}
 {% load tethys_gizmos static %}
+{% gizmo timeseries_plot %}
 
 {% block styles %}
     {{ block.super }}
@@ -45,7 +46,6 @@
 {% endblock %}
 
 {% block app_content %}
-
   <head>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
@@ -53,8 +53,27 @@
       <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
       crossorigin=""></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
       <style>
-          #mapid { height: 750px; width: 600px; }
+          #mapid {
+            flex 1 1 50%;
+
+            height: 750px; width: 600px;
+          }
+          #mapgraphs{
+            display:flex;
+            flex-direction: row;
+            width: 100%;
+            height: 100%;
+          }
+
+          #timeseries_plot{
+            flex 1 1 50%;
+            width: 50%;
+            height:50%;
+
+          }
       </style>
       <link href="HydroShare.css" type="text/css" rel="stylesheet" />
          <title>
@@ -64,10 +83,25 @@
 
   <body>
     <h1>Chlorophyll a</h1>
-       <div id="mapid"></div>
+    <div id="mapgraphs">
+      <div id="mapid"></div>
+      <h3>Station 4917310</h3>
+      <div id="timeseries_plot"></div>
+    </div>
+
   </body>
 <script>
+  var timeseriesObject310 = {{data310|safe}};
+  console.log(timeseriesObject310);
+  var trace310 = {
+    x: timeseriesObject310['date310'],
+    y: timeseriesObject310['values310'],
+    type: 'scatter'
+  };
 
+var data310 = [trace310];
+
+Plotly.newPlot('timeseries_plot', data310);
   var mymap = L.map('mapid').setView([40.2, -111.8], 11);
   L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -88,9 +122,25 @@
   transparent: true,
   }).addTo(mymap);
 
+  var marker = L.marker([40.32087284,-111.7775375]).addTo(mymap).bindPopup('4917310');
+  var marker = L.marker([40.29569,-111.80282]).addTo(mymap).bindPopup('4917365');
+  var marker = L.marker([40.26828256,-111.8299304]).addTo(mymap).bindPopup('4917370');
+  var marker = L.marker([40.23717289,-111.7646472]).addTo(mymap).bindPopup('4917390');
+  var marker = L.marker([40.18913907,-111.6999312]).addTo(mymap).bindPopup('4917450');
+  var marker = L.marker([40.16967582,-111.8716056]).addTo(mymap).bindPopup('4917500');
+  var marker = L.marker([40.34216863,-111.8713257]).addTo(mymap).bindPopup('4917520');
+  var marker = L.marker([40.06023518,-111.8743836]).addTo(mymap).bindPopup('4917600');
+  var marker = L.marker([40.16773467,-111.7596514]).addTo(mymap).bindPopup('4917700');
+  var marker = L.marker([40.1577293,-111.7913255]).addTo(mymap).bindPopup('4917710');
+  var marker = L.marker([40.169162,-111.777287]).addTo(mymap).bindPopup('4917715');
+  var marker = L.marker([40.18856667,-111.7313142]).addTo(mymap).bindPopup('4917770');
+
 </script>
 
+{% endblock %}
 
+{% block import_gizmos %}
+    {% import_gizmo_dependency plot_view %}
 {% endblock %}
 
 {# Use the after_app_content block for modals #}

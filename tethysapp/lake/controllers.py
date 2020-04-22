@@ -2,17 +2,19 @@ from django.shortcuts import render
 from django.shortcuts import reverse
 from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import MapView, Button
-from tethys_sdk.gizmos import PlotlyView
+from tethys_sdk.gizmos import TimeSeries
 from django.http import HttpResponse, JsonResponse
 
 from csv import writer as csv_writer
 import plotly.graph_objs as go
 import requests
+import numpy as np
 import pandas as pd
 import io
 import os
+import math
 from .app import Lake as app
-
+from pandas import DataFrame
 
 
 @login_required()
@@ -20,6 +22,7 @@ def home(request):
     """
     Controller for the app home page.
     """
+
     app_workspace = app.get_app_workspace()
     file_path = os.path.join(app_workspace.path,"awqms_lake.csv")
     dataLake = pd.read_csv(file_path)
@@ -92,6 +95,26 @@ def chl_a(request):
     """
     Controller for the Chlorophyll a  page.
     """
+    responseObject310 = {}
+    app_workspace = app.get_app_workspace()
+    file_path = os.path.join(app_workspace.path,"awqms_lake.csv")
+    dataLake = pd.read_csv(file_path)
+    chl_a_param = dataLake['Characteristic Name']=='Chlorophyll a, uncorrected for pheophytin'
+    chl_a_row = dataLake[chl_a_param]
+
+    chl_a_id310 = chl_a_row['Monitoring Location ID']==4917310
+    print(chl_a_id310)
+    chl_a310 = chl_a_row[chl_a_id310]
+    print(chl_a310)
+    value310 = chl_a310['Result Value']
+    date310 = chl_a310['Activity Start Date']
+    valuesNumpy310 = value310.to_numpy()
+    valuesNoNan310 = np.nan_to_num(valuesNumpy310)
+    valuesFin310 = valuesNoNan310.tolist()
+    responseObject310['values310']=valuesFin310
+    print(responseObject310['values310'])
+    responseObject310['date310']=date310.to_numpy().tolist()
+
     lake_map = MapView(
         height='100%',
         width='100%',
@@ -101,6 +124,8 @@ def chl_a(request):
 
     context = {
         'lake_map': lake_map,
+        'csvLake':dataLake,
+        'data310':responseObject310
     }
 
     return render(request, 'lake/chl_a.html', context)
