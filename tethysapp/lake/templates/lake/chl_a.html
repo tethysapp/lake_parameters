@@ -33,15 +33,15 @@
   <li class="{% if request.path == add_data_url %}active{% endif %}"><a href="{{ add_data_url }}">Search Data</a></li>
   <li class="title">Select Parameter</li>
   <ul>
-    <li class="{% if request.path == chl_a %}active{% endif %}"><a href="{{ chl_a_url }}">Chlorophyll a</li>
-    <li class="{% if request.path == do %}active{% endif %}"><a href="{{ do_url }}">Dissolved Oxygen</li>
-    <li class="{% if request.path == nit %}active{% endif %}"><a href="{{ nit_url }}">Nitrogen</li>
-    <li class="{% if request.path == ph %}active{% endif %}"><a href="{{ ph_url }}">pH</li>
-    <li class="{% if request.path == phosp %}active{% endif %}"><a href="{{ phosp_url }}">Phosphate-Phosphorus</li>
-    <li class="{% if request.path == water_temp %}active{% endif %}"><a href="{{ water_temp_url }}">Water Temperature</li>
-    <li class="{% if request.path == tds %}active{% endif %}"><a href="{{ tds_url }}">Total Dissolved Solids</li>
-    <li class="{% if request.path == turb %}active{% endif %}"><a href="{{ turb_url }}">Turbidity</li>
-    <li class="{% if request.path == secchi %}active{% endif %}"><a href="{{ secchi_url }}">Secchi Disk Depth</li>
+    <li class="{% if request.path == chl_a %}active{% endif %}"><a href="{{ chl_a_url }}">Chlorophyll a</a></li>
+    <li class="{% if request.path == do %}active{% endif %}"><a href="{{ do_url }}">Dissolved Oxygen</a></li>
+    <li class="{% if request.path == nit %}active{% endif %}"><a href="{{ nit_url }}">Nitrogen</a></li>
+    <li class="{% if request.path == ph %}active{% endif %}"><a href="{{ ph_url }}">pH</a></li>
+    <li class="{% if request.path == phosp %}active{% endif %}"><a href="{{ phosp_url }}">Phosphate-Phosphorus</a></li>
+    <li class="{% if request.path == water_temp %}active{% endif %}"><a href="{{ water_temp_url }}">Water Temperature</a></li>
+    <li class="{% if request.path == tds %}active{% endif %}"><a href="{{ tds_url }}">Total Dissolved Solids</a></li>
+    <li class="{% if request.path == turb %}active{% endif %}"><a href="{{ turb_url }}">Turbidity</a></li>
+    <li class="{% if request.path == secchi %}active{% endif %}"><a href="{{ secchi_url }}">Secchi Disk Depth</a></li>
   </ul>
 {% endblock %}
 
@@ -55,26 +55,19 @@
       crossorigin=""></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-      <style>
-          #mapid {
-            flex 1 1 50%;
+    <style>
 
-            height: 750px; width: 600px;
-          }
-          #mapgraphs{
-            display:flex;
-            flex-direction: row;
-            width: 100%;
-            height: 100%;
-          }
+    .column {
+    float: left;
+    width: 35%;
+    margin-bottom: 16px;
+    padding: 0 10px;
+    }
 
-          #timeseries_plot{
-            flex 1 1 50%;
-            width: 50%;
-            height:50%;
+    #mapid { height: 700px; width: 600px; }
 
-          }
-      </style>
+    </style>
+
       <link href="HydroShare.css" type="text/css" rel="stylesheet" />
          <title>
              HydroShare
@@ -82,26 +75,184 @@
   </head>
 
   <body>
+  <div class="column">
     <h1>Chlorophyll a</h1>
-    <div id="mapgraphs">
-      <div id="mapid"></div>
-      <h3>Station 4917310</h3>
-      <div id="timeseries_plot"></div>
-    </div>
+    <div id="mapid"></div>
+  </div>
+  <div class="column">
+      <h7>Station 4917310</h7>
+      <div id="timeseries_plot310"></div>
+      <h7>Station 4917365</h7>
+      <div id="timeseries_plot365"></div>
+      <h7>Station 4917370</h7>
+      <div id="timeseries_plot370"></div>
+      <h7>Station 4917390</h7>
+      <div id="timeseries_plot390"></div>
+      <h7>Station 4917450</h7>
+      <div id="timeseries_plot450"></div>
+      <h7>Station 4917500</h7>
+      <div id="timeseries_plot500"></div>
+      <h7>Station 4917520</h7>
+      <div id="timeseries_plot520"></div>
+      <h7>Station 4917600</h7>
+      <div id="timeseries_plot600"></div>
+      <h7>Station 4917700</h7>
+      <div id="timeseries_plot700"></div>
+      <h7>Station 4917710</h7>
+      <div id="timeseries_plot710"></div>
+      <h7>Station 4917715</h7>
+      <div id="timeseries_plot715"></div>
+      <h7>Station 4917770</h7>
+      <div id="timeseries_plot770"></div>
+  </div>
 
   </body>
 <script>
-  var timeseriesObject310 = {{data310|safe}};
-  console.log(timeseriesObject310);
-  var trace310 = {
-    x: timeseriesObject310['date310'],
-    y: timeseriesObject310['values310'],
+
+function chart365(d) {
+  var timeseriesObject365 = {{data365|safe}};
+  console.log(timeseriesObject365);
+  var trace365 = {
+    x: timeseriesObject365['date365'],
+    y: timeseriesObject365['values365'],
     type: 'scatter'
   };
+var data365 = [trace365];
+Plotly.newPlot('timeseries_plot365', data365);
+}
 
+function chart310(d) {
+var timeseriesObject310 = {{data310|safe}};
+console.log(timeseriesObject310);
+var trace310 = {
+  x: timeseriesObject310['date310'],
+  y: timeseriesObject310['values310'],
+  type: 'scatter'
+};
 var data310 = [trace310];
+Plotly.newPlot('timeseries_plot310', data310);
+}
 
-Plotly.newPlot('timeseries_plot', data310);
+function chart370(d) {
+var timeseriesObject370 = {{data370|safe}};
+console.log(timeseriesObject370);
+var trace370 = {
+  x: timeseriesObject370['date370'],
+  y: timeseriesObject370['values370'],
+  type: 'scatter'
+};
+var data370 = [trace370];
+Plotly.newPlot('timeseries_plot370', data370);
+}
+
+function chart390(d) {
+var timeseriesObject390 = {{data390|safe}};
+console.log(timeseriesObject390);
+var trace390 = {
+  x: timeseriesObject390['date390'],
+  y: timeseriesObject390['values390'],
+  type: 'scatter'
+};
+var data390 = [trace390];
+Plotly.newPlot('timeseries_plot390', data390);
+}
+
+function chart450(d) {
+var timeseriesObject450 = {{data450|safe}};
+console.log(timeseriesObject450);
+var trace450 = {
+  x: timeseriesObject450['date450'],
+  y: timeseriesObject450['values450'],
+  type: 'scatter'
+};
+var data450 = [trace450];
+Plotly.newPlot('timeseries_plot450', data450);
+}
+
+function chart500(d) {
+var timeseriesObject500 = {{data500|safe}};
+console.log(timeseriesObject500);
+var trace500 = {
+  x: timeseriesObject500['date500'],
+  y: timeseriesObject500['values500'],
+  type: 'scatter'
+};
+var data500 = [trace500];
+Plotly.newPlot('timeseries_plot500', data500);
+}
+
+function chart520(d) {
+var timeseriesObject520 = {{data520|safe}};
+console.log(timeseriesObject520);
+var trace520 = {
+  x: timeseriesObject520['date520'],
+  y: timeseriesObject520['values520'],
+  type: 'scatter'
+};
+var data520 = [trace520];
+Plotly.newPlot('timeseries_plot520', data520);
+}
+
+function chart600(d) {
+var timeseriesObject600 = {{data600|safe}};
+console.log(timeseriesObject600);
+var trace600 = {
+  x: timeseriesObject600['date600'],
+  y: timeseriesObject600['values600'],
+  type: 'scatter'
+};
+var data600 = [trace600];
+Plotly.newPlot('timeseries_plot600', data600);
+}
+
+function chart700(d) {
+var timeseriesObject700 = {{data700|safe}};
+console.log(timeseriesObject700);
+var trace700 = {
+  x: timeseriesObject700['date700'],
+  y: timeseriesObject700['values700'],
+  type: 'scatter'
+};
+var data700 = [trace700];
+Plotly.newPlot('timeseries_plot700', data700);
+}
+
+function chart710(d) {
+var timeseriesObject710 = {{data710|safe}};
+console.log(timeseriesObject710);
+var trace710 = {
+  x: timeseriesObject710['date710'],
+  y: timeseriesObject710['values710'],
+  type: 'scatter'
+};
+var data710 = [trace710];
+Plotly.newPlot('timeseries_plot710', data710);
+}
+
+function chart715(d) {
+var timeseriesObject715 = {{data715|safe}};
+console.log(timeseriesObject715);
+var trace715 = {
+  x: timeseriesObject715['date715'],
+  y: timeseriesObject715['values715'],
+  type: 'scatter'
+};
+var data715 = [trace715];
+Plotly.newPlot('timeseries_plot715', data715);
+}
+
+function chart770(d) {
+var timeseriesObject770 = {{data770|safe}};
+console.log(timeseriesObject770);
+var trace770 = {
+  x: timeseriesObject770['date770'],
+  y: timeseriesObject770['values770'],
+  type: 'scatter'
+};
+var data770 = [trace770];
+Plotly.newPlot('timeseries_plot770', data770);
+}
+
   var mymap = L.map('mapid').setView([40.2, -111.8], 11);
   L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -122,18 +273,18 @@ Plotly.newPlot('timeseries_plot', data310);
   transparent: true,
   }).addTo(mymap);
 
-  var marker = L.marker([40.32087284,-111.7775375]).addTo(mymap).bindPopup('4917310');
-  var marker = L.marker([40.29569,-111.80282]).addTo(mymap).bindPopup('4917365');
-  var marker = L.marker([40.26828256,-111.8299304]).addTo(mymap).bindPopup('4917370');
-  var marker = L.marker([40.23717289,-111.7646472]).addTo(mymap).bindPopup('4917390');
-  var marker = L.marker([40.18913907,-111.6999312]).addTo(mymap).bindPopup('4917450');
-  var marker = L.marker([40.16967582,-111.8716056]).addTo(mymap).bindPopup('4917500');
-  var marker = L.marker([40.34216863,-111.8713257]).addTo(mymap).bindPopup('4917520');
-  var marker = L.marker([40.06023518,-111.8743836]).addTo(mymap).bindPopup('4917600');
-  var marker = L.marker([40.16773467,-111.7596514]).addTo(mymap).bindPopup('4917700');
-  var marker = L.marker([40.1577293,-111.7913255]).addTo(mymap).bindPopup('4917710');
-  var marker = L.marker([40.169162,-111.777287]).addTo(mymap).bindPopup('4917715');
-  var marker = L.marker([40.18856667,-111.7313142]).addTo(mymap).bindPopup('4917770');
+  var marker = L.marker([40.32087284,-111.7775375]).addTo(mymap).bindPopup(chart310);
+  var marker = L.marker([40.29569,-111.80282]).addTo(mymap).bindPopup(chart365);
+  var marker = L.marker([40.26828256,-111.8299304]).addTo(mymap).bindPopup(chart370);
+  var marker = L.marker([40.23717289,-111.7646472]).addTo(mymap).bindPopup(chart390);
+  var marker = L.marker([40.18913907,-111.6999312]).addTo(mymap).bindPopup(chart450);
+  var marker = L.marker([40.16967582,-111.8716056]).addTo(mymap).bindPopup(chart500);
+  var marker = L.marker([40.34216863,-111.8713257]).addTo(mymap).bindPopup(chart520);
+  var marker = L.marker([40.06023518,-111.8743836]).addTo(mymap).bindPopup(chart600);
+  var marker = L.marker([40.16773467,-111.7596514]).addTo(mymap).bindPopup(chart700);
+  var marker = L.marker([40.1577293,-111.7913255]).addTo(mymap).bindPopup(chart710);
+  var marker = L.marker([40.169162,-111.777287]).addTo(mymap).bindPopup(chart715);
+  var marker = L.marker([40.18856667,-111.7313142]).addTo(mymap).bindPopup(chart770);
 
 </script>
 
