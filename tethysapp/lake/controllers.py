@@ -451,7 +451,9 @@ def nit(request):
     file_path = os.path.join(app_workspace.path,"awqms_lake.csv")
     dataLake = pd.read_csv(file_path)
     chl_a_param = dataLake['Characteristic Name']=='Nitrogen'
-    chl_a_row = dataLake[chl_a_param]
+    chl_a_both = dataLake[chl_a_param]
+    chl_a_total = chl_a_both['Sample Fraction']=='Total'
+    chl_a_row = chl_a_both[chl_a_total]
 
     chl_a_id310 = chl_a_row['Monitoring Location ID']==4917310
     chl_a310 = chl_a_row[chl_a_id310]
@@ -790,7 +792,9 @@ def phosp(request):
     file_path = os.path.join(app_workspace.path,"awqms_lake.csv")
     dataLake = pd.read_csv(file_path)
     chl_a_param = dataLake['Characteristic Name']=='Phosphate-phosphorus'
-    chl_a_row = dataLake[chl_a_param]
+    chl_a_both = dataLake[chl_a_param]
+    chl_a_total = chl_a_both['Sample Fraction']=='Total'
+    chl_a_row = chl_a_both[chl_a_total]
 
     chl_a_id310 = chl_a_row['Monitoring Location ID']==4917310
     chl_a310 = chl_a_row[chl_a_id310]

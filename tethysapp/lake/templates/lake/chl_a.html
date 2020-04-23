@@ -76,34 +76,11 @@
 
   <body>
   <div class="column">
-    <h1>Chlorophyll a</h1>
+    <h1>Chlorophyll a (ug/l)</h1>
     <div id="mapid"></div>
   </div>
   <div class="column">
-      <h7>Station 4917310</h7>
-      <div id="timeseries_plot310"></div>
-      <h7>Station 4917365</h7>
-      <div id="timeseries_plot365"></div>
-      <h7>Station 4917370</h7>
-      <div id="timeseries_plot370"></div>
-      <h7>Station 4917390</h7>
-      <div id="timeseries_plot390"></div>
-      <h7>Station 4917450</h7>
-      <div id="timeseries_plot450"></div>
-      <h7>Station 4917500</h7>
-      <div id="timeseries_plot500"></div>
-      <h7>Station 4917520</h7>
-      <div id="timeseries_plot520"></div>
-      <h7>Station 4917600</h7>
-      <div id="timeseries_plot600"></div>
-      <h7>Station 4917700</h7>
-      <div id="timeseries_plot700"></div>
-      <h7>Station 4917710</h7>
-      <div id="timeseries_plot710"></div>
-      <h7>Station 4917715</h7>
-      <div id="timeseries_plot715"></div>
-      <h7>Station 4917770</h7>
-      <div id="timeseries_plot770"></div>
+      <div id="timeseries_plot"></div>
   </div>
 
   </body>
@@ -118,7 +95,28 @@ function chart365(d) {
     type: 'scatter'
   };
 var data365 = [trace365];
-Plotly.newPlot('timeseries_plot365', data365);
+var layout = {
+  title: {
+    text:'Station 4917365',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data365, layout);
 }
 
 function chart310(d) {
@@ -130,7 +128,28 @@ var trace310 = {
   type: 'scatter'
 };
 var data310 = [trace310];
-Plotly.newPlot('timeseries_plot310', data310);
+var layout = {
+  title: {
+    text:'Station 4917310',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data310, layout);
 }
 
 function chart370(d) {
@@ -142,7 +161,28 @@ var trace370 = {
   type: 'scatter'
 };
 var data370 = [trace370];
-Plotly.newPlot('timeseries_plot370', data370);
+var layout = {
+  title: {
+    text:'Station 4917370',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data370, layout);
 }
 
 function chart390(d) {
@@ -154,7 +194,28 @@ var trace390 = {
   type: 'scatter'
 };
 var data390 = [trace390];
-Plotly.newPlot('timeseries_plot390', data390);
+var layout = {
+  title: {
+    text:'Station 4917390',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data390, layout);
 }
 
 function chart450(d) {
@@ -166,7 +227,28 @@ var trace450 = {
   type: 'scatter'
 };
 var data450 = [trace450];
-Plotly.newPlot('timeseries_plot450', data450);
+var layout = {
+  title: {
+    text:'Station 4917450',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data450, layout);
 }
 
 function chart500(d) {
@@ -178,7 +260,28 @@ var trace500 = {
   type: 'scatter'
 };
 var data500 = [trace500];
-Plotly.newPlot('timeseries_plot500', data500);
+var layout = {
+  title: {
+    text:'Station 4917500',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data500, layout);
 }
 
 function chart520(d) {
@@ -190,7 +293,28 @@ var trace520 = {
   type: 'scatter'
 };
 var data520 = [trace520];
-Plotly.newPlot('timeseries_plot520', data520);
+var layout = {
+  title: {
+    text:'Station 4917520',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data520, layout);
 }
 
 function chart600(d) {
@@ -202,7 +326,28 @@ var trace600 = {
   type: 'scatter'
 };
 var data600 = [trace600];
-Plotly.newPlot('timeseries_plot600', data600);
+var layout = {
+  title: {
+    text:'Station 4917600',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data600, layout);
 }
 
 function chart700(d) {
@@ -214,7 +359,28 @@ var trace700 = {
   type: 'scatter'
 };
 var data700 = [trace700];
-Plotly.newPlot('timeseries_plot700', data700);
+var layout = {
+  title: {
+    text:'Station 4917700',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data700, layout);
 }
 
 function chart710(d) {
@@ -223,10 +389,31 @@ console.log(timeseriesObject710);
 var trace710 = {
   x: timeseriesObject710['date710'],
   y: timeseriesObject710['values710'],
-  type: 'scatter'
+  type: 'scatter',
 };
 var data710 = [trace710];
-Plotly.newPlot('timeseries_plot710', data710);
+var layout = {
+  title: {
+    text:'Station 4917710',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data710, layout);
 }
 
 function chart715(d) {
@@ -238,7 +425,28 @@ var trace715 = {
   type: 'scatter'
 };
 var data715 = [trace715];
-Plotly.newPlot('timeseries_plot715', data715);
+var layout = {
+  title: {
+    text:'Station 4917715',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data715, layout);
 }
 
 function chart770(d) {
@@ -250,7 +458,28 @@ var trace770 = {
   type: 'scatter'
 };
 var data770 = [trace770];
-Plotly.newPlot('timeseries_plot770', data770);
+var layout = {
+  title: {
+    text:'Station 4917770',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+  yaxis: {
+    title: {
+      text: 'Value',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+Plotly.newPlot('timeseries_plot', data770, layout);
 }
 
   var mymap = L.map('mapid').setView([40.2, -111.8], 11);
@@ -273,18 +502,30 @@ Plotly.newPlot('timeseries_plot770', data770);
   transparent: true,
   }).addTo(mymap);
 
-  var marker = L.marker([40.32087284,-111.7775375]).addTo(mymap).bindPopup(chart310);
-  var marker = L.marker([40.29569,-111.80282]).addTo(mymap).bindPopup(chart365);
-  var marker = L.marker([40.26828256,-111.8299304]).addTo(mymap).bindPopup(chart370);
-  var marker = L.marker([40.23717289,-111.7646472]).addTo(mymap).bindPopup(chart390);
-  var marker = L.marker([40.18913907,-111.6999312]).addTo(mymap).bindPopup(chart450);
-  var marker = L.marker([40.16967582,-111.8716056]).addTo(mymap).bindPopup(chart500);
-  var marker = L.marker([40.34216863,-111.8713257]).addTo(mymap).bindPopup(chart520);
-  var marker = L.marker([40.06023518,-111.8743836]).addTo(mymap).bindPopup(chart600);
-  var marker = L.marker([40.16773467,-111.7596514]).addTo(mymap).bindPopup(chart700);
-  var marker = L.marker([40.1577293,-111.7913255]).addTo(mymap).bindPopup(chart710);
-  var marker = L.marker([40.169162,-111.777287]).addTo(mymap).bindPopup(chart715);
-  var marker = L.marker([40.18856667,-111.7313142]).addTo(mymap).bindPopup(chart770);
+  var marker = L.marker([40.32087284,-111.7775375]).bindTooltip('310', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart310);
+  var marker = L.marker([40.29569,-111.80282]).bindTooltip('365', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart365);
+  var marker = L.marker([40.26828256,-111.8299304]).bindTooltip('370', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart370);
+  var marker = L.marker([40.23717289,-111.7646472]).bindTooltip('390', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart390);
+  var marker = L.marker([40.18913907,-111.6999312]).bindTooltip('450', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart450);
+  var marker = L.marker([40.16967582,-111.8716056]).bindTooltip('500', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart500);
+  var marker = L.marker([40.34216863,-111.8713257]).bindTooltip('520', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart520);
+  var marker = L.marker([40.06023518,-111.8743836]).bindTooltip('600', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart600);
+  var marker = L.marker([40.16773467,-111.7596514]).bindTooltip('700', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart700);
+  var marker = L.marker([40.1577293,-111.7913255]).bindTooltip('710', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart710);
+  var marker = L.marker([40.169162,-111.777287]).bindTooltip('715', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart715);
+  var marker = L.marker([40.18856667,-111.7313142]).bindTooltip('770', {permanent: true, direction : 'bottom', className: 'transparent-tooltip',
+  offset: [0, 0]}).addTo(mymap).bindPopup(chart770);
 
 </script>
 
