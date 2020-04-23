@@ -12,7 +12,7 @@ class Lake(TethysAppBase):
     package = 'lake'
     root_url = 'lake'
     color = '#0c8fab'
-    description = 'Utah Lake Water Parameters is an App that allows you to see the distribution of a chosen parameter values through the Utah Lake'
+    description = 'Utah Lake Water Parameters is an App that allows you to see the value distribution of a chosen parameter through the Utah Lake in the time'
     tags = '"Hydrology","CEEN 514", "Utah Lake"'
     enable_feedback = False
     feedback_emails = []
