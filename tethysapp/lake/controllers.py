@@ -27,7 +27,6 @@ def home(request):
     file_path = os.path.join(app_workspace.path,"awqms_lake.csv")
     dataLake = pd.read_csv(file_path)
     dataJson = dataLake.to_dict()
-    print(dataJson)
 
     lake_map = MapView(
         height='100%',
