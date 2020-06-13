@@ -35,18 +35,8 @@ def home(request):
         basemap='OpenStreetMap',
     )
 
-
-    add_data_button = Button(
-        display_text='Add Data',
-        name='add-data-button',
-        icon='glyphicon glyphicon-plus',
-        style='success',
-        href=reverse('lake:add_data')
-    )
-
     context = {
         'lake_map': lake_map,
-        'add_data_button': add_data_button,
         'jsonLake':dataJson
     }
 
@@ -64,18 +54,8 @@ def add_data(request):
         basemap='OpenStreetMap',
     )
 
-
-    add_data_button = Button(
-        display_text='Add Data',
-        name='add-data-button',
-        icon='glyphicon glyphicon-plus',
-        style='success',
-        href=reverse('lake:add_data')
-    )
-
     context = {
         'lake_map': lake_map,
-        'add_data_button': add_data_button
     }
     return render(request, 'lake/add_data.html', context)
 
@@ -89,6 +69,44 @@ def instructions(request):
     }
 
     return render(request, 'lake/instructions.html', context)
+
+# def do_charts(request):
+#     """
+#     Controller for the chart.
+#     """
+
+    # responseObject = {}
+    #
+    # app_workspace = app.get_app_workspace()
+    # file_path = os.path.join(app_workspace.path,"awqms_lake.csv")
+    # dataLake = pd.read_csv(file_path)
+    # param = dataLake['Characteristic Name']=='Dissolved oxygen (DO)'
+    # param_row = dataLake[param]
+    #
+    # param_id = param_row['Monitoring Location ID']==4917+
+    # param_location = param_row[param_id]
+    # value = param_location['Result Value']
+    # date = param_location['Activity Start Date']
+    # valuesNumpy = value.to_numpy()
+    # valuesNoNan = np.nan_to_num(valuesNumpy)
+    # valuesFin = valuesNoNan.tolist()
+    # responseObject['values']=valuesFin
+    # responseObject['date']=date.to_numpy().tolist()
+        #
+        # lake_map = MapView(
+        #     height='100%',
+        #     width='100%',
+        #     layers=[],
+        #     basemap='OpenStreetMap',
+        # )
+        #
+        #     context = {
+        #      'lake_map': lake_map,
+        #      'csvLake':dataLake,
+        #      'data':responseObject,
+        # }
+        #
+        # return render(request, 'lake/do.html', context)
 
 def chl_a(request):
     """
@@ -410,20 +428,20 @@ def do(request):
     )
 
     context = {
-        'lake_map': lake_map,
-        'csvLake':dataLake,
-        'data310':responseObject310,
-        'data365':responseObject365,
-        'data370':responseObject370,
-        'data390':responseObject390,
-        'data450':responseObject450,
-        'data500':responseObject500,
-        'data520':responseObject520,
-        'data600':responseObject600,
-        'data700':responseObject700,
-        'data710':responseObject710,
-        'data715':responseObject715,
-        'data770':responseObject770,
+     'lake_map': lake_map,
+     'csvLake':dataLake,
+     'data310':responseObject310,
+     'data365':responseObject365,
+     'data370':responseObject370,
+     'data390':responseObject390,
+     'data450':responseObject450,
+     'data500':responseObject500,
+     'data520':responseObject520,
+     'data600':responseObject600,
+     'data700':responseObject700,
+     'data710':responseObject710,
+     'data715':responseObject715,
+     'data770':responseObject770,
     }
 
     return render(request, 'lake/do.html', context)
