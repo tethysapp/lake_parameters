@@ -25,7 +25,7 @@
   {% url 'lake:phosp' as phosp_url %}
   {% url 'lake:water_temp' as water_temp_url %}
   {% url 'lake:tds' as tds_url %}
-  {% url 'lake:tub' as turb_url %}
+  {% url 'lake:turb' as turb_url %}
   {% url 'lake:secchi' as secchi_url %}
   <li class="title">Navigation</li>
   <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
@@ -161,7 +161,7 @@ var trace370 = {
   type: 'scatter'
 };
 var data370 = [trace370];
-var layout = {3
+var layout = {
   title: {
     text:'Station 4917370',
     font: {
