@@ -71,70 +71,83 @@ def instructions(request):
     return render(request, 'lake/instructions.html', context)
 
 
-def getData(file_path, characteristic):
+def getData(request, characteristic):
+    app_workspace = app.get_app_workspace()
+    file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
     dataLake = pd.read_csv(file_path)
     param = dataLake['Characteristic Name'] == characteristic
     row = dataLake[param]
     locations = dataLake['Monitoring Location ID'].unique()
     locations.sort()
     context = {}
+    context['characteristic'] = characteristic
     context['csvLake'] = dataLake
+    # lake_map = MapView(
+    #     height='100%',
+    #     width='100%',
+    #     layers=[],
+    #     basemap='OpenStreetMap',
+    # )
+    # context['lake_map'] = lake_map
+    context['all_data'] = {}
+    for location in locations:
+        df = dataLake[dataLake['Monitoring Location ID'] == location]
+        if len(df) > 0:
+            lat = df['Monitoring Location Latitude'].tolist()[0]
+            lon = df['Monitoring Location Longitude'].tolist()[0]
+            dataname = str(location)
+            charac_id = row['Monitoring Location ID'] == location
+            charac = row[charac_id]
+            value = charac['Result Value']
+            date = charac['Activity Start Date']
+            valuesNumpy = value.to_numpy()
+            valuesNoNan = np.nan_to_num(valuesNumpy)
+            valuesFin = valuesNoNan.tolist()
+            responseObject = {}
+            responseObject['values'] = valuesFin
+            responseObject['dates'] = date.to_numpy().tolist()
+            context['all_data'][dataname] = {'coords': [lat, lon], 'data': responseObject}
+    return render(request, 'lake/show_data.html', context)
+
+
+def show_data(request):
+
     lake_map = MapView(
         height='100%',
         width='100%',
         layers=[],
         basemap='OpenStreetMap',
     )
-    context['lake_map'] = lake_map
-    for location in locations:
-        lastthree = str(location)[-3:]
-        valuesname = "values" + lastthree
-        datename = "date" + lastthree
-        dataname = "data" + lastthree
-        charac_id = row['Monitoring Location ID'] == location
-        charac = row[charac_id]
-        value = charac['Result Value']
-        date = charac['Activity Start Date']
-        valuesNumpy = value.to_numpy()
-        valuesNoNan = np.nan_to_num(valuesNumpy)
-        valuesFin = valuesNoNan.tolist()
-        responseObject = {}
-        responseObject[valuesname] = valuesFin
-        responseObject[datename] = date.to_numpy().tolist()
-        context[dataname] = responseObject
-    return context
 
+    context = {
+        'lake_map': lake_map,
+    }
+    return render(request, 'lake/show_data.html', context)
 
 def chl_a(request):
-    """
-    Controller for the Chlorophyll a  page.
-    """
-    characteristic = "Chlorophyll a, uncorrected for pheophytin"
-    app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
-    context = getData(file_path, characteristic)
-    return render(request, 'lake/chl_a.html', context)
+    result = getData(request, "Chlorophyll a, uncorrected for pheophytin")
+    context = {
+    }
+    return result
+
+
 
 def do(request):
-    """
-    Controller for the do page.
-    """
-    characteristic = "Dissolved oxygen (DO)"
-    app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
-    context = getData(file_path, characteristic)
-    return render(request, 'lake/do.html', context)
+    result = getData(request, "Dissolved oxygen (DO)")
+    context = {
+    }
+    return render(request,'lake/show_data.html', context)
+    # context = getData("Dissolved oxygen (DO)")
+    # return render(request, 'lake/do.html', context)
 
 
 def nit(request):
-    """
-    Controller for the Nitrogen page.
-    """
-    characteristic = "Nitrogen"
-    app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
-    context = getData(file_path, characteristic)
-    return render(request, 'lake/nit.html', context)
+    result = getData(request, "Nitrogen")
+    context = {
+    }
+    return render(request,'lake/show_data.html', context)
+    # context = getData("Nitrogen")
+    # return render(request, 'lake/nit.html', context)
 
     # chl_a_param = dataLake['Characteristic Name']=='Nitrogen'
     # chl_a_both = dataLake[chl_a_param]
@@ -143,25 +156,20 @@ def nit(request):
 
 
 def ph(request):
-    """
-    Controller for the ph page.
-    """
-    characteristic = "pH"
-    app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
-    context = getData(file_path, characteristic)
-    return render(request, 'lake/ph.html', context)
-
+    result = getData(request, "pH")
+    context = {
+    }
+    return render(request,'lake/show_data.html', context)
+    # context = getData("pH")
+    # return render(request, 'ph.html', context)
 
 def phosp(request):
-    """
-    Controller for the Phosphorus page.
-    """
-    characteristic = "Phosphate-phosphorus"
-    app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
-    context = getData(file_path, characteristic)
-    return render(request, 'lake/phosp.html', context)
+    result = getData(request, "Phosphate-phosphorus")
+    context = {
+    }
+    return render(request,'lake/show_data.html', context)
+    # context = getData("Phosphate-phosphorus")
+    # return render(request, 'lake/phosp.html', context)
 
     # chl_a_param = dataLake['Characteristic Name']=='Phosphate-phosphorus'
     # chl_a_both = dataLake[chl_a_param]
@@ -170,44 +178,33 @@ def phosp(request):
 
 
 def water_temp(request):
-    """
-    Controller for the Water Temp page.
-    """
-    characteristic = "Temperature, water"
-    app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
-    context = getData(file_path, characteristic)
-    return render(request, 'lake/water_temp.html', context)
-
+    result = getData(request, "Temperature, water")
+    context = {
+    }
+    return render(request,'lake/show_data.html', context)
+    # context = getData("Temperature, water")
+    # return render(request, 'lake/water_temp.html', context)
 
 def tds(request):
-    """
-    Controller for the TDS page.
-    """
-    characteristic = "Total dissolved solids"
-    app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
-    context = getData(file_path, characteristic)
-    return render(request, 'lake/tds.html', context)
-
+    result = getData(request, "Total dissolved solids")
+    context = {
+    }
+    return render(request,'lake/show_data.html', context)
+    # context = getData("Total dissolved solids")
+    # return render(request, 'lake/tds.html', context)
 
 def turb(request):
-    """
-    Controller for the Turbidity page.
-    """
-    characteristic = "Turbidity"
-    app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
-    context = getData(file_path, characteristic)
-    return render(request, 'lake/turb.html', context)
-
+    result = getData(request, "Turbidity")
+    context = {
+    }
+    return render(request,'lake/show_data.html', context)
+    # context = getData("Turbidity")
+    # return render(request, 'lake/turb.html', context)
 
 def secchi(request):
-    """
-    Controller for the Secchi Disk page.
-    """
-    characteristic = "Depth, Secchi disk depth"
-    app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
-    context = getData(file_path, characteristic)
-    return render(request, 'lake/secchi.html', context)
+    result = getData(request, "Depth, Secchi disk depth")
+    context = {
+    }
+    return render(request,'lake/show_data.html', context)
+    # context = getData("Depth, Secchi disk depth")
+    # return render(request, 'lake/secchi.html', context)
