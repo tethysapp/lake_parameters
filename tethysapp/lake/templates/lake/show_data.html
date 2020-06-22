@@ -25,9 +25,8 @@
   {% url 'lake:phosp' as phosp_url %}
   {% url 'lake:water_temp' as water_temp_url %}
   {% url 'lake:tds' as tds_url %}
-  {% url 'lake:tub' as turb_url %}
+  {% url 'lake:turb' as turb_url %}
   {% url 'lake:secchi' as secchi_url %}
-  {% url 'lake:show_data' as show_data_url %}
   <li class="title">Navigation</li>
   <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
   <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li>
@@ -65,7 +64,7 @@
     padding: 0 10px;
     }
 
-    #mapid { height: 700px; width: 600px; }
+    #mapid { height:500px; width: 350px; }
 
     </style>
 
@@ -75,9 +74,9 @@
          </title>
   </head>
 
- <body>
+  <body>
   <div class="column">
-    <h1>TODO: Change programatically</h1>
+    <h1>{{characteristic}}</h1>
     <div id="mapid"></div>
   </div>
   <div class="column">
@@ -85,24 +84,26 @@
   </div>
 
   </body>
+
 <script>
+  var alldata = {{all_data|safe}};
 
 	function chart(d) {
-		var data = d.options.custom;
+		//var rawdata = d.options.custom;
 		var location = d.options.title;
-		var timeseriesObject = {{data|safe}};
-		// console.log(timeseriesObject);
+		var timeseriesObject = d.options.custom;
+		//console.log(timeseriesObject);
 		var trace = {
 		  x: timeseriesObject['dates'],
 		  y: timeseriesObject['values'],
-		  type: 'scatter'
+      type: 'bar'
 		};
 		var data = [trace];
 		var layout = {
 		  title: {
-		    text:'Station ',
+		    text:'Station '.concat(locat),
 		    font: {
-		      family: 'Courier New, monospace',
+		      family: 'Arial, sans-serif',
 		      size: 24
 		    },
 		    xref: 'paper',
@@ -110,9 +111,9 @@
 		  },
 		  yaxis: {
 		    title: {
-		      text: 'Values ',
+		      text: 'Value '.concat(unit),
 		      font: {
-			family: 'Courier New, monospace',
+			family: 'Arial, sans-serif',
 			size: 18,
 			color: '#7f7f7f'
 		      }
@@ -122,13 +123,13 @@
 		Plotly.newPlot('timeseries_plot', data, layout);
 	}
 
-  var mymap = L.map('mapid').setView([40.2, -111.8], 11);
-  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-  maxZoom: 32,
-  id: 'mapbox/streets-v11',
-  accessToken: 'pk.eyJ1IjoiYWJoaXNoZWthbWFsMTgiLCJhIjoiY2s1eTVxNGExMmQ5MDNubjExaWY5MjdvbSJ9.3nmdjWZmUCDNyRdlPo5gbg'
-  }).addTo(mymap);
+	  var mymap = L.map('mapid').setView([40.2, -111.8], 10);
+	  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+	  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+	  maxZoom: 32,
+	  id: 'mapbox/streets-v11',
+	  accessToken: 'pk.eyJ1IjoiYWJoaXNoZWthbWFsMTgiLCJhIjoiY2s1eTVxNGExMmQ5MDNubjExaWY5MjdvbSJ9.3nmdjWZmUCDNyRdlPo5gbg'
+	  }).addTo(mymap);
 
 	  //let Lake = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
 	  //layers: 'UtahLake', //Title name
@@ -143,17 +144,19 @@
 	  }).addTo(mymap);
 
 	  var iconDrop = L.icon({
-	      iconUrl: 'raindrop.png',
+	      iconUrl: './images/raindrop.png',
 	      iconSize:  [30, 30]
 	  });
 
-	for (var location in all_data) {
-		var location_data = all_data[location];
+	for (var locat in alldata) {
+		var location_data = alldata[locat];
 		var coords = location_data['coords'];
+    var unit = location_data['unit'];
+    console.log(coords);
 		var data = location_data['data'];
-    var units =location_data['units'];
-	  var marker = L.marker(coords, {title:location, icon: iconDrop, custom: data}).addTo(mymap).bindPopup(chart)
-};
+	  var marker = L.marker(coords, {title:locat, icon: iconDrop, custom: data}).addTo(mymap).bindPopup(chart);
+  	};
+
 
 	</script>
 
@@ -163,7 +166,7 @@
     {% import_gizmo_dependency plot_view %}
 {% endblock %}
 
-{# Use the after_app_content block for modals #}
+<!-- {# Use the after_app_content block for modals #}
 {% block after_app_content %}
 
   <!-- Example Modal -->
@@ -186,4 +189,4 @@
       </div>
     </div>
   </div>
-{% endblock %}
+{% endblock %} -->

@@ -4,7 +4,6 @@ from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import MapView, Button
 from tethys_sdk.gizmos import TimeSeries
 from django.http import HttpResponse, JsonResponse
-import datetime
 
 from csv import writer as csv_writer
 import plotly.graph_objs as go
@@ -96,7 +95,6 @@ def getData(characteristic):
         if len(df) > 0:
             lat = df['Monitoring Location Latitude'].tolist()[0]
             lon = df['Monitoring Location Longitude'].tolist()[0]
-            unit = df['Result Unit'].tolist()[0]
             dataname = str(location)
             charac_id = row['Monitoring Location ID'] == location
             charac = row[charac_id]
@@ -105,50 +103,15 @@ def getData(characteristic):
             valuesNumpy = value.to_numpy()
             valuesNoNan = np.nan_to_num(valuesNumpy)
             valuesFin = valuesNoNan.tolist()
-            # sacar el 1
             responseObject = {}
             responseObject['values'] = valuesFin
             responseObject['dates'] = date.to_numpy().tolist()
-
-
-            context['all_data'][dataname] = {'coords': [lat, lon], 'unit': unit, 'data': responseObject}
-    return context
-
-
+            context['all_data'][dataname] = {'coords': [lat, lon], 'data': responseObject}
+    return render(request, 'lake/show_data.html', context)
 
 def chl_a(request):
-    context = getData('Chlorophyll a, uncorrected for pheophytin')
-    #print(context)
-    return render(request, 'lake/show_data.html', context)
+    result = getData("Chlorophyll a, uncorrected for pheophytin")
+    return result
 
-def do(request):
-    context = getData('Dissolved oxygen (DO)')
-    return render(request, 'lake/show_data.html', context)
 
-def nit(request):
-    context = getData('Nitrogen')
-    return render(request, 'lake/show_data.html', context)
 
-def ph(request):
-    context = getData('pH')
-    return render(request, 'lake/show_data.html', context)
-
-def phosp(request):
-    context = getData('Phosphate-phosphorus')
-    return render(request, 'lake/show_data.html', context)
-
-def water_temp(request):
-    context = getData('Temperature, water')
-    return render(request, 'lake/show_data.html', context)
-
-def tds(request):
-    context = getData('Total dissolved solids')
-    return render(request, 'lake/show_data.html', context)
-
-def turb(request):
-    context = getData('Turbidity')
-    return render(request, 'lake/show_data.html', context)
-
-def secchi(request):
-    context = getData('Depth, Secchi disk depth')
-    return render(request, 'lake/show_data.html', context)

@@ -68,11 +68,17 @@
   }).addTo(mymap);
 
   let Stations = L.tileLayer.betterWms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
-  layers: 'Stations', //Title name
+  layers: 'Stations',   //Title name
   format: 'image/png', //depends on what you want to load in
   transparent: true,
   }).addTo(mymap);
-  console.log('adfasf');
+
+  let Miller_Stations = L.tileLayer.betterWms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
+  layers: 'Miller_Stations',   //Title name
+  format: 'image/png', //depends on what you want to load in
+  transparent: true,
+  }).addTo(mymap);
+
   var marker = L.marker([40.2, -111.8]).addTo(mymap).bindPopup('<h1>Utah Lake</h1>' + '<img src = "{% static 'lake/images/lake.jpg' %}" width ="300" height="200">');
 </script>
 
