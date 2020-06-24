@@ -50,6 +50,11 @@ class Lake(TethysAppBase):
                 controller='lake.controllers.do'
             ),
             UrlMap(
+                name='magn',
+                url='lake/datas/magn',
+                controller='lake.controllers.magn'
+            ),
+            UrlMap(
                 name='nit',
                 url='lake/datas/nit',
                 controller='lake.controllers.nit'
@@ -83,6 +88,16 @@ class Lake(TethysAppBase):
                 name='secchi',
                 url='lake/datas/secchi',
                 controller='lake.controllers.secchi'
+            ),
+            UrlMap(
+                name='ortho',
+                url='lake/datas/ortho',
+                controller='lake.controllers.ortho'
+            ),
+            UrlMap(
+                name='precip',
+                url='lake/datas/precip',
+                controller='lake.controllers.precip'
             ),
         )
 

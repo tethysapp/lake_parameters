@@ -19,28 +19,34 @@
   {% url 'lake:add_data' as add_data_url %}
   {% url 'lake:chl_a' as chl_a_url %}
   {% url 'lake:do' as do_url %}
+  {% url 'lake:magn' as magn_url %}
   {% url 'lake:nit' as nit_url %}
   {% url 'lake:ph' as ph_url %}
   {% url 'lake:phosp' as phosp_url %}
+  {% url 'lake:ortho' as ortho_url %}
   {% url 'lake:water_temp' as water_temp_url %}
   {% url 'lake:tds' as tds_url %}
   {% url 'lake:turb' as turb_url %}
   {% url 'lake:secchi' as secchi_url %}
+  {% url 'lake:precip' as precip_url %}
   <li class="title">Navigation</li>
   <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
   <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li>
   <li class="{% if request.path == add_data_url %}active{% endif %}"><a href="{{ add_data_url }}">Search Data</a></li>
   <li class="title">Select Parameter</li>
   <ul>
-    <li class="{% if request.path == chl_a %}active{% endif %}"><a href="{{ chl_a_url }}">Chlorophyll a</li>
-    <li class="{% if request.path == do %}active{% endif %}"><a href="{{ do_url }}">Dissolved Oxygen</li>
-    <li class="{% if request.path == nit %}active{% endif %}"><a href="{{ nit_url }}">Nitrogen</li>
-    <li class="{% if request.path == ph %}active{% endif %}"><a href="{{ ph_url }}">pH</li>
-    <li class="{% if request.path == phosp %}active{% endif %}"><a href="{{ phosp_url }}">Phosphate-Phosphorus</li>
-    <li class="{% if request.path == water_temp %}active{% endif %}"><a href="{{ water_temp_url }}">Water Temperature</li>
-    <li class="{% if request.path == tds %}active{% endif %}"><a href="{{ tds_url }}">Total Dissolved Solids</li>
-    <li class="{% if request.path == turb %}active{% endif %}"><a href="{{ turb_url }}">Turbidity</li>
-    <li class="{% if request.path == secchi %}active{% endif %}"><a href="{{ secchi_url }}">Secchi Disk Depth</li>
+    <li class="{% if request.path == chl_a %}active{% endif %}"><a href="{{ chl_a_url }}">Chlorophyll a</a></li>
+    <li class="{% if request.path == do %}active{% endif %}"><a href="{{ do_url }}">Dissolved Oxygen</a></li>
+    <li class="{% if request.path == magn %}active{% endif %}"><a href="{{ magn_url }}">Magnesium</a></li>
+    <li class="{% if request.path == nit %}active{% endif %}"><a href="{{ nit_url }}">Nitrogen</a></li>
+    <li class="{% if request.path == ph %}active{% endif %}"><a href="{{ ph_url }}">pH</a></li>
+    <li class="{% if request.path == phosp %}active{% endif %}"><a href="{{ phosp_url }}">Phosphate-Phosphorus</a></li>
+    <li class="{% if request.path == ortho %}active{% endif %}"><a href="{{ ortho_url }}">Ortho Phosphorus</a></li>
+    <li class="{% if request.path == water_temp %}active{% endif %}"><a href="{{ water_temp_url }}">Water Temperature</a></li>
+    <li class="{% if request.path == tds %}active{% endif %}"><a href="{{ tds_url }}">Total Dissolved Solids</a></li>
+    <li class="{% if request.path == turb %}active{% endif %}"><a href="{{ turb_url }}">Turbidity</a></li>
+    <li class="{% if request.path == secchi %}active{% endif %}"><a href="{{ secchi_url }}">Secchi Disk Depth</a></li>
+    <li class="{% if request.path == precip %}active{% endif %}"><a href="{{ precip_url }}">Precipitation</a></li>
   </ul>
 
 {% endblock %}
@@ -86,8 +92,8 @@
   transparent: true,
   }).addTo(mymap);
 
-  let Miller_Stations = L.tileLayer.betterWms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
-  layers: 'Miller_Stations',   //Title name
+  let Miller_Stations = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
+  layers: 'Stations_Miller', //Title name
   format: 'image/png', //depends on what you want to load in
   transparent: true,
   }).addTo(mymap);

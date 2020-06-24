@@ -1,35 +1,19 @@
+from datetime import datetime
+import numpy as np
+import pandas as pd
 
-	function chart(d) {
-		var data = d.options.custom;
-		var location = d.options.title;
-		var timeseriesObject = {{data|safe}};
-		//console.log(timeseriesObject);
-		var trace = {
-		  x: timeseriesObject['dates'],
-		  y: timeseriesObject['values'],
-		  type: 'scatter'
-		};
-		var data = [trace];
-		var layout = {
-		  title: {
-		    text:'Station '.concat(location),
-		    font: {
-		      family: 'Courier New, monospace',
-		      size: 24
-		    },
-		    xref: 'paper',
-		    x: 0.05,
-		  },
-		  yaxis: {
-		    title: {
-		      text: 'Values '.units(location),
-		      font: {
-			family: 'Courier New, monospace',
-			size: 18,
-			color: '#7f7f7f'
-		      }
-		    }
-		  }
-		};
-		Plotly.newPlot('timeseries_plot', data, layout);
-	}
+a = ['2-14-2001','3-2-2003','8-25-1974']
+b = [1,2,3]
+z=[a,b]
+arr = ([])
+for dates in a:
+    objDate = datetime.strptime(dates, '%m-%d-%Y')
+    datetime.strftime(objDate,'%Y-%m-%d')
+    arr.append(objDate)
+    arr.sort()
+    print(arr)
+date1 = arr[0]
+date_len = len(arr)
+date2 = arr[date_len - 1]
+date_complete = pd.date_range(date1, date2)
+print(date_complete)

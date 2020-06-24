@@ -43,15 +43,10 @@
 
 </head>
 
-<div class="column">
-  <h1>Welcome to Utah Lake Parameters  App!</h1>
-  The Ambient Water Quality Monitoring System (AWQMS) is a web-based data management system for ambient water quality data from Utah State.
-  This app displays in a map the AWQMS data from Utah Lake stations for a selected parameters.
-</div>
-
 <body>
-  <div class="column">
+  <div>
     <br>
+      <h1>Welcome to Utah Lake Parameters  App!</h1>
     <p>Click the map to get information about the station.</p>
     <div id="mapid"></div>
   </div>
@@ -67,23 +62,24 @@
   accessToken: 'pk.eyJ1IjoiYWJoaXNoZWthbWFsMTgiLCJhIjoiY2s1eTVxNGExMmQ5MDNubjExaWY5MjdvbSJ9.3nmdjWZmUCDNyRdlPo5gbg'
   }).addTo(mymap);
 
+  let Miller_Stations = L.tileLayer.betterWms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
+  layers: 'Stations_Miller',   //Title name
+  format: 'image/png', //depends on what you want to load in
+  transparent: true,
+  }).addTo(mymap);
+
   let Stations = L.tileLayer.betterWms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
   layers: 'Stations',   //Title name
   format: 'image/png', //depends on what you want to load in
   transparent: true,
   }).addTo(mymap);
 
-  let Miller_Stations = L.tileLayer.betterWms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
-  layers: 'Miller_Stations',   //Title name
-  format: 'image/png', //depends on what you want to load in
-  transparent: true,
-  }).addTo(mymap);
 
   var marker = L.marker([40.2, -111.8]).addTo(mymap).bindPopup('<h1>Utah Lake</h1>' + '<img src = "{% static 'lake/images/lake.jpg' %}" width ="300" height="200">');
 </script>
 
 <div class="column"></div>
-<div class="column">
+<!-- <div class="column">
   <br>
   <br>
   <h3>Utah Lake Stations</h3>
@@ -99,7 +95,7 @@
   <p>* UTAH LAKE 1 MI NE OF LINCOLN POINT #03 (4917<b>710</b>)</p>
   <p>* UTAH LAKE 1 MILE SOUTHEAST OF BIRD ISLAND (4917<b>715</b>)</p>
   <p>* UTAH LAKE  OUTSIDE ENTRANCE TO PROVO BAY (4917<b>770</b>)</p>
-</div>
+</div> -->
 {% endblock %}
 
 {# Use the after_app_content block for modals #}

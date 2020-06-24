@@ -4,7 +4,7 @@ from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import MapView, Button
 from tethys_sdk.gizmos import TimeSeries
 from django.http import HttpResponse, JsonResponse
-import datetime
+from datetime import datetime
 
 from csv import writer as csv_writer
 import plotly.graph_objs as go
@@ -75,13 +75,29 @@ def instructions(request):
 def getData(characteristic):
     app_workspace = app.get_app_workspace()
     file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
-    dataLake = pd.read_csv(file_path)
+    # file_path = os.path.join(app_workspace.path, "awqms_lake.xlsx")
+
+    # file_path_miller = os.path.join(app_workspace.path, "Miller_data.xlsx")
+    # dataLake_awqms = pd.read_excel(file_path)
+    # dataLake_miller = pd.read_excel(file_path_miller)
+    file_path_miller = os.path.join(app_workspace.path, "Miller_data.csv")
+    dataLake_awqms = pd.read_csv(file_path)
+    dataLake_miller = pd.read_csv(file_path_miller)
+    values_awqms = dataLake_awqms[['Monitoring Location ID', 'Monitoring Location Name', 'Characteristic Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Activity Start Date', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
+    values_miller = dataLake_miller[['Monitoring Location ID', 'Monitoring Location Name', 'Characteristic Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Activity Start Date', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
+    dataLake_all = [values_awqms, values_miller]
+    dataLake = pd.concat(dataLake_all)
+    # print(dataLake)
+
     param = dataLake['Characteristic Name'] == characteristic
     row = dataLake[param]
-    locations = dataLake['Monitoring Location ID'].unique()
+    locations = row['Monitoring Location ID'].unique()
+    unit = row['Result Unit'].unique()
     locations.sort()
+    print(locations)
     context = {}
     context['characteristic'] = characteristic
+    context['unit'] = unit
     context['csvLake'] = dataLake
     lake_map = MapView(
         height='100%',
@@ -96,7 +112,6 @@ def getData(characteristic):
         if len(df) > 0:
             lat = df['Monitoring Location Latitude'].tolist()[0]
             lon = df['Monitoring Location Longitude'].tolist()[0]
-            unit = df['Result Unit'].tolist()[0]
             dataname = str(location)
             charac_id = row['Monitoring Location ID'] == location
             charac = row[charac_id]
@@ -109,9 +124,23 @@ def getData(characteristic):
             responseObject = {}
             responseObject['values'] = valuesFin
             responseObject['dates'] = date.to_numpy().tolist()
+            # borrar
+            # date1 = responseObject1['dates'][0]
+            # date_len = len(responseObject1['dates'])
+            # date2 = responseObject1['dates'][date_len - 1]
+            # start = datetime.datetime(date1)
+            # end = datetime.datetime(date2)
+            # date_complete = pd.date_range(start, end)
+            # print(responseObject1['dates'])
+            # print(date_complete)
+            # responseObject = {}
+            # responseObject['dates'] = date_complete
+            # responseObject['values'] = responseObject1['values']
+            # print(responseObject)
+            # print(responseObject1['values'])
+            #
 
-
-            context['all_data'][dataname] = {'coords': [lat, lon], 'unit': unit, 'data': responseObject}
+            context['all_data'][dataname] = {'coords': [lat, lon], 'data': responseObject}
     return context
 
 
@@ -123,6 +152,10 @@ def chl_a(request):
 
 def do(request):
     context = getData('Dissolved oxygen (DO)')
+    return render(request, 'lake/show_data.html', context)
+
+def magn(request):
+    context = getData('Magnesium')
     return render(request, 'lake/show_data.html', context)
 
 def nit(request):
@@ -151,4 +184,12 @@ def turb(request):
 
 def secchi(request):
     context = getData('Depth, Secchi disk depth')
+    return render(request, 'lake/show_data.html', context)
+
+def ortho(request):
+    context = getData('Ortho Phosphorus')
+    return render(request, 'lake/show_data.html', context)
+
+def precip(request):
+    context = getData('Precipitation')
     return render(request, 'lake/show_data.html', context)
