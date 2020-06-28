@@ -52,8 +52,7 @@
   </div>
 </body>
 <script>
-  // var dataUtahLake = {{jsonLake|safe}}
-  // console.log(dataUtahLake);
+
   var mymap = L.map('mapid').setView([40.2, -111.8], 11);
   L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -62,40 +61,33 @@
   accessToken: 'pk.eyJ1IjoiYWJoaXNoZWthbWFsMTgiLCJhIjoiY2s1eTVxNGExMmQ5MDNubjExaWY5MjdvbSJ9.3nmdjWZmUCDNyRdlPo5gbg'
   }).addTo(mymap);
 
-  let Miller_Stations = L.tileLayer.betterWms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
-  layers: 'Stations_Miller',   //Title name
-  format: 'image/png', //depends on what you want to load in
-  transparent: true,
-  }).addTo(mymap);
+  let iconMiller = L.icon({
+      iconUrl: "{% static '/lake/images/byu.png' %}",
+      iconSize:  [15, 12]
+  });
 
-  let Stations = L.tileLayer.betterWms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
-  layers: 'Stations',   //Title name
-  format: 'image/png', //depends on what you want to load in
-  transparent: true,
-  }).addTo(mymap);
+  let iconAwqms = L.icon({
+      iconUrl: "{% static '/lake/images/raindrop.png' %}",
+      iconSize:  [15, 15]
+  });
+
+var allstations = {{all_stations|safe}};
+for (var locat in allstations) {
+  var location_data = allstations[locat];
+  var coords = location_data['coords'];
+  var loc = location_data['org'];
+  var station = location_data['station'];
+  if (loc == 'BYU, Dr Miller') {
+     var marker = L.marker(coords, {title:locat, icon: iconMiller}).addTo(mymap).bindPopup('<b>Station: </b>' + station +'<br>ID: ' + locat + '<br>Coordinates: ' + coords +'<br>Organization: ' + loc);
+      } else if (location_data['org'] == 'UTAHDWQ_WQX') {
+     var marker = L.marker(coords, {title:locat, icon: iconAwqms}).addTo(mymap).bindPopup('<b>Station: </b>' + station +'<br>ID: ' + locat + '<br>Coordinates: ' + coords +'<br>Organization: ' + loc);
+     }
+  };
 
 
   var marker = L.marker([40.2, -111.8]).addTo(mymap).bindPopup('<h1>Utah Lake</h1>' + '<img src = "{% static 'lake/images/lake.jpg' %}" width ="300" height="200">');
 </script>
 
-<div class="column"></div>
-<!-- <div class="column">
-  <br>
-  <br>
-  <h3>Utah Lake Stations</h3>
-  <p>* UTAH LAKE 0.5 MI W OF GENEVA DISCHARGE #15-A (4917<b>310</b>)</p>
-  <p>* UTAH LAKE 2 MILES WEST OF VINEYARD (4917<b>365</b>)</p>
-  <p>* UTAH LAKE 1 MI EAST OF PELICAN POINT (4917<b>370</b>)</p>
-  <p>* UTAH LAKE 1 MI WEST OF PROVO BOAT HARBOR (4917<b>390</b>)</p>
-  <p>* UTAH LAKE AT MIDDLE OF PROVO BAY (4917<b>450</b>)</p>
-  <p>* UTAH LAKE 3 MI WNW OF LINCOLN BEACH (4917<b>500</b>)</p>
-  <p>* UTAH LAKE 2 MI E OF SARATOGA SPRINGS #12 (4917<b>520</b>)</p>
-  <p>* UTAH LAKE GOSHEN BAY SOUTHWEST END (4917<b>600</b>)</p>
-  <p>* UTAH LAKE 2.5 MI NE OF LINCOLN POINT #02 (4917<b>700</b>)</p>
-  <p>* UTAH LAKE 1 MI NE OF LINCOLN POINT #03 (4917<b>710</b>)</p>
-  <p>* UTAH LAKE 1 MILE SOUTHEAST OF BIRD ISLAND (4917<b>715</b>)</p>
-  <p>* UTAH LAKE  OUTSIDE ENTRANCE TO PROVO BAY (4917<b>770</b>)</p>
-</div> -->
 {% endblock %}
 
 {# Use the after_app_content block for modals #}

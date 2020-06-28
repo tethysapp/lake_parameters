@@ -2,6 +2,7 @@
 {% load tethys_gizmos %}
 {% load tethys_gizmos static %}
 
+
 {% block styles %}
     {{ block.super }}
     <link href="{% static 'lake/css/map.css' %}" rel="stylesheet"/>
@@ -60,7 +61,6 @@
       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
       crossorigin=""></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
     <style>
 
     .column {
@@ -81,13 +81,14 @@
   </head>
 
   <body>
-  <div class="column">
-    <h1>{{characteristic}}</h1>
-    <div id="mapid"></div>
-  </div>
-  <div class="column">
-      <div id="timeseries_plot"></div>
-  </div>
+    <div class="column">
+      <!-- <img src="{% static '/lake/images/raindrop.png' %}" alt=""> -->
+      <h3>{{characteristic}}</h3>
+      <div id="mapid"></div>
+    </div>
+    <div class="column">
+        <div id="timeseries_plot"></div>
+      </div>
 
   </body>
 
@@ -98,6 +99,7 @@
 		//var rawdata = d.options.custom;
 		var location = d.options.title;
 		var timeseriesObject = d.options.custom;
+    var unit = d.options.unit;
 		//console.log(timeseriesObject);
 		var trace = {
 		  x: timeseriesObject['dates'],
@@ -143,36 +145,27 @@
 	  //transparent: true,
 	  //}).addTo(mymap);
 
-	  let Stations = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
-	  layers: 'Stations', //Title name
-	  format: 'image/png', //depends on what you want to load in
-	  transparent: true,
-	  }).addTo(mymap);
-
-	  let Miller_Stations = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
-	  layers: 'Stations_Miller', //Title name
-	  format: 'image/png', //depends on what you want to load in
-	  transparent: true,
-	  }).addTo(mymap);
-
-	  var iconDrop = L.icon({
-	      iconUrl: './images/raindrop.png',
-	      iconSize:  [30, 30]
+	  let iconMiller = L.icon({
+	      iconUrl: "{% static '/lake/images/byu.png' %}",
+	      iconSize:  [15, 12]
 	  });
 
+    let iconAwqms = L.icon({
+	      iconUrl: "{% static '/lake/images/raindrop.png' %}",
+	      iconSize:  [15, 15]
+	  });
+
+  var unit = {{unit|safe}};
 	for (var locat in alldata) {
 		var location_data = alldata[locat];
 		var coords = location_data['coords'];
-    var unit = alldata[unit];
-    console.log(coords);
 		var data = location_data['data'];
-
-	  var marker = L.marker(coords, {title:locat, custom: data}).addTo(mymap).bindPopup(chart);
+    if (location_data['org'] == 'BYU, Dr Miller') {
+	     var marker = L.marker(coords, {title:locat, custom: data, icon: iconMiller, unit: unit}).addTo(mymap).bindPopup(chart);
+        } else if (location_data['org'] == 'UTAHDWQ_WQX') {
+	     var marker = L.marker(coords, {title:locat, custom: data, icon: iconAwqms, unit: unit}).addTo(mymap).bindPopup(chart);
+       }
   	};
-    // var marker = L.marker(coords, {title:locat, icon: iconDrop, custom: data}).addTo(mymap).bindPopup(chart);
-    // };
-
-
 
 	</script>
 
