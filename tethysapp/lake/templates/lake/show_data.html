@@ -1,6 +1,7 @@
 {% extends "lake/base.html" %}
 {% load tethys_gizmos %}
 {% load tethys_gizmos static %}
+{% gizmo timeseries_plot %}
 
 
 {% block styles %}
@@ -18,7 +19,7 @@
   {% url 'lake:home' as home_url %}
   {% url 'lake:instructions' as instructions_url %}
   {% url 'lake:add_data' as add_data_url %}
-  {% url 'lake:chl_a' as chl_a_url %}
+  {% url 'lake:chl_a_total' as chl_a_total_url %}
   {% url 'lake:do' as do_url %}
   {% url 'lake:magn' as magn_url %}
   {% url 'lake:nit' as nit_url %}
@@ -33,10 +34,11 @@
   <li class="title">Navigation</li>
   <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
   <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li>
-  <li class="{% if request.path == add_data_url %}active{% endif %}"><a href="{{ add_data_url }}">Search Data</a></li>
+  <li class="{% if request.path == search_data_url %}active{% endif %}"><a href="{{ search_data_url }}">Search Data</a></li>
   <li class="title">Select Parameter</li>
   <ul>
-    <li class="{% if request.path == chl_a %}active{% endif %}"><a href="{{ chl_a_url }}">Chlorophyll a</a></li>
+  <li class="title">Chlorophyll a</li>
+    <li class="{% if request.path == chl_a_total %}active{% endif %}"><a href="{{ chl_a_total_url }}">Total</a></li>
     <li class="{% if request.path == do %}active{% endif %}"><a href="{{ do_url }}">Dissolved Oxygen</a></li>
     <li class="{% if request.path == magn %}active{% endif %}"><a href="{{ magn_url }}">Magnesium</a></li>
     <li class="{% if request.path == nit %}active{% endif %}"><a href="{{ nit_url }}">Nitrogen</a></li>
@@ -61,6 +63,8 @@
       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
       crossorigin=""></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script scr="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+
     <style>
 
     .column {
@@ -74,21 +78,17 @@
 
     </style>
 
-      <link href="HydroShare.css" type="text/css" rel="stylesheet" />
-         <title>
-             HydroShare
-         </title>
   </head>
 
   <body>
     <div class="column">
-      <!-- <img src="{% static '/lake/images/raindrop.png' %}" alt=""> -->
       <h3>{{characteristic}}</h3>
       <div id="mapid"></div>
     </div>
     <div class="column">
-        <div id="timeseries_plot"></div>
-      </div>
+      <div id="timeseries_plot"></div>
+        // <canvas id="timeseries_plot" width="400" height="400"></canvas>
+    </div>
 
   </body>
 
@@ -96,14 +96,24 @@
   var alldata = {{all_data|safe}};
 
 	function chart(d) {
-		//var rawdata = d.options.custom;
+
 		var location = d.options.title;
 		var timeseriesObject = d.options.custom;
+    var timeseriesCorrectedY=[];
+    timeseriesObject['values'].forEach(function(x){
+      if(x < 0){
+        timeseriesCorrectedY.push(NaN);
+      }
+      else{
+        timeseriesCorrectedY.push(x);
+      }
+    });
+
     var unit = d.options.unit;
-		//console.log(timeseriesObject);
+		console.log(timeseriesObject);
 		var trace = {
 		  x: timeseriesObject['dates'],
-		  y: timeseriesObject['values'],
+		  y: timeseriesCorrectedY,
       type: 'bar'
 		};
 		var data = [trace];
@@ -139,7 +149,7 @@
 	  accessToken: 'pk.eyJ1IjoiYWJoaXNoZWthbWFsMTgiLCJhIjoiY2s1eTVxNGExMmQ5MDNubjExaWY5MjdvbSJ9.3nmdjWZmUCDNyRdlPo5gbg'
 	  }).addTo(mymap);
 
-	  //let Lake = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
+	  // let Lake = L.tileLayer.wms('https://geoserver.hydroshare.org/geoserver/HS-3f4baeb41ab140d0b2207bbdcb168ad4/wms', {
 	  //layers: 'UtahLake', //Title name
 	  //format: 'image/png', //depends on what you want to load in
 	  //transparent: true,

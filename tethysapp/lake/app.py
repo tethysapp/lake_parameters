@@ -30,9 +30,9 @@ class Lake(TethysAppBase):
                 controller='lake.controllers.home'
             ),
             UrlMap(
-                name='add_data',
-                url='lake/datas/add',
-                controller='lake.controllers.add_data'
+                name='search_data',
+                url='lake/datas/search',
+                controller='lake.controllers.search_data'
             ),
             UrlMap(
                 name='instructions',
@@ -40,9 +40,9 @@ class Lake(TethysAppBase):
                 controller='lake.controllers.instructions'
             ),
             UrlMap(
-                name='chl_a',
-                url='lake/datas/chl_a',
-                controller='lake.controllers.chl_a'
+                name='chl_a_total',
+                url='lake/datas/chl_a_total',
+                controller='lake.controllers.chl_a_total'
             ),
             UrlMap(
                 name='do',

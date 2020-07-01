@@ -24,21 +24,9 @@ def home(request):
     return render(request, 'lake/home.html', context)
 
 @login_required()
-def add_data(request):
-    """
-    Controller for the Search Data page.
-    """
-    lake_map = MapView(
-        height='100%',
-        width='100%',
-        layers=[],
-        basemap='OpenStreetMap',
-    )
-
-    context = {
-        'lake_map': lake_map
-            }
-    return render(request, 'lake/add_data.html', context)
+def search_data(request):
+    context = getStations()
+    return render(request, 'lake/search_data.html', context)
 
 @login_required()
 def instructions(request):
@@ -54,9 +42,8 @@ def getFiles():
     dataLake_awqms = pd.read_csv(file_path)
     dataLake_miller = pd.read_csv(file_path_miller)
     dataLake_miller['Organization ID'] = 'BYU, Dr Miller'
-    # print(dataLake_miller['Organization ID'])
-    values_awqms = dataLake_awqms[['Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Characteristic Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Activity Start Date', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
-    values_miller = dataLake_miller[['Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Characteristic Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Activity Start Date', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
+    values_awqms = dataLake_awqms[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
+    values_miller = dataLake_miller[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
     dataLake_all = [values_awqms, values_miller]
     dataLake = pd.concat(dataLake_all)
     context = dataLake
@@ -65,8 +52,6 @@ def getFiles():
 def getStations():
     dataLake = getFiles()
     locations = dataLake['Monitoring Location ID'].unique()
-    # locations.sort()
-    # print(locations)
     context = {}
 
     lake_map = MapView(
@@ -90,7 +75,7 @@ def getStations():
     return context
 
 def completeSeries(df):
-    df['Date'] = pd.to_datetime(df['Activity Start Date'], format = "%m-%d-%Y")
+    df['Date'] = pd.to_datetime(df['Activity Start Date'])
     df = df.sort_values(by = ['Date'])
     dateslist = df['Date'].tolist()
     inidate = dateslist[0]
@@ -104,10 +89,27 @@ def completeSeries(df):
     dfjoin = df2.merge(df, on = 'Date', how = 'left')
     value = dfjoin['Result Value']
     dates = dfjoin['Date']
-    valuesNumpy = value.to_numpy()
-    valuesNoNan = np.nan_to_num(valuesNumpy)
+    datesString=[]
+    valuesNumpy = value.to_numpy(value)
+    valuesNoNan = np.nan_to_num(valuesNumpy, nan=-999)
     valuesFin = valuesNoNan.tolist()
-    alldates = dates.to_numpy().tolist()
+    # valuesFin = valuesNumpy.tolist()
+    for datesX in dates:
+        # datesX.to_pydatetime()
+        datesString.append(str(datesX).split()[0])
+    print(type(dates[0]))
+    print((dates[0]))
+    print(type(dates))
+    # alldates = dates.to_numpy()
+    alldates = datesString
+    print(alldates)
+    print(type(alldates))
+    # alldates = dates.to_numpy().tolist()
+    # print(type(alldates[0]))
+    # print(alldates[0])
+    # alldates = dates.tolist()
+    # print(alldates)
+    # print(valuesFin)
     return valuesFin, alldates
 
 def getData(characteristic):
@@ -117,8 +119,6 @@ def getData(characteristic):
     # print(row)
     locations = row['Monitoring Location ID'].unique()
     unit = row['Result Unit'].unique()
-    # locations.sort()
-    # print(locations)
     context = {}
     context['characteristic'] = characteristic
     context['unit'] = unit
@@ -139,6 +139,7 @@ def getData(characteristic):
             lat = df['Monitoring Location Latitude'].tolist()[0]
             lon = df['Monitoring Location Longitude'].tolist()[0]
             organization = df['Organization ID'].tolist()[0]
+
             dataname = str(location)
             charac_id = row['Monitoring Location ID'] == location
             charac = row[charac_id]
@@ -146,10 +147,11 @@ def getData(characteristic):
             valuesFin, alldates = completeSeries(charac)
             responseObject['values'] = valuesFin
             responseObject['dates'] = alldates
+            # print(responseObject)
             context['all_data'][dataname] = {'coords': [lat, lon], 'org': organization, 'data': responseObject}
     return context
 
-def chl_a(request):
+def chl_a_total(request):
     context = getData('Chlorophyll a, uncorrected for pheophytin')
     return render(request, 'lake/show_data.html', context)
 

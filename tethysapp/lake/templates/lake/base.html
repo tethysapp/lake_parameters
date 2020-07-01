@@ -16,11 +16,11 @@
 {% block app_navigation_items %}
   {% url 'lake:home' as home_url %}
   {% url 'lake:instructions' as instructions_url %}
-  {% url 'lake:add_data' as add_data_url %}
+  {% url 'lake:search_data' as search_data_url %}
   <li class="title">Navigation</li>
   <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
   <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li>
-  <li class="{% if request.path == add_data_url %}active{% endif %}"><a href="{{ add_data_url }}">Search Data</a></li>
+  <li class="{% if request.path == search_data_url %}active{% endif %}"><a href="{{ search_data_url }}">Search Data</a></li>
 {% endblock %}
 
 {% block app_content %}
