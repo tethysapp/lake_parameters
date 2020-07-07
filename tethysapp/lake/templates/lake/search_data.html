@@ -18,10 +18,11 @@
   {% url 'lake:home' as home_url %}
   {% url 'lake:instructions' as instructions_url %}
   {% url 'lake:add_data' as add_data_url %}
-  {% url 'lake:chl_a_total' as chl_a_total_url %}
+  {% url 'lake:chl_a' as chl_a_url %}
   {% url 'lake:do' as do_url %}
   {% url 'lake:magn' as magn_url %}
-  {% url 'lake:nit' as nit_url %}
+  {% url 'lake:nit_total' as nit_total_url %}
+  {% url 'lake:nit_dis' as nit_dis_url %}
   {% url 'lake:ph' as ph_url %}
   {% url 'lake:phosp' as phosp_url %}
   {% url 'lake:ortho' as ortho_url %}
@@ -36,11 +37,12 @@
   <li class="{% if request.path == add_data_url %}active{% endif %}"><a href="{{ add_data_url }}">Search Data</a></li>
   <li class="title">Select Parameter</li>
   <ul>
-    <li class="title">Chlorophyll a</li>
-    <li class="{% if request.path == chl_a_total %}active{% endif %}"><a href="{{ chl_a_total_url }}">Total</a></li>
+    <li class="{% if request.path == chl_a %}active{% endif %}"><a href="{{ chl_a_url }}">Chlorophyll a</a></li>
     <li class="{% if request.path == do %}active{% endif %}"><a href="{{ do_url }}">Dissolved Oxygen</a></li>
     <li class="{% if request.path == magn %}active{% endif %}"><a href="{{ magn_url }}">Magnesium</a></li>
-    <li class="{% if request.path == nit %}active{% endif %}"><a href="{{ nit_url }}">Nitrogen</a></li>
+    <li class="title">Nitrogen</li>
+    <li class="{% if request.path == nit_total %}active{% endif %}"><a href="{{ nit_total_url }}">Total</a></li>
+    <li class="{% if request.path == nit_dis %}active{% endif %}"><a href="{{ nit_dis_url }}">Dissolved</a></li>
     <li class="{% if request.path == ph %}active{% endif %}"><a href="{{ ph_url }}">pH</a></li>
     <li class="{% if request.path == phosp %}active{% endif %}"><a href="{{ phosp_url }}">Phosphate-Phosphorus</a></li>
     <li class="{% if request.path == ortho %}active{% endif %}"><a href="{{ ortho_url }}">Ortho Phosphorus</a></li>

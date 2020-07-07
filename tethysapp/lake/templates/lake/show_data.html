@@ -15,44 +15,7 @@
   </div>
 {% endblock %}
 
-{% block app_navigation_items %}
-  {% url 'lake:home' as home_url %}
-  {% url 'lake:instructions' as instructions_url %}
-  {% url 'lake:add_data' as add_data_url %}
-  {% url 'lake:chl_a_total' as chl_a_total_url %}
-  {% url 'lake:do' as do_url %}
-  {% url 'lake:magn' as magn_url %}
-  {% url 'lake:nit' as nit_url %}
-  {% url 'lake:ph' as ph_url %}
-  {% url 'lake:phosp' as phosp_url %}
-  {% url 'lake:ortho' as ortho_url %}
-  {% url 'lake:water_temp' as water_temp_url %}
-  {% url 'lake:tds' as tds_url %}
-  {% url 'lake:turb' as turb_url %}
-  {% url 'lake:secchi' as secchi_url %}
-  {% url 'lake:precip' as precip_url %}
-  <li class="title">Navigation</li>
-  <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
-  <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li>
-  <li class="{% if request.path == search_data_url %}active{% endif %}"><a href="{{ search_data_url }}">Search Data</a></li>
-  <li class="title">Select Parameter</li>
-  <ul>
-  <li class="title">Chlorophyll a</li>
-    <li class="{% if request.path == chl_a_total %}active{% endif %}"><a href="{{ chl_a_total_url }}">Total</a></li>
-    <li class="{% if request.path == do %}active{% endif %}"><a href="{{ do_url }}">Dissolved Oxygen</a></li>
-    <li class="{% if request.path == magn %}active{% endif %}"><a href="{{ magn_url }}">Magnesium</a></li>
-    <li class="{% if request.path == nit %}active{% endif %}"><a href="{{ nit_url }}">Nitrogen</a></li>
-    <li class="{% if request.path == ph %}active{% endif %}"><a href="{{ ph_url }}">pH</a></li>
-    <li class="{% if request.path == phosp %}active{% endif %}"><a href="{{ phosp_url }}">Phosphate-Phosphorus</a></li>
-    <li class="{% if request.path == ortho %}active{% endif %}"><a href="{{ ortho_url }}">Ortho Phosphorus</a></li>
-    <li class="{% if request.path == water_temp %}active{% endif %}"><a href="{{ water_temp_url }}">Water Temperature</a></li>
-    <li class="{% if request.path == tds %}active{% endif %}"><a href="{{ tds_url }}">Total Dissolved Solids</a></li>
-    <li class="{% if request.path == turb %}active{% endif %}"><a href="{{ turb_url }}">Turbidity</a></li>
-    <li class="{% if request.path == secchi %}active{% endif %}"><a href="{{ secchi_url }}">Secchi Disk Depth</a></li>
-    <li class="{% if request.path == precip %}active{% endif %}"><a href="{{ precip_url }}">Precipitation</a></li>
-  </ul>
 
-{% endblock %}
 
 {% block app_content %}
   <head>
@@ -69,7 +32,7 @@
 
     .column {
     float: left;
-    width: 35%;
+    width: 50%;
     margin-bottom: 16px;
     padding: 0 10px;
     }
@@ -82,12 +45,13 @@
 
   <body>
     <div class="column">
-      <h3>{{characteristic}}</h3>
+      <h3>{{fraction}} {{characteristic}}</h3>
+          {% gizmo download_button %}
       <div id="mapid"></div>
     </div>
     <div class="column">
       <div id="timeseries_plot"></div>
-        // <canvas id="timeseries_plot" width="400" height="400"></canvas>
+
     </div>
 
   </body>
@@ -125,7 +89,7 @@
 		      size: 24
 		    },
 		    xref: 'paper',
-		    x: 0.05,
+		    x: 0.5,
 		  },
 		  yaxis: {
 		    title: {
@@ -182,7 +146,7 @@
 {% endblock %}
 
 {% block import_gizmos %}
-    {% import_gizmo_dependency plot_view %}
+  {% import_gizmo_dependency plot_view %}
 {% endblock %}
 
 <!-- {# Use the after_app_content block for modals #}

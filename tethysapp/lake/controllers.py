@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import reverse
 from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import MapView, Button
-from tethys_sdk.gizmos import TimeSeries
+from tethys_sdk.gizmos import TimeSeries, SelectInput
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, timedelta
 
@@ -17,6 +17,13 @@ import math
 from .app import Lake as app
 from pandas import DataFrame
 
+# from .utils import selectLake
+#
+# @login_required()
+# def base(request):
+#
+#     context = selectLake()
+#     return render(request, 'lake/base.html', context)
 
 @login_required()
 def home(request):
@@ -35,15 +42,17 @@ def instructions(request):
 
     return render(request, 'lake/instructions.html', context)
 
+
+
 def getFiles():
     app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, "awqms_lake.csv")
+    file_path = os.path.join(app_workspace.path, "awqms_utahlake.csv")
     file_path_miller = os.path.join(app_workspace.path, "Miller_data.csv")
     dataLake_awqms = pd.read_csv(file_path)
     dataLake_miller = pd.read_csv(file_path_miller)
     dataLake_miller['Organization ID'] = 'BYU, Dr Miller'
-    values_awqms = dataLake_awqms[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
-    values_miller = dataLake_miller[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
+    values_awqms = dataLake_awqms[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
+    values_miller = dataLake_miller[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
     dataLake_all = [values_awqms, values_miller]
     dataLake = pd.concat(dataLake_all)
     context = dataLake
@@ -93,34 +102,31 @@ def completeSeries(df):
     valuesNumpy = value.to_numpy(value)
     valuesNoNan = np.nan_to_num(valuesNumpy, nan=-999)
     valuesFin = valuesNoNan.tolist()
-    # valuesFin = valuesNumpy.tolist()
     for datesX in dates:
-        # datesX.to_pydatetime()
         datesString.append(str(datesX).split()[0])
-    print(type(dates[0]))
-    print((dates[0]))
-    print(type(dates))
-    # alldates = dates.to_numpy()
     alldates = datesString
-    print(alldates)
-    print(type(alldates))
-    # alldates = dates.to_numpy().tolist()
-    # print(type(alldates[0]))
-    # print(alldates[0])
-    # alldates = dates.tolist()
-    # print(alldates)
-    # print(valuesFin)
     return valuesFin, alldates
 
-def getData(characteristic):
+def getData(characteristic, fraction):
     dataLake = getFiles()
     param = dataLake['Characteristic Name'] == characteristic
-    row = dataLake[param]
-    # print(row)
+    row_param = dataLake[param]
+    # check Total-Dissolved
+    fract = row_param[row_param['Sample Fraction'] == fraction]
+    if len(fract) > 0:
+        fract = row_param['Sample Fraction'] == fraction
+        row = row_param[fract]
+        # print(row)
+    else:
+        row = row_param
+
+    print(row['Sample Fraction'])
+
     locations = row['Monitoring Location ID'].unique()
     unit = row['Result Unit'].unique()
     context = {}
     context['characteristic'] = characteristic
+    context['fraction'] = fraction
     context['unit'] = unit
     context['csvLake'] = dataLake
 
@@ -151,50 +157,263 @@ def getData(characteristic):
             context['all_data'][dataname] = {'coords': [lat, lon], 'org': organization, 'data': responseObject}
     return context
 
-def chl_a_total(request):
-    context = getData('Chlorophyll a, uncorrected for pheophytin')
+
+# def charts(request):
+#     timeseries_plot = TimeSeries(
+#         height='500px',
+#         width='500px',
+#         engine='highcharts',
+#         title='Irregular Timeseries Plot',
+#         y_axis_title='Snow depth',
+#         y_axis_units='m',
+#         series=[{
+#             'name': 'Winter 2007-2008',
+#             'data': [
+#                 [datetime(2008, 12, 2), 0.8],
+#                 [datetime(2008, 12, 9), 0.6],
+#                 [datetime(2008, 12, 16), 0.6]
+#             ]
+#         }]
+#     )
+#
+#     context = {
+#                 'timeseries_plot': timeseries_plot,
+#               }
+
+def chl_a(request):
+    context = getData('Chlorophyll a, uncorrected for pheophytin',' ')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
     return render(request, 'lake/show_data.html', context)
 
 def do(request):
-    context = getData('Dissolved oxygen (DO)')
+    context = getData('Dissolved oxygen (DO)',' ')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
     return render(request, 'lake/show_data.html', context)
 
-def magn(request):
-    context = getData('Magnesium')
+def magn_total(request):
+    context = getData('Magnesium','Total')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
     return render(request, 'lake/show_data.html', context)
 
-def nit(request):
-    context = getData('Nitrogen')
+def magn_dis(request):
+    context = getData('Magnesium','Dissolved')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
+    return render(request, 'lake/show_data.html', context)
+
+def nit_total(request):
+    context = getData('Nitrogen','Total')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
+    return render(request, 'lake/show_data.html', context)
+
+def nit_dis(request):
+    context = getData('Nitrogen','Dissolved')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
     return render(request, 'lake/show_data.html', context)
 
 def ph(request):
-    context = getData('pH')
+    context = getData('pH',' ')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
     return render(request, 'lake/show_data.html', context)
 
-def phosp(request):
-    context = getData('Phosphate-phosphorus')
+def phosp_total(request):
+    context = getData('Phosphate-phosphorus','Total')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
+    return render(request, 'lake/show_data.html', context)
+
+def phosp_dis(request):
+    context = getData('Phosphate-phosphorus','Dissolved')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
     return render(request, 'lake/show_data.html', context)
 
 def water_temp(request):
-    context = getData('Temperature, water')
+    context = getData('Temperature, water',' ')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
     return render(request, 'lake/show_data.html', context)
 
 def tds(request):
-    context = getData('Total dissolved solids')
+    context = getData('Total dissolved solids','None')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
     return render(request, 'lake/show_data.html', context)
 
 def turb(request):
-    context = getData('Turbidity')
+    context = getData('Turbidity',' ')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
     return render(request, 'lake/show_data.html', context)
 
 def secchi(request):
-    context = getData('Depth, Secchi disk depth')
+    context = getData('Depth, Secchi disk depth',' ')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
+
+    context['download_button'] = download_button
+
     return render(request, 'lake/show_data.html', context)
 
 def ortho(request):
-    context = getData('Ortho Phosphorus')
-    return render(request, 'lake/show_data.html', context)
+    context = getData('Ortho Phosphorus','None')
+    download_button = Button(
+        display_text='Download all data',
+        icon='glyphicon glyphicon-download-alt',
+        style='success',
+        attributes={
+            'data-toggle':'tooltip',
+            'dataplacement':'top',
+            'title':'Download'
+        }
+    )
 
-def precip(request):
-    context = getData('Precipitation')
+    context['download_button'] = download_button
+
     return render(request, 'lake/show_data.html', context)

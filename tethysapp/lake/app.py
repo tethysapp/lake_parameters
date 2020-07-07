@@ -39,10 +39,15 @@ class Lake(TethysAppBase):
                 url='lake/datas/instructions',
                 controller='lake.controllers.instructions'
             ),
+            # UrlMap(
+            #     name='select-lake',
+            #     url='lake/base',
+            #     controller='lake.controllers.base'
+            # ),
             UrlMap(
-                name='chl_a_total',
-                url='lake/datas/chl_a_total',
-                controller='lake.controllers.chl_a_total'
+                name='chl_a',
+                url='lake/datas/chl_a',
+                controller='lake.controllers.chl_a'
             ),
             UrlMap(
                 name='do',
@@ -50,14 +55,24 @@ class Lake(TethysAppBase):
                 controller='lake.controllers.do'
             ),
             UrlMap(
-                name='magn',
-                url='lake/datas/magn',
-                controller='lake.controllers.magn'
+                name='magn_total',
+                url='lake/datas/magn_total',
+                controller='lake.controllers.magn_total'
             ),
             UrlMap(
-                name='nit',
-                url='lake/datas/nit',
-                controller='lake.controllers.nit'
+                name='magn_dis',
+                url='lake/datas/magn_dis',
+                controller='lake.controllers.magn_dis'
+            ),
+            UrlMap(
+                name='nit_total',
+                url='lake/datas/nit_total',
+                controller='lake.controllers.nit_total'
+            ),
+            UrlMap(
+                name='nit_dis',
+                url='lake/datas/nit_dis',
+                controller='lake.controllers.nit_dis'
             ),
             UrlMap(
                 name='ph',
@@ -65,9 +80,14 @@ class Lake(TethysAppBase):
                 controller='lake.controllers.ph'
             ),
             UrlMap(
-                name='phosp',
-                url='lake/datas/phosp',
-                controller='lake.controllers.phosp'
+                name='phosp_total',
+                url='lake/datas/phosp_total',
+                controller='lake.controllers.phosp_total'
+            ),
+            UrlMap(
+                name='phosp_dis',
+                url='lake/datas/phosp_dis',
+                controller='lake.controllers.phosp_dis'
             ),
             UrlMap(
                 name='water_temp',
@@ -94,11 +114,6 @@ class Lake(TethysAppBase):
                 url='lake/datas/ortho',
                 controller='lake.controllers.ortho'
             ),
-            UrlMap(
-                name='precip',
-                url='lake/datas/precip',
-                controller='lake.controllers.precip'
-            ),
-        )
+    )
 
         return url_maps
