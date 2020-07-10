@@ -17,6 +17,7 @@
   {{ block.super}}
   {% url 'lake:home' as home_url %}
   {% url 'lake:instructions' as instructions_url %}
+  {% url 'lake:lakes' as lakes_url %}
   {% url 'lake:chl_a' as chl_a_url %}
   {% url 'lake:do' as do_url %}
   {% url 'lake:magn_total' as magn_total_url %}
@@ -34,28 +35,7 @@
   <li class="title">Navigation</li>
   <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
   <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li>
-  <li class="title">Select Lake</li>
-
-  <li class="title">Select Parameter</li>
-  <ul>
-    <li class="{% if request.path == chl_a %}active{% endif %}"><a href="{{ chl_a_url }}">Chlorophyll a</a></li>
-    <li class="{% if request.path == do %}active{% endif %}"><a href="{{ do_url }}">Dissolved Oxygen</a></li>
-    <li class="title">Magnesium</li>
-    <li class="{% if request.path == magn_total %}active{% endif %}"><a href="{{ magn_total_url }}">Total</a></li>
-    <li class="{% if request.path == magn_dis %}active{% endif %}"><a href="{{ magn_dis_url }}">Dissolved</a></li>
-    <li class="title">Nitrogen</li>
-    <li class="{% if request.path == nit_total %}active{% endif %}"><a href="{{ nit_total_url }}">Total</a></li>
-    <li class="{% if request.path == nit_dis %}active{% endif %}"><a href="{{ nit_dis_url }}">Dissolved</a></li>
-    <li class="{% if request.path == ph %}active{% endif %}"><a href="{{ ph_url }}">pH</a></li>
-    <li class="title">Phosphate-Phosphorus</li>
-    <li class="{% if request.path == phosp_total %}active{% endif %}"><a href="{{ phosp_total_url }}">Total</a></li>
-    <li class="{% if request.path == phosp_dis %}active{% endif %}"><a href="{{ phosp_dis_url }}">Dissolved</a></li>
-    <li class="{% if request.path == ortho %}active{% endif %}"><a href="{{ ortho_url }}">Ortho Phosphorus</a></li>
-    <li class="{% if request.path == water_temp %}active{% endif %}"><a href="{{ water_temp_url }}">Water Temperature</a></li>
-    <li class="{% if request.path == tds %}active{% endif %}"><a href="{{ tds_url }}">Total Dissolved Solids</a></li>
-    <li class="{% if request.path == turb %}active{% endif %}"><a href="{{ turb_url }}">Turbidity</a></li>
-    <li class="{% if request.path == secchi %}active{% endif %}"><a href="{{ secchi_url }}">Secchi Disk Depth</a></li>
-  </ul>
+  <li class="{% if request.path == lakes_url %}active{% endif %}"><a href="{{ lakes_url }}">Lakes</a></li>
 
 {% endblock %}
 
@@ -73,5 +53,6 @@
 
 {% block scripts %}
   {{ block.super }}
-  <script src="{% static 'lake/js/main.js' %}" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="{% static 'lake/js/lakes.js' %}" type="text/javascript"></script>
 {% endblock %}

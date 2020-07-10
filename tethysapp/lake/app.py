@@ -26,24 +26,19 @@ class Lake(TethysAppBase):
         url_maps = (
             UrlMap(
                 name='home',
-                url='lake',
+                url='lake/home',
                 controller='lake.controllers.home'
             ),
             UrlMap(
-                name='search_data',
-                url='lake/datas/search',
-                controller='lake.controllers.search_data'
-            ),
-            UrlMap(
                 name='instructions',
-                url='lake/datas/instructions',
+                url='lake/instructions',
                 controller='lake.controllers.instructions'
             ),
-            # UrlMap(
-            #     name='select-lake',
-            #     url='lake/base',
-            #     controller='lake.controllers.base'
-            # ),
+            UrlMap(
+                name='lakes',
+                url='lake/lakes',
+                controller='lake.controllers.lakes'
+            ),
             UrlMap(
                 name='chl_a',
                 url='lake/datas/chl_a',

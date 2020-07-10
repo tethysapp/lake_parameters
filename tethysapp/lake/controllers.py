@@ -16,49 +16,72 @@ import os
 import math
 from .app import Lake as app
 from pandas import DataFrame
-
-# from .utils import selectLake
-#
-# @login_required()
-# def base(request):
-#
-#     context = selectLake()
-#     return render(request, 'lake/base.html', context)
+from .utils import download
+from .utils import get_select_lake
 
 @login_required()
 def home(request):
     context = getStations()
     return render(request, 'lake/home.html', context)
 
-@login_required()
-def search_data(request):
+def lakes(request):
     context = getStations()
-    return render(request, 'lake/search_data.html', context)
+    context['select_lake'] = get_select_lake()
+    return render(request, 'lake/lakes.html', context)
 
 @login_required()
 def instructions(request):
     context = {
     }
-
     return render(request, 'lake/instructions.html', context)
-
+    from tethys_sdk.gizmos import SelectInput
 
 
 def getFiles():
+
+    # Obtener archivos y separarlos segun lago y organizacion(o los dos juntos)
+
     app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, "awqms_utahlake.csv")
-    file_path_miller = os.path.join(app_workspace.path, "Miller_data.csv")
-    dataLake_awqms = pd.read_csv(file_path)
-    dataLake_miller = pd.read_csv(file_path_miller)
-    dataLake_miller['Organization ID'] = 'BYU, Dr Miller'
-    values_awqms = dataLake_awqms[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
-    values_miller = dataLake_miller[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
-    dataLake_all = [values_awqms, values_miller]
-    dataLake = pd.concat(dataLake_all)
-    context = dataLake
+    file_path_utah = os.path.join(app_workspace.path, "awqms_utah.csv")
+    file_path_salt = os.path.join(app_workspace.path, "awqms_salt.csv")
+    file_path_byu_utah = os.path.join(app_workspace.path, "byu_utah.csv")
+    file_path_byu_salt = os.path.join(app_workspace.path, "byu_salt.csv")
+    dataLake_awqms_utah = pd.read_csv(file_path_utah)
+    dataLake_awqms_salt = pd.read_csv(file_path_salt)
+    dataLake_byu_utah = pd.read_csv(file_path_byu_utah)
+    dataLake_byu_salt = pd.read_csv(file_path_byu_salt)
+    dataLake_byu_utah['Organization ID'] = 'BYU'
+    dataLake_byu_salt['Organization ID'] = 'BYU'
+    values_awqms_utah = dataLake_awqms_utah[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
+    values_byu_utah = dataLake_byu_utah[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
+    values_awqms_salt = dataLake_awqms_salt[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
+    values_byu_salt = dataLake_byu_salt[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
+    dataLake_all_utah = [values_awqms_utah, values_byu_utah]
+    dataLake_all_salt = [values_awqms_salt, values_byu_salt]
+    dataLake_utah = pd.concat(dataLake_all_utah)
+    dataLake_salt = pd.concat(dataLake_all_salt)
+    # context = {
+            # 'dataLake_salt':dataLake_salt,
+            # 'values_awqms_utah':values_awqms_utah,
+            # 'values_awqms_salt':values_awqms_salt,
+            # 'values_byu_utah':values_byu_utah,
+            # 'values_byu_salt':values_byu_salt,
+            # 'dataLake_utah':dataLake_utah
+        # }
+
+    context = dataLake_utah
     return context
 
+def select_dataLake():
+
+
+    context={}
+    return dataLake
+
 def getStations():
+
+    # Obtner estaciones segun lago para el mapa de estaciones
+
     dataLake = getFiles()
     locations = dataLake['Monitoring Location ID'].unique()
     context = {}
@@ -81,9 +104,17 @@ def getStations():
             station = df['Monitoring Location Name'].tolist()[0]
             dataname = str(location)
             context['all_stations'][dataname] = {'coords': [lat, lon], 'org': organization, 'station': station}
+    lats = dataLake['Monitoring Location Latitude'].unique()
+    lons = dataLake['Monitoring Location Longitude'].unique()
+    lats_mean = np.mean(lats)
+    lons_mean = np.mean(lons)
+    context['all_coords_stations']=[lats_mean,lons_mean]
     return context
 
 def completeSeries(df):
+
+    # Completar el time series para los graficos
+
     df['Date'] = pd.to_datetime(df['Activity Start Date'])
     df = df.sort_values(by = ['Date'])
     dateslist = df['Date'].tolist()
@@ -108,6 +139,9 @@ def completeSeries(df):
     return valuesFin, alldates
 
 def getData(characteristic, fraction):
+
+    # Obtener datos segun el parametro y su fraccion, mandar datos con el timeseries completo
+
     dataLake = getFiles()
     param = dataLake['Characteristic Name'] == characteristic
     row_param = dataLake[param]
@@ -119,8 +153,6 @@ def getData(characteristic, fraction):
         # print(row)
     else:
         row = row_param
-
-    print(row['Sample Fraction'])
 
     locations = row['Monitoring Location ID'].unique()
     unit = row['Result Unit'].unique()
@@ -155,6 +187,11 @@ def getData(characteristic, fraction):
             responseObject['dates'] = alldates
             # print(responseObject)
             context['all_data'][dataname] = {'coords': [lat, lon], 'org': organization, 'data': responseObject}
+    lats = dataLake['Monitoring Location Latitude'].unique()
+    lons = dataLake['Monitoring Location Longitude'].unique()
+    lats_mean = np.mean(lats)
+    lons_mean = np.mean(lons)
+    context['all_coords']=[lats_mean,lons_mean]
     return context
 
 
@@ -182,16 +219,7 @@ def getData(characteristic, fraction):
 
 def chl_a(request):
     context = getData('Chlorophyll a, uncorrected for pheophytin',' ')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -199,16 +227,7 @@ def chl_a(request):
 
 def do(request):
     context = getData('Dissolved oxygen (DO)',' ')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -216,16 +235,7 @@ def do(request):
 
 def magn_total(request):
     context = getData('Magnesium','Total')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -233,16 +243,7 @@ def magn_total(request):
 
 def magn_dis(request):
     context = getData('Magnesium','Dissolved')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -250,16 +251,7 @@ def magn_dis(request):
 
 def nit_total(request):
     context = getData('Nitrogen','Total')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -267,16 +259,7 @@ def nit_total(request):
 
 def nit_dis(request):
     context = getData('Nitrogen','Dissolved')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -284,16 +267,7 @@ def nit_dis(request):
 
 def ph(request):
     context = getData('pH',' ')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -301,16 +275,7 @@ def ph(request):
 
 def phosp_total(request):
     context = getData('Phosphate-phosphorus','Total')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -318,16 +283,7 @@ def phosp_total(request):
 
 def phosp_dis(request):
     context = getData('Phosphate-phosphorus','Dissolved')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -335,16 +291,7 @@ def phosp_dis(request):
 
 def water_temp(request):
     context = getData('Temperature, water',' ')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -352,16 +299,7 @@ def water_temp(request):
 
 def tds(request):
     context = getData('Total dissolved solids','None')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -369,16 +307,7 @@ def tds(request):
 
 def turb(request):
     context = getData('Turbidity',' ')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -386,16 +315,7 @@ def turb(request):
 
 def secchi(request):
     context = getData('Depth, Secchi disk depth',' ')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 
@@ -403,16 +323,7 @@ def secchi(request):
 
 def ortho(request):
     context = getData('Ortho Phosphorus','None')
-    download_button = Button(
-        display_text='Download all data',
-        icon='glyphicon glyphicon-download-alt',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'dataplacement':'top',
-            'title':'Download'
-        }
-    )
+    download_button = download()
 
     context['download_button'] = download_button
 

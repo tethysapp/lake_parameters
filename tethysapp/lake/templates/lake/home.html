@@ -14,6 +14,27 @@
   </div>
 {% endblock %}
 
+{% block app_navigation_items %}
+  {{ block.super}}
+  {% url 'lake:home' as home_url %}
+  {% url 'lake:instructions' as instructions_url %}
+  {% url 'lake:chl_a' as chl_a_url %}
+  {% url 'lake:do' as do_url %}
+  {% url 'lake:magn_total' as magn_total_url %}
+  {% url 'lake:magn_dis' as magn_dis_url %}
+  {% url 'lake:nit_total' as nit_total_url %}
+  {% url 'lake:nit_dis' as nit_dis_url %}
+  {% url 'lake:ph' as ph_url %}
+  {% url 'lake:phosp_total' as phosp_total_url %}
+  {% url 'lake:phosp_dis' as phosp_dis_url %}
+  {% url 'lake:ortho' as ortho_url %}
+  {% url 'lake:water_temp' as water_temp_url %}
+  {% url 'lake:tds' as tds_url %}
+  {% url 'lake:turb' as turb_url %}
+  {% url 'lake:secchi' as secchi_url %}
+
+
+{% endblock %}
 
 {% block app_content %}
 
@@ -41,8 +62,10 @@
   </div>
 </body>
 <script>
+    var allstations_coords = {{all_coords_stations|safe}};
+  console.log(allstations_coords);
 
-  var mymap = L.map('mapid').setView([40.2, -111.8], 11);
+  var mymap = L.map('mapid').setView(allstations_coords, 11);
   L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
   maxZoom: 32,
@@ -66,7 +89,7 @@ for (var locat in allstations) {
   var coords = location_data['coords'];
   var loc = location_data['org'];
   var station = location_data['station'];
-  if (loc == 'BYU, Dr Miller') {
+  if (loc == 'BYU') {
      var marker = L.marker(coords, {title:locat, icon: iconMiller}).addTo(mymap).bindPopup('<b>Station: </b>' + station +'<br>ID: ' + locat + '<br>Coordinates: ' + coords +'<br>Organization: ' + loc);
       } else if (location_data['org'] == 'UTAHDWQ_WQX') {
      var marker = L.marker(coords, {title:locat, icon: iconAwqms}).addTo(mymap).bindPopup('<b>Station: </b>' + station +'<br>ID: ' + locat + '<br>Coordinates: ' + coords +'<br>Organization: ' + loc);
