@@ -34,13 +34,30 @@ def instructions(request):
     context = {
     }
     return render(request, 'lake/instructions.html', context)
-    from tethys_sdk.gizmos import SelectInput
+
+
+def get_lake(request):
+    print('Hola')
+    get_data = request.GET
+
+    try:
+        lake_name = get_data['lake_name']
+        print (lake_name)
+
+        context = {}
+
+        return render(request, 'lake/lakes.html', context)
+
+    except Exception  as e:
+        print (str(e))
+        return JsonResponse({'error': 'No se pudo obtener el nombre del lago'})
+
 
 
 def getFiles():
 
     # Obtener archivos y separarlos segun lago y organizacion(o los dos juntos)
-
+    # print(selectlake)
     app_workspace = app.get_app_workspace()
     file_path_utah = os.path.join(app_workspace.path, "awqms_utah.csv")
     file_path_salt = os.path.join(app_workspace.path, "awqms_salt.csv")
@@ -72,11 +89,6 @@ def getFiles():
     context = dataLake_utah
     return context
 
-def select_dataLake():
-
-
-    context={}
-    return dataLake
 
 def getStations():
 

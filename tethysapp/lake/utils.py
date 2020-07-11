@@ -29,5 +29,4 @@ def get_select_lake():
                             options=[('Utah Lake','1'), ('Salt Lake','2')],
                             initial=['Utah Lake']
                             )
-
     return select_lake
