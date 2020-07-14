@@ -19,48 +19,55 @@ from pandas import DataFrame
 from .utils import download
 # from .utils import get_select_lake, get_select_parameter, get_select_bdl, get_select_data, get_select_max
 
+LAKE_FILES = {
+    "utah": ["awqms_utah.csv", "byu_utah.csv"],
+    "salt": ["awqms_salt.csv", "byu_salt.csv"]
+}
+
+
 @login_required()
 def home(request):
     select_lake = SelectInput(display_text='Select a Lake',
-                            name='select-lake',
-                            multiple=False,
-                            options=[('Utah Lake','1'), ('Salt Lake','2')],
-                            initial=['Utah Lake']
-                            )
+                              name='select-lake',
+                              multiple=False,
+                              options=[('Utah Lake', 'utah'), ('Salt Lake', 'salt')],
+                              initial=['Utah Lake']
+                              )
     select_data = SelectInput(display_text='Select Data',
-                            name='select-data',
-                            multiple=False,
-                            options=[('All','1'), ('AWQMS','2'),('BYU','3')],
-                            initial=['All']
-                            )
+                              name='select-data',
+                              multiple=False,
+                              options=[('All', '1'), ('AWQMS', '2'), ('BYU', '3')],
+                              initial=['All']
+                              )
     select_parameter = SelectInput(display_text='Select a Parameter',
-                            name='select-parameter',
-                            multiple=False,
-                            options=[('Chlorophyll-a','1'), ('Dissolved Oxygen','2'),('Phosphate-phosphorus','3'),('Nitrogen','4'),('Magnesium','5'),('Ortho Phosphorus','6'),('pH','7'),('Water Temperature','8'),('Turbidity','9'),('Secchi Disk Depth','10'),('Total Dissolved Solids','11')],
-                            initial=['Chlorophyll-a']
-                            )
+                                   name='select-parameter',
+                                   multiple=False,
+                                   options=[('Chlorophyll-a', '1'), ('Dissolved Oxygen', '2'), ('Phosphate-phosphorus', '3'), ('Nitrogen', '4'), ('Magnesium', '5'), ('Ortho Phosphorus',
+                                                                                                                                                                      '6'), ('pH', '7'), ('Water Temperature', '8'), ('Turbidity', '9'), ('Secchi Disk Depth', '10'), ('Total Dissolved Solids', '11')],
+                                   initial=['Chlorophyll-a']
+                                   )
     select_bdl = SelectInput(display_text='Select a value for Data below Detection Limit',
-                            name='select-bdl',
-                            multiple=False,
-                            options=[('0','1'), ('Detection Limit','2'),('1/2 Detection Limit','3')],
-                            initial=['0']
-                            )
+                             name='select-bdl',
+                             multiple=False,
+                             options=[('0', '1'), ('Detection Limit', '2'), ('1/2 Detection Limit', '3')],
+                             initial=['0']
+                             )
     select_max = SelectInput(display_text='Select a maximum value',
-                            name='select-max',
-                            multiple=False,
-                            options=[('Unlimited','1'), ('<5','2'),('<2','3'),('<1','4')],
-                            initial=['Unlimited']
-                            )
-    get_Stations=getStations()
+                             name='select-max',
+                             multiple=False,
+                             options=[('Unlimited', '1'), ('<5', '2'), ('<2', '3'), ('<1', '4')],
+                             initial=['Unlimited']
+                             )
+    get_Stations = getStations('utah')
     context = {}
     context['all_coords_stations'] = get_Stations['all_coords_stations']
     context['all_stations'] = get_Stations['all_stations']
     context['lake_map'] = get_Stations['lake_map']
-    context['select_lake']=select_lake
-    context['select_data']=select_data
-    context['select_parameter']=select_parameter
-    context['select_bdl']=select_bdl
-    context['select_max']=select_max
+    context['select_lake'] = select_lake
+    context['select_data'] = select_data
+    context['select_parameter'] = select_parameter
+    context['select_bdl'] = select_bdl
+    context['select_max'] = select_max
     # print(context)
     return render(request, 'lake/home.html', context)
 
@@ -71,55 +78,50 @@ def instructions(request):
     }
     return render(request, 'lake/instructions.html', context)
 
+
 @login_required()
 def get_lake(request):
     get_data = request.GET
-    lake_name = get_data['lake_name']
+    lake_name = get_data.get('lake_name')
     # print (lake_name)
-    context=lake_name
-    return render(request, HttpResponse(getFiles(), safe=False), context)
+    context = lake_name
+    stations = getStations(lake_name)
+    return JsonResponse(stations)
 
-def getFiles():
+
+def getFiles(lake_name):
 
     # Obtener archivos y separarlos segun lago y organizacion(o los dos juntos)
     # print(selectlake)
     app_workspace = app.get_app_workspace()
-    file_path_utah = os.path.join(app_workspace.path, "awqms_utah.csv")
-    file_path_salt = os.path.join(app_workspace.path, "awqms_salt.csv")
-    file_path_byu_utah = os.path.join(app_workspace.path, "byu_utah.csv")
-    file_path_byu_salt = os.path.join(app_workspace.path, "byu_salt.csv")
-    dataLake_awqms_utah = pd.read_csv(file_path_utah)
-    dataLake_awqms_salt = pd.read_csv(file_path_salt)
-    dataLake_byu_utah = pd.read_csv(file_path_byu_utah)
-    dataLake_byu_salt = pd.read_csv(file_path_byu_salt)
-    dataLake_byu_utah['Organization ID'] = 'BYU'
-    dataLake_byu_salt['Organization ID'] = 'BYU'
-    values_awqms_utah = dataLake_awqms_utah[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
-    values_byu_utah = dataLake_byu_utah[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
-    values_awqms_salt = dataLake_awqms_salt[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
-    values_byu_salt = dataLake_byu_salt[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']]
-    dataLake_all_utah = [values_awqms_utah, values_byu_utah]
-    dataLake_all_salt = [values_awqms_salt, values_byu_salt]
-    dataLake_utah = pd.concat(dataLake_all_utah)
-    dataLake_salt = pd.concat(dataLake_all_salt)
-    # context = {
-            # 'dataLake_salt':dataLake_salt,
-            # 'values_awqms_utah':values_awqms_utah,
-            # 'values_awqms_salt':values_awqms_salt,
-            # 'values_byu_utah':values_byu_utah,
-            # 'values_byu_salt':values_byu_salt,
-            # 'dataLake_utah':dataLake_utah
-        # }
+    file_path = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[0])
+    file_path_byu = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[1])
 
-    context = dataLake_utah
+    dataLake_awqms = pd.read_csv(file_path)
+    dataLake_byu = pd.read_csv(file_path_byu)
+    dataLake_byu['Organization ID'] = 'BYU'
+
+    fields = ['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude',
+              'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']
+
+    values_awqms = dataLake_awqms[fields]
+    values_byu = dataLake_byu[fields]
+    dataLake_all = [values_awqms, values_byu]
+    dataLake = pd.concat(dataLake_all)
+    context = {
+        'dataLake': dataLake,
+        'values_awqms': values_awqms,
+        'values_byu': values_byu,
+    }
+
     return context
 
 
-def getStations():
+def getStations(lake_name):
 
     # Obtner estaciones segun lago para el mapa de estaciones
 
-    dataLake = getFiles()
+    dataLake = getFiles(lake_name).get('dataLake')
     locations = dataLake['Monitoring Location ID'].unique()
     context = {}
 
@@ -145,15 +147,16 @@ def getStations():
     lons = dataLake['Monitoring Location Longitude'].unique()
     lats_mean = np.mean(lats)
     lons_mean = np.mean(lons)
-    context['all_coords_stations']=[lats_mean,lons_mean]
+    context['all_coords_stations'] = [lats_mean, lons_mean]
     return context
+
 
 def completeSeries(df):
 
     # Completar el time series para los graficos
 
     df['Date'] = pd.to_datetime(df['Activity Start Date'])
-    df = df.sort_values(by = ['Date'])
+    df = df.sort_values(by=['Date'])
     dateslist = df['Date'].tolist()
     inidate = dateslist[0]
     findate = dateslist[-1]
@@ -161,12 +164,12 @@ def completeSeries(df):
     curdate = inidate
     while curdate <= findate:
         alldates.append(curdate)
-        curdate = curdate + timedelta(days = 1)
-    df2 = pd.DataFrame(alldates, columns = ['Date'])
-    dfjoin = df2.merge(df, on = 'Date', how = 'left')
+        curdate = curdate + timedelta(days=1)
+    df2 = pd.DataFrame(alldates, columns=['Date'])
+    dfjoin = df2.merge(df, on='Date', how='left')
     value = dfjoin['Result Value']
     dates = dfjoin['Date']
-    datesString=[]
+    datesString = []
     valuesNumpy = value.to_numpy(value)
     valuesNoNan = np.nan_to_num(valuesNumpy, nan=-999)
     valuesFin = valuesNoNan.tolist()
@@ -174,6 +177,7 @@ def completeSeries(df):
         datesString.append(str(datesX).split()[0])
     alldates = datesString
     return valuesFin, alldates
+
 
 def getData(characteristic, fraction):
 
@@ -228,7 +232,7 @@ def getData(characteristic, fraction):
     lons = dataLake['Monitoring Location Longitude'].unique()
     lats_mean = np.mean(lats)
     lons_mean = np.mean(lons)
-    context['all_coords']=[lats_mean,lons_mean]
+    context['all_coords'] = [lats_mean, lons_mean]
     return context
 
 
@@ -255,111 +259,124 @@ def getData(characteristic, fraction):
 #               }
 
 def chl_a(request):
-    context = getData('Chlorophyll a, uncorrected for pheophytin',' ')
+    context = getData('Chlorophyll a, uncorrected for pheophytin', ' ')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def do(request):
-    context = getData('Dissolved oxygen (DO)',' ')
+    context = getData('Dissolved oxygen (DO)', ' ')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def magn_total(request):
-    context = getData('Magnesium','Total')
+    context = getData('Magnesium', 'Total')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def magn_dis(request):
-    context = getData('Magnesium','Dissolved')
+    context = getData('Magnesium', 'Dissolved')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def nit_total(request):
-    context = getData('Nitrogen','Total')
+    context = getData('Nitrogen', 'Total')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def nit_dis(request):
-    context = getData('Nitrogen','Dissolved')
+    context = getData('Nitrogen', 'Dissolved')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def ph(request):
-    context = getData('pH',' ')
+    context = getData('pH', ' ')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def phosp_total(request):
-    context = getData('Phosphate-phosphorus','Total')
+    context = getData('Phosphate-phosphorus', 'Total')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def phosp_dis(request):
-    context = getData('Phosphate-phosphorus','Dissolved')
+    context = getData('Phosphate-phosphorus', 'Dissolved')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def water_temp(request):
-    context = getData('Temperature, water',' ')
+    context = getData('Temperature, water', ' ')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def tds(request):
-    context = getData('Total dissolved solids','None')
+    context = getData('Total dissolved solids', 'None')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def turb(request):
-    context = getData('Turbidity',' ')
+    context = getData('Turbidity', ' ')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
+
 
 def secchi(request):
-    context = getData('Depth, Secchi disk depth',' ')
+    context = getData('Depth, Secchi disk depth', ' ')
     download_button = download()
 
     context['download_button'] = download_button
 
     return render(request, 'lake/show_data.html', context)
 
+
 def ortho(request):
-    context = getData('Ortho Phosphorus','None')
+    context = getData('Ortho Phosphorus', 'None')
     download_button = download()
 
     context['download_button'] = download_button
