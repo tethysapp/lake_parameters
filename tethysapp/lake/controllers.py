@@ -17,17 +17,53 @@ import math
 from .app import Lake as app
 from pandas import DataFrame
 from .utils import download
-from .utils import get_select_lake
+# from .utils import get_select_lake, get_select_parameter, get_select_bdl, get_select_data, get_select_max
 
 @login_required()
 def home(request):
-    context = getStations()
+    select_lake = SelectInput(display_text='Select a Lake',
+                            name='select-lake',
+                            multiple=False,
+                            options=[('Utah Lake','1'), ('Salt Lake','2')],
+                            initial=['Utah Lake']
+                            )
+    select_data = SelectInput(display_text='Select Data',
+                            name='select-data',
+                            multiple=False,
+                            options=[('All','1'), ('AWQMS','2'),('BYU','3')],
+                            initial=['All']
+                            )
+    select_parameter = SelectInput(display_text='Select a Parameter',
+                            name='select-parameter',
+                            multiple=False,
+                            options=[('Chlorophyll-a','1'), ('Dissolved Oxygen','2'),('Phosphate-phosphorus','3'),('Nitrogen','4'),('Magnesium','5'),('Ortho Phosphorus','6'),('pH','7'),('Water Temperature','8'),('Turbidity','9'),('Secchi Disk Depth','10'),('Total Dissolved Solids','11')],
+                            initial=['Chlorophyll-a']
+                            )
+    select_bdl = SelectInput(display_text='Select a value for Data below Detection Limit',
+                            name='select-bdl',
+                            multiple=False,
+                            options=[('0','1'), ('Detection Limit','2'),('1/2 Detection Limit','3')],
+                            initial=['0']
+                            )
+    select_max = SelectInput(display_text='Select a maximum value',
+                            name='select-max',
+                            multiple=False,
+                            options=[('Unlimited','1'), ('<5','2'),('<2','3'),('<1','4')],
+                            initial=['Unlimited']
+                            )
+    get_Stations=getStations()
+    context = {}
+    context['all_coords_stations'] = get_Stations['all_coords_stations']
+    context['all_stations'] = get_Stations['all_stations']
+    context['lake_map'] = get_Stations['lake_map']
+    context['select_lake']=select_lake
+    context['select_data']=select_data
+    context['select_parameter']=select_parameter
+    context['select_bdl']=select_bdl
+    context['select_max']=select_max
+    # print(context)
     return render(request, 'lake/home.html', context)
 
-def lakes(request):
-    context = getStations()
-    context['select_lake'] = get_select_lake()
-    return render(request, 'lake/lakes.html', context)
 
 @login_required()
 def instructions(request):
@@ -35,24 +71,13 @@ def instructions(request):
     }
     return render(request, 'lake/instructions.html', context)
 
-
+@login_required()
 def get_lake(request):
-    print('Hola')
     get_data = request.GET
-
-    try:
-        lake_name = get_data['lake_name']
-        print (lake_name)
-
-        context = {}
-
-        return render(request, 'lake/lakes.html', context)
-
-    except Exception  as e:
-        print (str(e))
-        return JsonResponse({'error': 'No se pudo obtener el nombre del lago'})
-
-
+    lake_name = get_data['lake_name']
+    # print (lake_name)
+    context=lake_name
+    return render(request, HttpResponse(getFiles(), safe=False), context)
 
 def getFiles():
 

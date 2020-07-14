@@ -2,6 +2,7 @@
 {% load tethys_gizmos %}
 {% load tethys_gizmos static %}
 {% load static %}
+{% load staticfiles %}
 
 {% block styles %}
     {{ block.super }}
@@ -12,28 +13,6 @@
   <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Help">
     <a data-toggle="modal" data-target="#help-modal"><span class="glyphicon glyphicon-question-sign"></span></a>
   </div>
-{% endblock %}
-
-{% block app_navigation_items %}
-  {{ block.super}}
-  {% url 'lake:home' as home_url %}
-  {% url 'lake:instructions' as instructions_url %}
-  {% url 'lake:chl_a' as chl_a_url %}
-  {% url 'lake:do' as do_url %}
-  {% url 'lake:magn_total' as magn_total_url %}
-  {% url 'lake:magn_dis' as magn_dis_url %}
-  {% url 'lake:nit_total' as nit_total_url %}
-  {% url 'lake:nit_dis' as nit_dis_url %}
-  {% url 'lake:ph' as ph_url %}
-  {% url 'lake:phosp_total' as phosp_total_url %}
-  {% url 'lake:phosp_dis' as phosp_dis_url %}
-  {% url 'lake:ortho' as ortho_url %}
-  {% url 'lake:water_temp' as water_temp_url %}
-  {% url 'lake:tds' as tds_url %}
-  {% url 'lake:turb' as turb_url %}
-  {% url 'lake:secchi' as secchi_url %}
-
-
 {% endblock %}
 
 {% block app_content %}
@@ -56,14 +35,13 @@
 <body>
   <div>
     <br>
-      <h1>Welcome to Utah Lake Parameters  App!</h1>
-    <p>Click the map to get information about the station.</p>
+      <h1>Stations</h1>
     <div id="mapid"></div>
   </div>
 </body>
 <script>
-    var allstations_coords = {{all_coords_stations|safe}};
-  console.log(allstations_coords);
+
+  var allstations_coords = {{all_coords_stations|safe}};
 
   var mymap = L.map('mapid').setView(allstations_coords, 11);
   L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -84,6 +62,7 @@
   });
 
 var allstations = {{all_stations|safe}};
+
 for (var locat in allstations) {
   var location_data = allstations[locat];
   var coords = location_data['coords'];
@@ -102,7 +81,6 @@ for (var locat in allstations) {
 
 {% endblock %}
 
-{# Use the after_app_content block for modals #}
 {% block after_app_content %}
 
   <!-- Example Modal -->

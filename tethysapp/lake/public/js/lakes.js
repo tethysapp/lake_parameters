@@ -9,23 +9,19 @@ $(function() { //wait for page to load
 });
 
 function get_lake (lake_name){
-  console.log(lake_name);
+  console.log(typeof lake_name);
   $.ajax({
-    url:'lake/lakes/get_lake',
+    url:'/apps/lake/controllers/get_lake/',
     type:'GET',
     data: {'lake_name':lake_name},
+    datatype:'string',
     error: function (xhr, status, error) {
       var err = JSON.parse(xhr.responseText);
       console.log(err.Message);
     },
-    success: function (data) {
-      if  (!data.error) {
-        console.log('Si se pudo enviar el dato del nombre del lago. ', lake_name);
-      } else if (data.error) {
-        console.log('Un error desconocido ocurrio enviando el nombre del lago');
-      } else {
-        console.log('Un error inexplicable ocurrio enviando el nombre del lago');
-      }
+    success: function (result) {
+      console.log('Si se pudo enviar el dato del nombre del lago. ', lake_name);
+      get_lake(result)
     }
    });
 };
