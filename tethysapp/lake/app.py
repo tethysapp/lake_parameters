@@ -34,11 +34,6 @@ class Lake(TethysAppBase):
                 url='lake/instructions',
                 controller='lake.controllers.instructions'
             ),
-            # UrlMap(
-            #     name='lakes',
-            #     url='lake/lakes',
-            #     controller='lake.controllers.lakes'
-            # ),
             UrlMap(
                 name='get_lake',
                 url='lake/controllers/get_lake/',

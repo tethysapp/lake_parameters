@@ -59,6 +59,7 @@ def home(request):
                              initial=['Unlimited']
                              )
     get_Stations = getStations('utah')
+    # search_button = search()
     context = {}
     context['all_coords_stations'] = get_Stations['all_coords_stations']
     context['all_stations'] = get_Stations['all_stations']
@@ -68,6 +69,7 @@ def home(request):
     context['select_parameter'] = select_parameter
     context['select_bdl'] = select_bdl
     context['select_max'] = select_max
+    # context['search_button'] = search_button
     # print(context)
     return render(request, 'lake/home.html', context)
 
@@ -234,29 +236,6 @@ def getData(characteristic, fraction):
     lons_mean = np.mean(lons)
     context['all_coords'] = [lats_mean, lons_mean]
     return context
-
-
-# def charts(request):
-#     timeseries_plot = TimeSeries(
-#         height='500px',
-#         width='500px',
-#         engine='highcharts',
-#         title='Irregular Timeseries Plot',
-#         y_axis_title='Snow depth',
-#         y_axis_units='m',
-#         series=[{
-#             'name': 'Winter 2007-2008',
-#             'data': [
-#                 [datetime(2008, 12, 2), 0.8],
-#                 [datetime(2008, 12, 9), 0.6],
-#                 [datetime(2008, 12, 16), 0.6]
-#             ]
-#         }]
-#     )
-#
-#     context = {
-#                 'timeseries_plot': timeseries_plot,
-#               }
 
 def chl_a(request):
     context = getData('Chlorophyll a, uncorrected for pheophytin', ' ')

@@ -18,6 +18,12 @@
   <img src="{% if 'http' in tethys_app.icon %}{{ tethys_app.icon }}{% else %}{% static tethys_app.icon %}{% endif %}" />
 {% endblock %}
 
+{% block header_buttons %}
+  <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Help">
+    <a data-toggle="modal" data-target="#help-modal"><span class="glyphicon glyphicon-question-sign"></span></a>
+  </div>
+{% endblock %}
+
 {% block app_title %}
 {{ tethys_app.name }}
 {% endblock %}
@@ -47,10 +53,11 @@
   <br>
   {% if request.path == home_url %}
   {% gizmo select_input select_lake %}
-  {% gizmo select_input select_parameter %}
   {% gizmo select_input select_data %}
+  {% gizmo select_input select_parameter %}
   {% gizmo select_input select_bdl %}
   {% gizmo select_input select_max %}
+  <input type="button" onclick="searchButton();" name="search-button" class="btn btn-default" value="Search Data">
   {% endif %}
     <li class="title">Select Parameter</li>
     <ul>
@@ -90,4 +97,5 @@
 {% block scripts %}
 {{ block.super }}
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script src="{% static 'lake/js/lakes.js' %}" type="text/javascript"></script>
 {% endblock %}
