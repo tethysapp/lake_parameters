@@ -21,12 +21,13 @@
     crossorigin=""></script>
 <script src="{% static 'lake/js/L.TileLayer.BetterWMS.js' %}" type="text/javascript"></script>
 <script>
-
 var allstations_coords = {{all_coords_stations|safe}}
+var difcoords = {{dif_coords_stations|safe}}
 var allstations = {{all_stations|safe}}
 var imgUrl = "{% static 'lake/images/lake.jpg' %}"
 var byuImgUrl = "{% static '/lake/images/byu.png' %}"
-var raindropImgUrl = "{% static '/lake/images/raindrop.png' %}"
+var raindropImgUrl = "{% static '/lake/images/raindrop2.png' %}"
+var raindrop2ImgUrl = "{% static '/lake/images/raindrop4.png' %}"
 var mymap = L.map("mapid")
   L.tileLayer(
     "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
@@ -41,12 +42,13 @@ var mymap = L.map("mapid")
   ).addTo(mymap)
 set_map()
 </script>
-
 {% endblock %}
 
 {% block header_buttons %}
 {{ block.super }}
 {% endblock %}
+
+
 
 {% block app_content %}
 <div>

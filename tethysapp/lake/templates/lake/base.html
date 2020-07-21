@@ -33,20 +33,8 @@
   {% url 'lake:home' as home_url %}
   {% url 'lake:instructions' as instructions_url %}
   {% url 'lake:lakes' as lakes_url %}
-  {% url 'lake:chl_a' as chl_a_url %}
-  {% url 'lake:do' as do_url %}
-  {% url 'lake:magn_total' as magn_total_url %}
-  {% url 'lake:magn_dis' as magn_dis_url %}
-  {% url 'lake:nit_total' as nit_total_url %}
-  {% url 'lake:nit_dis' as nit_dis_url %}
-  {% url 'lake:ph' as ph_url %}
-  {% url 'lake:phosp_total' as phosp_total_url %}
-  {% url 'lake:phosp_dis' as phosp_dis_url %}
-  {% url 'lake:ortho' as ortho_url %}
-  {% url 'lake:water_temp' as water_temp_url %}
-  {% url 'lake:tds' as tds_url %}
-  {% url 'lake:turb' as turb_url %}
-  {% url 'lake:secchi' as secchi_url %}
+  {% url 'lake:charact' as charact_url %}
+  {% url 'lake:show_data' as show_data_url %}
   <li class="title">Navigation</li>
   <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
   <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li>
@@ -55,30 +43,13 @@
   {% gizmo select_input select_lake %}
   {% gizmo select_input select_data %}
   {% gizmo select_input select_parameter %}
+  {% gizmo select_input select_fraction %}
   {% gizmo select_input select_bdl %}
   {% gizmo select_input select_max %}
   <input type="button" onclick="searchButton();" name="search-button" class="btn btn-default" value="Search Data">
+  <br>  <br>
+  <li class="{% if request.path == show_data_url %}active{% endif %}"><a href="{{ show_data_url }}">Show Data</a></li>
   {% endif %}
-    <li class="title">Select Parameter</li>
-    <ul>
-      <li class="{% if request.path == chl_a %}active{% endif %}"><a href="{{ chl_a_url }}">Chlorophyll a</a></li>
-      <li class="{% if request.path == do %}active{% endif %}"><a href="{{ do_url }}">Dissolved Oxygen</a></li>
-      <li class="title">Magnesium</li>
-      <li class="{% if request.path == magn_total %}active{% endif %}"><a href="{{ magn_total_url }}">Total</a></li>
-      <li class="{% if request.path == magn_dis %}active{% endif %}"><a href="{{ magn_dis_url }}">Dissolved</a></li>
-      <li class="title">Nitrogen</li>
-      <li class="{% if request.path == nit_total %}active{% endif %}"><a href="{{ nit_total_url }}">Total</a></li>
-      <li class="{% if request.path == nit_dis %}active{% endif %}"><a href="{{ nit_dis_url }}">Dissolved</a></li>
-      <li class="{% if request.path == ph %}active{% endif %}"><a href="{{ ph_url }}">pH</a></li>
-      <li class="title">Phosphate-Phosphorus</li>
-      <li class="{% if request.path == phosp_total %}active{% endif %}"><a href="{{ phosp_total_url }}">Total</a></li>
-      <li class="{% if request.path == phosp_dis %}active{% endif %}"><a href="{{ phosp_dis_url }}">Dissolved</a></li>
-      <li class="{% if request.path == ortho %}active{% endif %}"><a href="{{ ortho_url }}">Ortho Phosphorus</a></li>
-      <li class="{% if request.path == water_temp %}active{% endif %}"><a href="{{ water_temp_url }}">Water Temperature</a></li>
-      <li class="{% if request.path == tds %}active{% endif %}"><a href="{{ tds_url }}">Total Dissolved Solids</a></li>
-      <li class="{% if request.path == turb %}active{% endif %}"><a href="{{ turb_url }}">Turbidity</a></li>
-      <li class="{% if request.path == secchi %}active{% endif %}"><a href="{{ secchi_url }}">Secchi Disk Depth</a></li>
-    </ul>
 {% endblock %}
 
 
