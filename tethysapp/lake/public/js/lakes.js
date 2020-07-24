@@ -56,7 +56,7 @@ function get_lake() {
       console.log("Si se pudo enviar el dato del nombre del lago. ", lake_name)
       allstations_coords = result["all_coords_stations"]
       allstations = result["all_stations"]
-      // difcoords = result["dif_coords_stations"]
+      difcoords = result["dif_coords_stations"]
       set_map()
       $(".loading").remove()
     }
@@ -92,10 +92,10 @@ function charact_data() {
       console.log("Si se pudo enviar. ", lake_name, lake_data, lake_param, param_bdl)
       // console.log(result)
       allstations_coords = result["all_coords_stations"]
-      allstations = result["some_stations"]
+      allstations = result["all_data"]
       unit = result['unit']
-      // difcoords = result["dif_coords_stations"]
-      alldataparam = result["all_data"]
+      difcoords = result["dif_coords_stations"]
+      alldata = result["all_data"]
       set_map()
       $(".loading").remove()
     }
@@ -106,8 +106,9 @@ function set_map() {
   for (var i = 0; i < markers.length; i++) {
     mymap.removeLayer(markers[i])
   }
-  console.log(allstations_coords)
-  mymap.setView(allstations_coords, 11)
+  var lat_size = 32/(difcoords[0]+2.65)
+  console.log(lat_size)
+  mymap.setView(allstations_coords, lat_size)
 
   let iconMiller = L.icon({
     iconUrl: byuImgUrl,
@@ -129,20 +130,21 @@ function set_map() {
     var coords = location_data["coords"]
 		var data = location_data['data']
     var loc = location_data["org"]
+    var unit = unit
     var inlake = location_data["type"]
     var station = location_data["station"]
     if (loc == "BYU") {
-      var marker = L.marker(coords, { title: locat, custom: data, icon: iconMiller })
+      var marker = L.marker(coords, { title: locat, custom: data, icon: iconMiller, station:station})
         .addTo(mymap).bindPopup(chart)
       markers.push(marker)
     } else if (loc == "UTAHDWQ_WQX") {
       if(inlake == "Lake"){
-        var marker = L.marker(coords, { title: locat, custom: data, icon: iconAwqms })
+        var marker = L.marker(coords, { title: locat, custom: data, icon: iconAwqms, station:station})
           .addTo(mymap).bindPopup(chart)
         markers.push(marker)
       }
       else{
-        var marker = L.marker(coords, { title: locat, custom: data, icon: iconAwqms2 })
+        var marker = L.marker(coords, { title: locat, custom: data, icon: iconAwqms2, station:station})
           .addTo(mymap).bindPopup(chart)
         markers.push(marker)
       }
@@ -153,46 +155,54 @@ function set_map() {
 
     var location = d.options.title;
     var timeseriesObject = d.options.custom;
-    var timeseriesCorrectedY=[];
-    timeseriesObject['values'].forEach(function(x){
-      if(x < 0){
-        timeseriesCorrectedY.push(NaN);
-      }
-      else{
-        timeseriesCorrectedY.push(x);
-      }
-    });
 
     var unit = d.options.unit;
-    console.log(timeseriesObject);
+    var station = d.options.station;
+    console.log(unit);
+
     var trace = {
+      type: "scatter",
+      mode: "lines",
+      name: 'AAPL High',
       x: timeseriesObject['dates'],
-      y: timeseriesCorrectedY,
-      type: 'bar'
-    };
+      y: timeseriesObject['values'],
+      line: {color: '#17BECF'}
+    }
+
     var data = [trace];
+
     var layout = {
-      title: {
-        text:'Station '.concat(location),
-        font: {
-          family: 'Arial, sans-serif',
-          size: 24
-        },
-        xref: 'paper',
-        x: 0.5,
+      title: 'Station '.concat(station),
+      xaxis: {
+        autorange: true,
+        range: ['1989-01-01', '2020-08-01'],
+        rangeselector: {buttons: [
+            {
+              count: 6,
+              label: '6m',
+              step: 'month',
+              stepmode: 'backward'
+            },
+            {
+              count: 12,
+              label: '12m',
+              step: 'month',
+              stepmode: 'backward'
+            },
+            {step: 'all'}
+          ]},
+        rangeslider: {range: ['1989-01-01', '2020-08-01']},
+        type: 'date'
       },
       yaxis: {
-        title: {
-          text: 'Value '.concat(unit),
-          font: {
-      family: 'Arial, sans-serif',
-      size: 18,
-      color: '#7f7f7f'
-          }
-        }
+            title: {
+              text: 'Value '.concat(unit),
+            // autorange: true,
+        // range: [86.8700008333, 138.870004167],
+        type: 'linear'
       }
-    };
-    Plotly.newPlot('timeseries_plot', data, layout);
-  }
+  };
 
+  Plotly.newPlot('timeseries_plot', data, layout);
+  }
 }

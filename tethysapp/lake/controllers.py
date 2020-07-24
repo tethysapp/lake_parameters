@@ -133,7 +133,8 @@ def getFiles(lake_name):
     values_awqms = dataLake_awqms[fields]
     values_byu = dataLake_byu[fields]
     dataLake_all = [values_awqms, values_byu]
-    dataLake = pd.concat(dataLake_all)
+    dataLake = pd.concat(dataLake_all, ignore_index=True)
+    print(dataLake)
     context = {
         'all': dataLake,
         'awqms': values_awqms,
@@ -171,8 +172,8 @@ def getStations(lake_name):
             context['all_stations'][dataname] = {'coords': [lat, lon], 'org': organization, 'type': in_out_lake,'station': station}
     lats = dataLake['Monitoring Location Latitude'].unique()
     lons = dataLake['Monitoring Location Longitude'].unique()
-    lats_mean = np.mean(lats)
-    lons_mean = np.mean(lons)
+    lats_mean = (np.max(lats)+np.min(lats))/2
+    lons_mean = (np.max(lons)+np.min(lons))/2
     lats_dif = np.max(lats)-np.min(lats)
     lons_dif = np.max(lons)-np.min(lons)
     context['all_coords_stations'] = [lats_mean, lons_mean]
@@ -200,24 +201,11 @@ def getData(lake_name, lake_data, lake_param, param_bdl):
     #     row = row_param
 
         # Add values to the No Detected, acording the selected bdl
-    bdlall = row[row['Detection Condition'] == 'Not Detected']
-    # bdlall = row[bdlvalues]
-    # print(bdlall)
-    # print(type(bdlall))
-    # bdlall['DeLiVa'] = bdlall['Detection Limit Value1']
-    # print(bdlall['DeLiVa'])
-    # print(bdlall['Detection Limit Value1'])
-    # print(type(bdlall2))
     x=float(param_bdl)
-    bdl_list = bdlall['Detection Limit Value1'].values.tolist()
-    bdl = [i * x for i in bdl_list]
-    print(bdl)
-    bdlallx = pd.DataFrame(bdl, columns = ['Result Value'])
-    # print(bdlallx)
-    # bdljoin = bdlallx.merge(row, on = 'Result Value', how = 'left')
-    # print(bdljoin['Result Value'])
-    # print(type(bdljoin))
-
+    row['DeLiVal']=row['Detection Limit Value1']*x
+    print(row['DeLiVal'])
+    row['Result Value'].fillna(row['DeLiVal'], inplace=True)
+    print(row['Result Value'])
 
     locations = row['Monitoring Location ID'].unique()
     unit = row['Result Unit'].unique()
@@ -235,7 +223,6 @@ def getData(lake_name, lake_data, lake_param, param_bdl):
     )
     context['lake_map'] = lake_map
     context['all_data'] = {}
-    context['some_stations'] = {}
 
     for location in locations:
         df = dataLake[dataLake['Monitoring Location ID'] == location]
@@ -253,12 +240,11 @@ def getData(lake_name, lake_data, lake_param, param_bdl):
             responseObject['values'] = valuesFin
             responseObject['dates'] = alldates
             # print(responseObject)
-            context['some_stations'][dataname] = {'coords': [lat, lon], 'org': organization, 'type': in_out_lake, 'station': station}
-            context['all_data'][dataname] = {'coords': [lat, lon], 'org': organization, 'type': in_out_lake, 'data': responseObject}
+            context['all_data'][dataname] = {'coords': [lat, lon], 'org': organization, 'type': in_out_lake, 'station': station, 'data': responseObject}
     lats = dataLakeAll['Monitoring Location Latitude'].unique()
     lons = dataLakeAll['Monitoring Location Longitude'].unique()
-    lats_mean = np.mean(lats)
-    lons_mean = np.mean(lons)
+    lats_mean = (np.max(lats)+np.min(lats))/2
+    lons_mean = (np.max(lons)+np.min(lons))/2
     lats_dif = np.max(lats)-np.min(lats)
     lons_dif = np.max(lons)-np.min(lons)
     context['all_coords_stations'] = [lats_mean, lons_mean]
@@ -269,25 +255,27 @@ def completeSeries(df):
     # print(df)
     # Completar el time series para los graficos
     df['Date'] = pd.to_datetime(df['Activity Start Date'])
-    # print(df['Date'])
-    df = df.sort_values(by=['Date'])
-    # print(df['Date'])
-    dateslist = df['Date'].tolist()
-    inidate = dateslist[0]
-    findate = dateslist[-1]
-    alldates = []
-    curdate = inidate
-    while curdate <= findate:
-        alldates.append(curdate)
-        curdate = curdate + timedelta(days=1)
-    # print(alldates)
-    # print(type(alldates))
-    df2 = pd.DataFrame(alldates, columns=['Date'])
-    # print(df2)
-    dfjoin = df2.merge(df, on='Date', how='left')
-    # print(dfjoin)
-    value = dfjoin['Result Value']
-    dates = dfjoin['Date']
+
+    # df = df.sort_values(by=['Date'])
+    #
+    # dateslist = df['Date'].tolist()
+    # inidate = dateslist[0]
+    # findate = dateslist[-1]
+    # alldates = []
+    # curdate = inidate
+    # while curdate <= findate:
+    #     alldates.append(curdate)
+    #     curdate = curdate + timedelta(days=1)
+    #
+    # df2 = pd.DataFrame(alldates, columns=['Date'])
+    #
+    # dfjoin = df2.merge(df, on='Date', how='left')
+    # value = dfjoin['Result Value']
+    # dates = dfjoin['Date']
+
+    value = df['Result Value']
+    dates = df['Date']
+
     datesString = []
     valuesNumpy = value.to_numpy(value)
     valuesNoNan = np.nan_to_num(valuesNumpy, nan=-999)

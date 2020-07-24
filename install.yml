@@ -8,8 +8,12 @@ requirements:
   skip: false
   conda:
     channels:
+      - conda-forge
     packages:
-
+      - earthengine-api=0.1.205
+      - oauth2client
+      - geojson
   pip:
 
 post:
+  

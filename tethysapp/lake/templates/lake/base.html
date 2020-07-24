@@ -34,7 +34,6 @@
   {% url 'lake:instructions' as instructions_url %}
   {% url 'lake:lakes' as lakes_url %}
   {% url 'lake:charact' as charact_url %}
-  {% url 'lake:show_data' as show_data_url %}
   <li class="title">Navigation</li>
   <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
   <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li>
@@ -47,8 +46,6 @@
   {% gizmo select_input select_bdl %}
   {% gizmo select_input select_max %}
   <input type="button" onclick="searchButton();" name="search-button" class="btn btn-default" value="Search Data">
-  <br>  <br>
-  <li class="{% if request.path == show_data_url %}active{% endif %}"><a href="{{ show_data_url }}">Show Data</a></li>
   {% endif %}
 {% endblock %}
 
