@@ -3,6 +3,7 @@ let lake_data
 let lake_param
 let param_bdl
 let param_max
+let fraction_list
 var markers = []
 
 $(function() {
@@ -13,21 +14,24 @@ $(function() {
   })
 })
 
-// $(function() {
-//   $("#select-parameter").change(function() {
-//     lake_param = $("#select-lake option:selected").val()
-//     console.log(lake_param)
-//     get_fraction()
-//   })
-// })
+$(function() {
+  $("#select-parameter").change(function() {
+    lake_param = $("#select-parameter option:selected").val()
+    console.log(lake_param)
+    param_fraction()
+  })
+})
 
 function searchButton() {
   lake_name = document.getElementById('select-lake').value
   lake_data = document.getElementById('select-data').value
   lake_param = document.getElementById('select-parameter').value
+  param_fract = document.getElementById('fraction2').value
   param_bdl = document.getElementById('select-bdl').value
-  param_max = document.getElementById('select-max').value
-  console.log(lake_name)
+  param_max = document.getElementById('maximum').value
+  console.log(param_fract)
+  console.log(param_bdl)
+  console.log(param_max)
   charact_data()
 }
 
@@ -63,6 +67,48 @@ function get_lake() {
   })
 }
 
+function param_fraction() {
+  var loading = L.control({
+      position: 'topleft'
+  });
+
+  loading.onAdd = function(mymap) {
+      var div = L.DomUtil.create('div', 'info loading');
+      div.innerHTML += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='/static/lake/images/loading.gif'>";
+      return div;
+  };
+  loading.addTo(mymap);
+
+  $.ajax({
+    url: "/apps/lake/controllers/param_fraction/",
+    type: "GET",
+    data: { lake_param: lake_param },
+    error: function(xhr, status, error) {
+      var err = JSON.parse(xhr.responseText)
+      console.log(err.Message)
+      $(".loading").remove()
+    },
+    success: function(result) {
+      console.log("Si se pudo enviar el parametro. ", lake_param)
+      select_fraction = result['fraction']
+      select_max = result['maximum']
+      $("#fraction2").empty();
+      select_fraction['options'].forEach(function(x){
+        let newHtml = `<option>${x[0]}</option>`
+        $("#fraction2").append(newHtml);
+      })
+      $("#fraction2").selectpicker("refresh");
+      $("#maximum").empty();
+      select_max['options'].forEach(function(x){
+        let newHtml2 = `<option>${(x[0])}</option>`
+        $("#maximum").append(newHtml2);
+      })
+      $("#maximum").selectpicker("refresh");
+      $(".loading").remove()
+    }
+  })
+}
+
 function charact_data() {
   var loading = L.control({
       position: 'topleft'
@@ -81,6 +127,8 @@ function charact_data() {
     data: { lake_name: lake_name,
             lake_data: lake_data,
             lake_param: lake_param,
+            param_fract: param_fract,
+            param_max: param_max,
             param_bdl: param_bdl
           },
     error: function(xhr, status, error) {
@@ -89,13 +137,16 @@ function charact_data() {
       $(".loading").remove()
     },
     success: function(result) {
-      console.log("Si se pudo enviar. ", lake_name, lake_data, lake_param, param_bdl)
+      console.log("Si se pudo enviar. ", lake_name, lake_data, lake_param, param_fract, param_bdl)
       // console.log(result)
       allstations_coords = result["all_coords_stations"]
       allstations = result["all_data"]
       unit = result['unit']
+      characteristic = lake_param
       difcoords = result["dif_coords_stations"]
       alldata = result["all_data"]
+      console.log(characteristic)
+      console.log(unit)
       set_map()
       $(".loading").remove()
     }
@@ -107,7 +158,6 @@ function set_map() {
     mymap.removeLayer(markers[i])
   }
   var lat_size = 32/(difcoords[0]+2.65)
-  console.log(lat_size)
   mymap.setView(allstations_coords, lat_size)
 
   let iconMiller = L.icon({
@@ -130,7 +180,6 @@ function set_map() {
     var coords = location_data["coords"]
 		var data = location_data['data']
     var loc = location_data["org"]
-    var unit = unit
     var inlake = location_data["type"]
     var station = location_data["station"]
     if (loc == "BYU") {
@@ -155,52 +204,59 @@ function set_map() {
 
     var location = d.options.title;
     var timeseriesObject = d.options.custom;
-
-    var unit = d.options.unit;
-    var station = d.options.station;
-    console.log(unit);
-
-    var trace = {
-      type: "scatter",
-      mode: "lines",
-      name: 'AAPL High',
-      x: timeseriesObject['dates'],
-      y: timeseriesObject['values'],
-      line: {color: '#17BECF'}
-    }
-
-    var data = [trace];
-
-    var layout = {
-      title: 'Station '.concat(station),
-      xaxis: {
-        autorange: true,
-        range: ['1989-01-01', '2020-08-01'],
-        rangeselector: {buttons: [
-            {
-              count: 6,
-              label: '6m',
-              step: 'month',
-              stepmode: 'backward'
-            },
-            {
-              count: 12,
-              label: '12m',
-              step: 'month',
-              stepmode: 'backward'
-            },
-            {step: 'all'}
-          ]},
-        rangeslider: {range: ['1989-01-01', '2020-08-01']},
-        type: 'date'
-      },
-      yaxis: {
-            title: {
-              text: 'Value '.concat(unit),
-            // autorange: true,
-        // range: [86.8700008333, 138.870004167],
-        type: 'linear'
+    var timeseriesCorrectedY=[];
+    timeseriesObject['values'].forEach(function(x){
+      if(x < 0){
+        timeseriesCorrectedY.push(NaN);
       }
+      else{
+        timeseriesCorrectedY.push(x);
+      }
+    });
+
+    var station = d.options.station;
+    console.log(station);
+  var trace = {
+    type: "scatter",
+    mode: "lines",
+    name: 'AAPL High',
+    x: timeseriesObject['dates'],
+    y: timeseriesObject['values'],
+    line: {color: '#17BECF'}
+  }
+
+  var data = [trace];
+
+  var layout = {
+    title: station + '<br>Station '.concat(location),
+    xaxis: {
+      autorange: true,
+      range: ['1989-01-01', '2020-08-01'],
+      rangeselector: {buttons: [
+          {
+            count: 6,
+            label: '6m',
+            step: 'month',
+            stepmode: 'backward'
+          },
+          {
+            count: 12,
+            label: '12m',
+            step: 'month',
+            stepmode: 'backward'
+          },
+          {step: 'all'}
+        ]},
+      rangeslider: {range: ['1989-01-01', '2020-08-01']},
+      type: 'date'
+    },
+    yaxis: {
+      title: {
+           text: param_fract+' '+characteristic+' ('+unit+')'},
+      // autorange: true,
+      // range: [86.8700008333, 138.870004167],
+      type: 'linear'
+    }
   };
 
   Plotly.newPlot('timeseries_plot', data, layout);

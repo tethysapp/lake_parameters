@@ -10,38 +10,11 @@
   height: auto;
 }
 
-#obsgraph {
-    height: 100%;
-}
-
-#obsgraph .modal-body {
-  height: 100%;
-  border-radius: 0;
-}
-
-#obsgraph .modal-dialog {
-  width: 75%;
-  height: 75%;
-  padding: 0;
-}
 
 .obslogos {
     width: 40%;
     padding: 0 5px 0 5px;
 }
-
-/* No rounded borders */
-
-.leaflet-bar,
-.leaflet-control-layers,
-.leaflet-control-zoom-in,
-.leaflet-control-zoom-out,
-.leaflet-popup-content-wrapper {
-    border-radius: 0px !important;
-}
-
-
-/* Panel to interact with layers */
 
 #floating-panel {
     position: absolute;

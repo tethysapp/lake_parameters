@@ -18,11 +18,24 @@ import math
 from .app import Lake as app
 from pandas import DataFrame
 from .utils import download
-# from .utils import get_select_lake, get_select_parameter, get_select_bdl, get_select_data, get_select_max
 
 LAKE_FILES = {
     "utah": ["awqms_utah.csv", "byu_utah.csv"],
     "salt": ["awqms_salt.csv", "byu_salt.csv"]
+}
+
+PARAM_MAX = {
+    "Chlorophyll a": [('',''), ('Unlimited', '0')],
+    'Dissolved oxygen (DO)': [('',''), ('Unlimited', '0')],
+    'Phosphate-phosphorus': [('',''), ('Unlimited', '0'), ('5', '5'), ('2', '2'), ('1', '1')],
+    'Nitrogen': [('',''), ('Unlimited', '0'), ('10', '10'), ('5', '5'), ('2', '2')],
+    'Magnesium': [('',''), ('Unlimited', '0'), ('5', '5'), ('2', '2'), ('1', '1')],
+    'Orthophosphate': [('',''), ('Unlimited', '0'), ('5', '5'), ('2', '2'), ('1', '1')],
+    'pH': [('',''), ('Unlimited', '0')],
+    'Temperature, water': [('',''), ('Unlimited', '0')],
+    'Turbidity': [('',''), ('Unlimited', '0')],
+    'Depth, Secchi disk depth': [('',''), ('Unlimited', '0')],
+    'Total dissolved solids': [('',''), ('Unlimited', '0')]
 }
 
 
@@ -38,34 +51,22 @@ def home(request):
                               name='select-data',
                               multiple=False,
                               options=[('All', 'all'), ('AWQMS', 'awqms'), ('BYU', 'byu')],
-                              initial=['All']
+                              initial=['']
                               )
     select_parameter = SelectInput(display_text='Select a Parameter',
                                    name='select-parameter',
                                    multiple=False,
-                                   options=[('Chlorophyll-a', 'Chlorophyll a, uncorrected for pheophytin'), ('Dissolved Oxygen', 'Dissolved oxygen (DO)'), ('Phosphate-phosphorus', 'Phosphate-phosphorus'), ('Nitrogen', 'Nitrogen'), ('Magnesium', 'Magnesium'), ('Orthophosphate', 'Orthophosphate'), ('pH', 'pH'), ('Water Temperature', 'Temperature, water'), ('Turbidity', 'Turbidity'), ('Secchi Disk Depth', 'Depth, Secchi disk depth'), ('Total Dissolved Solids', 'Total dissolved solids')],
-                                   initial=['Chlorophyll-a']
+                                   options=[('',''), ('Chlorophyll-a', 'Chlorophyll a'), ('Dissolved Oxygen', 'Dissolved oxygen (DO)'), ('Phosphate-phosphorus', 'Phosphate-phosphorus'), ('Nitrogen', 'Nitrogen'), ('Magnesium', 'Magnesium'), ('Orthophosphate', 'Orthophosphate'), ('pH', 'pH'), ('Water Temperature', 'Temperature, water'), ('Turbidity', 'Turbidity'), ('Secchi Disk Depth', 'Depth, Secchi disk depth'), ('Total Dissolved Solids', 'Total dissolved solids')],
+                                   initial=['']
                                    )
-    select_fraction = SelectInput(display_text='Select Fraction (only for some parameters)',
-                              name='select-fraction',
-                              multiple=False,
-                              options=[('All', 'all'), ('AWQMS', 'awqms'), ('BYU', 'byu')],
-                              initial=['']
-                              )
     select_bdl = SelectInput(display_text='Select a value for Data below Detection Limit',
                              name='select-bdl',
                              multiple=False,
-                             options=[('0', '0'), ('Detection Limit', '1'), ('1/2 Detection Limit', '0.5')],
-                             initial=['0']
+                             options=[('', ''), ('0', '0'), ('Detection Limit', '1'), ('1/2 Detection Limit', '0.5')],
+                             initial=['']
                              )
-    select_max = SelectInput(display_text='Select a maximum value',
-                             name='select-max',
-                             multiple=False,
-                             options=[('Unlimited', '1'), ('<5', '2'), ('<2', '3'), ('<1', '4')],
-                             initial=['Unlimited']
-                             )
+
     getstations = getStations('utah')
-    # getdata = getData('utah','all','Chlorophyll a, uncorrected for pheophytin','0')
     context = {}
     context['all_coords_stations'] = getstations['all_coords_stations']
     context['dif_coords_stations'] = getstations['dif_coords_stations']
@@ -74,9 +75,9 @@ def home(request):
     context['select_lake'] = select_lake
     context['select_data'] = select_data
     context['select_parameter'] = select_parameter
-    context['select_fraction'] = select_fraction
+
     context['select_bdl'] = select_bdl
-    context['select_max'] = select_max
+
     return render(request, 'lake/home.html', context)
 
 @login_required()
@@ -86,12 +87,6 @@ def instructions(request):
     return render(request, 'lake/instructions.html', context)
 
 @login_required()
-def show_data(request):
-    context = {
-    }
-    return render(request, 'lake/show_data.html', context)
-
-@login_required()
 def get_lake(request):
     get_data = request.GET
     lake_name = get_data.get('lake_name')
@@ -99,16 +94,56 @@ def get_lake(request):
     return JsonResponse(context)
 
 @login_required()
+def param_fraction(request):
+    # to get the fraction and the maximum
+    get_data = request.GET
+    lake_param = get_data.get('lake_param')
+    context ={}
+    context['fraction'] = fraction(lake_param)
+    context['maximum'] = maximum(lake_param)
+    print(context)
+    return JsonResponse(context)
+
+def fraction(lake_param):
+    if lake_param =='Phosphate-phosphorus' or lake_param =='Nitrogen' or lake_param =='Magnesium':
+        fraction_list = [('',''), ('Total', 'total'), ('Dissolved', 'dissolved')]
+    else:
+        fraction_list = [('','')]
+    select_fraction = SelectInput(display_text='Select Fraction (only for some parameters)',
+                              name='select-fraction',
+                              multiple=False,
+                              options=fraction_list,
+                              initial=['']
+                              )
+    context=select_fraction
+    return context
+
+def maximum(lake_param):
+    if lake_param =='Phosphate-phosphorus' or lake_param =='Nitrogen' or lake_param =='Magnesium':
+        fraction_list = [('',''), ('Total', 'total'), ('Dissolved', 'dissolved')]
+    else:
+        fraction_list = [('','')]
+    select_max = SelectInput(display_text='Select a maximum value',
+                             name='select-max',
+                             multiple=False,
+                             options=PARAM_MAX.get(lake_param),
+                             initial=['']
+                             )
+    context=select_max
+    return context
+
+@login_required()
 def charact_data(request):
     get_data = request.GET
     lake_name = get_data.get('lake_name')
     lake_data = get_data.get('lake_data')
     lake_param = get_data.get('lake_param')
+    param_max = get_data.get('param_max')
+    param_fract = get_data.get('param_fract')
     param_bdl = get_data.get('param_bdl')
-    # param_max = get_data.get('param_max')
     print (lake_name)
     # context = {}
-    context = getData(lake_name, lake_data, lake_param, param_bdl)
+    context = getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     # print(context)
     # download_button = download()
     # context['download_button'] = download_button
@@ -134,7 +169,7 @@ def getFiles(lake_name):
     values_byu = dataLake_byu[fields]
     dataLake_all = [values_awqms, values_byu]
     dataLake = pd.concat(dataLake_all, ignore_index=True)
-    print(dataLake)
+    # print(dataLake)
     context = {
         'all': dataLake,
         'awqms': values_awqms,
@@ -180,39 +215,43 @@ def getStations(lake_name):
     context['dif_coords_stations'] = [lats_dif, lons_dif]
     return context
 
-
-
-def getData(lake_name, lake_data, lake_param, param_bdl):
+def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl):
     # Obtener datos segun el parametro y su fraccion, mandar datos con el timeseries completo
     dataLakeAll = getFiles(lake_name).get('all')
     dataLake = getFiles(lake_name).get(lake_data)
+    chl = {'Chlorophyll a, uncorrected for pheophytin':'Chlorophyll a','Chlorophyll a, corrected for pheophytin':'Chlorophyll a','Chlorophyll a, free of pheophytin':'Chlorophyll a'}
+    dataLake = dataLake.replace(chl)
     param = dataLake['Characteristic Name'] == lake_param
-    row = dataLake[param]
-    # print(row)
-    # row_param = dataLake[param]
-
+    row_param = dataLake[param]
+    # print(row_param)
+    
         # check Total-Dissolved
-    # fract = row_param[row_param['Sample Fraction'] == fraction]
-    # if len(fract) > 0:
-    #     fract = row_param['Sample Fraction'] == fraction
-    #     row = row_param[fract]
-        # print(row)
-    # else:
-    #     row = row_param
+    if param_fract == 'Dissolved' or param_fract == 'Total':
+        fract = row_param['Sample Fraction'] == param_fract
+        row_all = row_param[fract]
+    else:
+        row_all = row_param
+
+        # erase below maximum
+    if param_max != 'Unlimited' and param_max != '':
+        m = float(param_max)
+        maxim = row_all['Result Value']<m
+        row = row_all[maxim]
+    else:
+        row = row_all
 
         # Add values to the No Detected, acording the selected bdl
     x=float(param_bdl)
     row['DeLiVal']=row['Detection Limit Value1']*x
-    print(row['DeLiVal'])
     row['Result Value'].fillna(row['DeLiVal'], inplace=True)
-    print(row['Result Value'])
 
     locations = row['Monitoring Location ID'].unique()
     unit = row['Result Unit'].unique()
+    unit = ''.join(unit)
     context = {}
     context['characteristic'] = lake_param
-    # context['fraction'] = fraction
-    context['unit'] = unit.tolist()
+    #context['fraction'] = fraction
+    context['unit'] = unit
     context['csvLake'] = dataLake
 
     lake_map = MapView(

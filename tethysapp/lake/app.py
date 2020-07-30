@@ -40,14 +40,14 @@ class Lake(TethysAppBase):
                 controller='lake.controllers.get_lake'
             ),
             UrlMap(
+                name='param_fraction',
+                url='lake/controllers/param_fraction/',
+                controller='lake.controllers.param_fraction'
+            ),
+            UrlMap(
                 name='charact_data',
                 url='lake/controllers/charact_data/',
                 controller='lake.controllers.charact_data'
-            ),
-            UrlMap(
-                name='show_data',
-                url='lake/controllers/show_data/',
-                controller='lake.controllers.show_data'
             ),
     )
         return url_maps
