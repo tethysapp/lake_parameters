@@ -32,6 +32,7 @@ function searchButton() {
   console.log(param_fract)
   console.log(param_bdl)
   console.log(param_max)
+  $( "#timeseries_plot" ).empty()
   charact_data()
 }
 
@@ -147,6 +148,7 @@ function charact_data() {
       alldata = result["all_data"]
       console.log(characteristic)
       console.log(unit)
+
       set_map()
       $(".loading").remove()
     }
@@ -219,16 +221,16 @@ function set_map() {
   var trace = {
     type: "scatter",
     mode: "lines",
-    name: 'AAPL High',
+    name: station + '<br>Station '.concat(location),
+    text: name,
     x: timeseriesObject['dates'],
     y: timeseriesObject['values'],
-    line: {color: '#17BECF'}
   }
 
   var data = [trace];
 
   var layout = {
-    title: station + '<br>Station '.concat(location),
+    title: param_fract+' '+characteristic,
     xaxis: {
       autorange: true,
       range: ['1989-01-01', '2020-08-01'],
@@ -252,13 +254,13 @@ function set_map() {
     },
     yaxis: {
       title: {
-           text: param_fract+' '+characteristic+' ('+unit+')'},
+           text: 'value ('+unit+')'},
       // autorange: true,
       // range: [86.8700008333, 138.870004167],
       type: 'linear'
     }
   };
 
-  Plotly.newPlot('timeseries_plot', data, layout);
+  Plotly.plot('timeseries_plot', data, layout);
   }
 }

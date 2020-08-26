@@ -25,22 +25,27 @@ LAKE_FILES = {
 }
 
 PARAM_MAX = {
-    "Chlorophyll a": [('',''), ('Unlimited', '0')],
-    'Dissolved oxygen (DO)': [('',''), ('Unlimited', '0')],
-    'Phosphate-phosphorus': [('',''), ('Unlimited', '0'), ('5', '5'), ('2', '2'), ('1', '1')],
-    'Nitrogen': [('',''), ('Unlimited', '0'), ('10', '10'), ('5', '5'), ('2', '2')],
-    'Magnesium': [('',''), ('Unlimited', '0'), ('5', '5'), ('2', '2'), ('1', '1')],
+    "Chlorophyll a": [('Unlimited', '0')],
+    'Dissolved oxygen (DO)': [('Unlimited', '0')],
+    'Phosphate-phosphorus': [('Unlimited', '0'), ('5', '5'), ('2', '2'), ('1', '1')],
+    'Nitrogen': [('Unlimited', '0'), ('10', '10'), ('5', '5'), ('2', '2')],
+    'Magnesium': [('Unlimited', '0'), ('5', '5'), ('2', '2'), ('1', '1')],
     'Orthophosphate': [('',''), ('Unlimited', '0'), ('5', '5'), ('2', '2'), ('1', '1')],
-    'pH': [('',''), ('Unlimited', '0')],
-    'Temperature, water': [('',''), ('Unlimited', '0')],
-    'Turbidity': [('',''), ('Unlimited', '0')],
-    'Depth, Secchi disk depth': [('',''), ('Unlimited', '0')],
-    'Total dissolved solids': [('',''), ('Unlimited', '0')]
+    'pH': [('Unlimited', '0')],
+    'Temperature, water': [('Unlimited', '0')],
+    'Turbidity': [('Unlimited', '0')],
+    'Depth, Secchi disk depth': [('Unlimited', '0')],
+    'Total dissolved solids': [('Unlimited', '0')]
 }
-
 
 @login_required()
 def home(request):
+    context = {
+    }
+    return render(request, 'lake/home.html', context)
+
+@login_required()
+def data(request):
     select_lake = SelectInput(display_text='Select a Lake',
                               name='select-lake',
                               multiple=False,
@@ -62,8 +67,8 @@ def home(request):
     select_bdl = SelectInput(display_text='Select a value for Data below Detection Limit',
                              name='select-bdl',
                              multiple=False,
-                             options=[('', ''), ('0', '0'), ('Detection Limit', '1'), ('1/2 Detection Limit', '0.5')],
-                             initial=['']
+                             options=[('0', '0'), ('Detection Limit', '1'), ('1/2 Detection Limit', '0.5')],
+                             initial=[('0', '0')]
                              )
 
     getstations = getStations('utah')
@@ -78,13 +83,32 @@ def home(request):
 
     context['select_bdl'] = select_bdl
 
-    return render(request, 'lake/home.html', context)
+    return render(request, 'lake/data.html', context)
 
 @login_required()
 def instructions(request):
     context = {
     }
     return render(request, 'lake/instructions.html', context)
+
+@login_required()
+def interp(request):
+    lake_map = MapView(
+        height='100%',
+        width='100%',
+        layers=[],
+        basemap='OpenStreetMap',
+    )
+    select_lake = SelectInput(display_text='Select a Lake',
+                              name='select-lake',
+                              multiple=False,
+                              options=[('Utah Lake', 'utah'), ('Salt Lake', 'salt')],
+                              initial=['Utah Lake']
+                              )
+    context = {}
+    context['lake_map'] = lake_map
+    context['select_lake'] = select_lake
+    return render(request, 'lake/interp.html', context)
 
 @login_required()
 def get_lake(request):
@@ -224,7 +248,7 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     param = dataLake['Characteristic Name'] == lake_param
     row_param = dataLake[param]
     # print(row_param)
-    
+
         # check Total-Dissolved
     if param_fract == 'Dissolved' or param_fract == 'Total':
         fract = row_param['Sample Fraction'] == param_fract
