@@ -33,7 +33,6 @@
   {{ block.super}}
   {% url 'lake:home' as home_url %}
   {% url 'lake:instructions' as instructions_url %}
-  {% url 'lake:interp' as interp_url %}
   {% url 'lake:data' as data_url %}
   {% url 'lake:lakes' as lakes_url %}
   {% url 'lake:charact' as charact_url %}
@@ -41,7 +40,6 @@
   <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
   <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li>
   <li class="{% if request.path == data_url %}active{% endif %}"><a href="{{ data_url }}">Search Data</a></li>
-  <li class="{% if request.path == interp_url %}active{% endif %}"><a href="{{ interp_url }}">Interpolation</a></li>
   <br>
   {% if request.path == data_url %}
   {% gizmo select_input select_lake %}
@@ -61,6 +59,7 @@
   <br>
   <br>
   <input type="button" onclick="searchButton();" name="search-button" class="btn btn-default" value="Search Data">
+  <input type="button" onclick="interpButton();" name="interp-button" class="btn btn-default" value="Interpolation">
   {% endif %}
   {% if request.path == interp_url %}
   {% gizmo select_input select_lake %}

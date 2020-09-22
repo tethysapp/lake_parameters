@@ -36,6 +36,16 @@ function searchButton() {
   charact_data()
 }
 
+function interpButton() {
+  lake_name = document.getElementById('select-lake').value
+  lake_data = document.getElementById('select-data').value
+  lake_param = document.getElementById('select-parameter').value
+  param_fract = document.getElementById('fraction2').value
+  param_bdl = document.getElementById('select-bdl').value
+  param_max = document.getElementById('maximum').value
+  $( "#timeseries_plot" ).empty()
+}
+
 function get_lake() {
   var loading = L.control({
       position: 'topleft'
@@ -231,6 +241,13 @@ function set_map() {
 
   var layout = {
     title: param_fract+' '+characteristic,
+    showlegend: true,
+    legend:{
+      xanchor:"center",
+      yanchor:"top",
+      y:-0.6, // play with it
+      x:0.5   // play with it
+    },
     xaxis: {
       autorange: true,
       range: ['1989-01-01', '2020-08-01'],

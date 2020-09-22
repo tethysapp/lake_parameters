@@ -92,25 +92,6 @@ def instructions(request):
     return render(request, 'lake/instructions.html', context)
 
 @login_required()
-def interp(request):
-    lake_map = MapView(
-        height='100%',
-        width='100%',
-        layers=[],
-        basemap='OpenStreetMap',
-    )
-    select_lake = SelectInput(display_text='Select a Lake',
-                              name='select-lake',
-                              multiple=False,
-                              options=[('Utah Lake', 'utah'), ('Salt Lake', 'salt')],
-                              initial=['Utah Lake']
-                              )
-    context = {}
-    context['lake_map'] = lake_map
-    context['select_lake'] = select_lake
-    return render(request, 'lake/interp.html', context)
-
-@login_required()
 def get_lake(request):
     get_data = request.GET
     lake_name = get_data.get('lake_name')
