@@ -49,7 +49,7 @@ def data(request):
     select_lake = SelectInput(display_text='Select a Lake',
                               name='select-lake',
                               multiple=False,
-                              options=[('Utah Lake', 'utah'), ('Salt Lake', 'salt')],
+                              options=[('Utah Lake', 'utah'), ('Great Salt Lake', 'salt')],
                               initial=['Utah Lake']
                               )
     select_data = SelectInput(display_text='Select Data',
@@ -58,12 +58,12 @@ def data(request):
                               options=[('All', 'all'), ('AWQMS', 'awqms'), ('BYU', 'byu')],
                               initial=['']
                               )
-    select_parameter = SelectInput(display_text='Select a Parameter',
-                                   name='select-parameter',
-                                   multiple=False,
-                                   options=[('',''), ('Chlorophyll-a', 'Chlorophyll a'), ('Dissolved Oxygen', 'Dissolved oxygen (DO)'), ('Phosphate-phosphorus', 'Phosphate-phosphorus'), ('Nitrogen', 'Nitrogen'), ('Magnesium', 'Magnesium'), ('Orthophosphate', 'Orthophosphate'), ('pH', 'pH'), ('Water Temperature', 'Temperature, water'), ('Turbidity', 'Turbidity'), ('Secchi Disk Depth', 'Depth, Secchi disk depth'), ('Total Dissolved Solids', 'Total dissolved solids')],
-                                   initial=['']
-                                   )
+    # select_parameter = SelectInput(display_text='Select a Parameter',
+    #                                name='select-parameter',
+    #                                multiple=False,
+    #                                options=[('',''), ('Chlorophyll-a', 'Chlorophyll a'), ('Dissolved Oxygen', 'Dissolved oxygen (DO)'), ('Phosphate-phosphorus', 'Phosphate-phosphorus'), ('Nitrogen', 'Nitrogen'), ('Magnesium', 'Magnesium'), ('Orthophosphate', 'Orthophosphate'), ('pH', 'pH'), ('Water Temperature', 'Temperature, water'), ('Turbidity', 'Turbidity'), ('Secchi Disk Depth', 'Depth, Secchi disk depth'), ('Total Dissolved Solids', 'Total dissolved solids')],
+    #                                initial=['']
+    #                                )
     select_bdl = SelectInput(display_text='Select a value for Data below Detection Limit',
                              name='select-bdl',
                              multiple=False,
@@ -79,8 +79,6 @@ def data(request):
     context['lake_map'] = getstations['lake_map']
     context['select_lake'] = select_lake
     context['select_data'] = select_data
-    context['select_parameter'] = select_parameter
-
     context['select_bdl'] = select_bdl
 
     return render(request, 'lake/data.html', context)
@@ -135,6 +133,29 @@ def maximum(lake_param):
                              initial=['']
                              )
     context=select_max
+    return context
+
+def lake_param(request):
+    # to get the parameters of the lake
+    get_data = request.GET
+    lake_name = get_data.get('lake_name')
+    context ={}
+    context['parameter'] = parameter(lake_name)
+    print(context)
+    return JsonResponse(context)
+
+def parameter(lake_name):
+    dataLake = getFiles(lake_name).get('all')
+    print(dataLake)
+    parameter_list = dataLake['Characteristic Name'].unique()
+    print(parameter_list)
+    select_parameter = SelectInput(display_text='Select Parameter',
+                              name='select-parameter',
+                              multiple=False,
+                              options=parameter_list,
+                              initial=['']
+                              )
+    context=select_parameter
     return context
 
 @login_required()

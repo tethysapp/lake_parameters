@@ -50,6 +50,11 @@ class Lake(TethysAppBase):
                 controller='lake.controllers.param_fraction'
             ),
             UrlMap(
+                name='lake_param',
+                url='lake/controllers/lake_param/',
+                controller='lake.controllers.lake_param'
+            ),
+            UrlMap(
                 name='charact_data',
                 url='lake/controllers/charact_data/',
                 controller='lake.controllers.charact_data'

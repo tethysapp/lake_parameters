@@ -17,7 +17,7 @@ resource_files += find_resource_files('tethysapp/' + app_package + '/workspaces'
 setup(
     name=release_package,
     version='0.0.1',
-    description='Utah Lake Water Parameters',
+    description='Utah Lakes Water Quality',
     long_description='',
     keywords='',
     author='ddolder',

@@ -44,7 +44,10 @@
   {% if request.path == data_url %}
   {% gizmo select_input select_lake %}
   {% gizmo select_input select_data %}
-  {% gizmo select_input select_parameter %}
+  <li>Select Parameter</li>
+  <select id="parameter2" class="selectpicker" >
+  <option > No Parameter Selected . . .</option>
+  </select>
   <li>Select Fraction <br>(only for some parameters)</li>
   <select id="fraction2" class="selectpicker" >
   <option > No Parameter Selected . . .</option>
@@ -59,10 +62,6 @@
   <br>
   <br>
   <input type="button" onclick="searchButton();" name="search-button" class="btn btn-default" value="Search Data">
-  <input type="button" onclick="interpButton();" name="interp-button" class="btn btn-default" value="Interpolation">
-  {% endif %}
-  {% if request.path == interp_url %}
-  {% gizmo select_input select_lake %}
   {% endif %}
 {% endblock %}
 

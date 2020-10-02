@@ -11,6 +11,7 @@ $(function() {
     lake_name = $("#select-lake option:selected").val()
     console.log(lake_name)
     get_lake()
+    lake_param()
   })
 })
 
@@ -25,7 +26,7 @@ $(function() {
 function searchButton() {
   lake_name = document.getElementById('select-lake').value
   lake_data = document.getElementById('select-data').value
-  lake_param = document.getElementById('select-parameter').value
+  lake_param = document.getElementById('parameter2').value
   param_fract = document.getElementById('fraction2').value
   param_bdl = document.getElementById('select-bdl').value
   param_max = document.getElementById('maximum').value
@@ -34,16 +35,6 @@ function searchButton() {
   console.log(param_max)
   $( "#timeseries_plot" ).empty()
   charact_data()
-}
-
-function interpButton() {
-  lake_name = document.getElementById('select-lake').value
-  lake_data = document.getElementById('select-data').value
-  lake_param = document.getElementById('select-parameter').value
-  param_fract = document.getElementById('fraction2').value
-  param_bdl = document.getElementById('select-bdl').value
-  param_max = document.getElementById('maximum').value
-  $( "#timeseries_plot" ).empty()
 }
 
 function get_lake() {
@@ -68,7 +59,6 @@ function get_lake() {
       $(".loading").remove()
     },
     success: function(result) {
-      console.log("Si se pudo enviar el dato del nombre del lago. ", lake_name)
       allstations_coords = result["all_coords_stations"]
       allstations = result["all_stations"]
       difcoords = result["dif_coords_stations"]
@@ -82,7 +72,6 @@ function param_fraction() {
   var loading = L.control({
       position: 'topleft'
   });
-
   loading.onAdd = function(mymap) {
       var div = L.DomUtil.create('div', 'info loading');
       div.innerHTML += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='/static/lake/images/loading.gif'>";
@@ -100,7 +89,6 @@ function param_fraction() {
       $(".loading").remove()
     },
     success: function(result) {
-      console.log("Si se pudo enviar el parametro. ", lake_param)
       select_fraction = result['fraction']
       select_max = result['maximum']
       $("#fraction2").empty();
@@ -115,6 +103,42 @@ function param_fraction() {
         $("#maximum").append(newHtml2);
       })
       $("#maximum").selectpicker("refresh");
+      $(".loading").remove()
+    }
+  })
+}
+
+function lake_param() {
+  var loading = L.control({
+      position: 'topleft'
+  });
+
+  loading.onAdd = function(mymap) {
+      var div = L.DomUtil.create('div', 'info loading');
+      div.innerHTML += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='/static/lake/images/loading.gif'>";
+      return div;
+  };
+  loading.addTo(mymap);
+
+  $.ajax({
+    url: "/apps/lake/controllers/lake_param/",
+    type: "GET",
+    data: { lake_name: lake_name},
+    error: function(xhr, status, error) {
+      var err = JSON.parse(xhr.responseText)
+      console.log(err.Message)
+      $(".loading").remove()
+    },
+    success: function(result) {
+      console.log("Si se pudo enviar el lago. ", lake_name)
+      select_parameter = result['parameter']
+      console.log(select_parameter)
+      $("#parameter2").empty();
+      select_parameter['options'].forEach(function(x){
+        let newHtml = `<option>${x[0]}</option>`
+        $("#parameter2").append(newHtml);
+      })
+      $("#parameter2").selectpicker("refresh");
       $(".loading").remove()
     }
   })
@@ -169,7 +193,7 @@ function set_map() {
   for (var i = 0; i < markers.length; i++) {
     mymap.removeLayer(markers[i])
   }
-  var lat_size = 32/(difcoords[0]+2.65)
+  var lat_size = 32/(difcoords[0]+2.75)
   mymap.setView(allstations_coords, lat_size)
 
   let iconMiller = L.icon({
