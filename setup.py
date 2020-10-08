@@ -21,7 +21,7 @@ setup(
     long_description='',
     keywords='',
     author='ddolder',
-    author_email='',
+    author_email='danisadolder@gmail.com',
     url='',
     license='',
     packages=find_namespace_packages(),

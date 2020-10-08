@@ -6,14 +6,14 @@ class Lake(TethysAppBase):
     Tethys app class for Utah Lake Parameters.
     """
 
-    name = 'Utah Lake Parameters'
+    name = 'Water Quality - Utah Lakes'
     index = 'lake:home'
     icon = 'lake/images/lake.png'
     package = 'lake'
     root_url = 'lake'
     color = '#0c8fab'
-    description = 'Utah Lake Water Parameters is an App that allows you to see the value distribution of a chosen parameter through the Utah Lake in the time'
-    tags = '"Hydrology","CEEN 514", "Utah Lake"'
+    description = 'Utah Lakes Water Parameters is an App that allows you to see the value distribution of a chosen parameter through the Utah Lake in the time'
+    tags = '"Hydrology", "Utah Lake"'
     enable_feedback = False
     feedback_emails = []
 
@@ -50,9 +50,9 @@ class Lake(TethysAppBase):
                 controller='lake.controllers.param_fraction'
             ),
             UrlMap(
-                name='lake_param',
-                url='lake/controllers/lake_param/',
-                controller='lake.controllers.lake_param'
+                name='lake_parameter',
+                url='lake/controllers/lake_parameter/',
+                controller='lake.controllers.lake_parameter'
             ),
             UrlMap(
                 name='charact_data',

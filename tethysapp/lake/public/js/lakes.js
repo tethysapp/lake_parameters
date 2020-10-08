@@ -11,7 +11,7 @@ $(function() {
     lake_name = $("#select-lake option:selected").val()
     console.log(lake_name)
     get_lake()
-    lake_param()
+    lake_parameter()
   })
 })
 
@@ -108,7 +108,7 @@ function param_fraction() {
   })
 }
 
-function lake_param() {
+function lake_parameter() {
   var loading = L.control({
       position: 'topleft'
   });
@@ -121,16 +121,16 @@ function lake_param() {
   loading.addTo(mymap);
 
   $.ajax({
-    url: "/apps/lake/controllers/lake_param/",
+    url: "/apps/lake/controllers/lake_parameter/",
     type: "GET",
-    data: { lake_name: lake_name},
+    data: { lake_name: lake_name },
     error: function(xhr, status, error) {
       var err = JSON.parse(xhr.responseText)
       console.log(err.Message)
       $(".loading").remove()
     },
     success: function(result) {
-      console.log("Si se pudo enviar el lago. ", lake_name)
+      console.log("Si se pudo enviar. ", lake_name)
       select_parameter = result['parameter']
       console.log(select_parameter)
       $("#parameter2").empty();

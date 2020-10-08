@@ -49,8 +49,8 @@ def data(request):
     select_lake = SelectInput(display_text='Select a Lake',
                               name='select-lake',
                               multiple=False,
-                              options=[('Utah Lake', 'utah'), ('Great Salt Lake', 'salt')],
-                              initial=['Utah Lake']
+                              options=[('',''), ('Utah Lake', 'utah'), ('Great Salt Lake', 'salt')],
+                              initial=['']
                               )
     select_data = SelectInput(display_text='Select Data',
                               name='select-data',
@@ -58,12 +58,6 @@ def data(request):
                               options=[('All', 'all'), ('AWQMS', 'awqms'), ('BYU', 'byu')],
                               initial=['']
                               )
-    # select_parameter = SelectInput(display_text='Select a Parameter',
-    #                                name='select-parameter',
-    #                                multiple=False,
-    #                                options=[('',''), ('Chlorophyll-a', 'Chlorophyll a'), ('Dissolved Oxygen', 'Dissolved oxygen (DO)'), ('Phosphate-phosphorus', 'Phosphate-phosphorus'), ('Nitrogen', 'Nitrogen'), ('Magnesium', 'Magnesium'), ('Orthophosphate', 'Orthophosphate'), ('pH', 'pH'), ('Water Temperature', 'Temperature, water'), ('Turbidity', 'Turbidity'), ('Secchi Disk Depth', 'Depth, Secchi disk depth'), ('Total Dissolved Solids', 'Total dissolved solids')],
-    #                                initial=['']
-    #                                )
     select_bdl = SelectInput(display_text='Select a value for Data below Detection Limit',
                              name='select-bdl',
                              multiple=False,
@@ -135,7 +129,7 @@ def maximum(lake_param):
     context=select_max
     return context
 
-def lake_param(request):
+def lake_parameter(request):
     # to get the parameters of the lake
     get_data = request.GET
     lake_name = get_data.get('lake_name')
@@ -146,8 +140,11 @@ def lake_param(request):
 
 def parameter(lake_name):
     dataLake = getFiles(lake_name).get('all')
-    print(dataLake)
-    parameter_list = dataLake['Characteristic Name'].unique()
+    chl = {'Chlorophyll a, uncorrected for pheophytin':'Chlorophyll a','Chlorophyll a, corrected for pheophytin':'Chlorophyll a','Chlorophyll a, free of pheophytin':'Chlorophyll a'}
+    dataLake = dataLake.replace(chl)
+    # print(dataLake)
+    parameter_list1 = dataLake['Characteristic Name'].unique()
+    parameter_list = list(zip(*([parameter_list1] + [parameter_list1])))
     print(parameter_list)
     select_parameter = SelectInput(display_text='Select Parameter',
                               name='select-parameter',
@@ -170,16 +167,12 @@ def charact_data(request):
     print (lake_name)
     # context = {}
     context = getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
-    # print(context)
-    # download_button = download()
-    # context['download_button'] = download_button
-    # return render(request, 'lake/show_data.html', context)
     return JsonResponse(context)
 
 def getFiles(lake_name):
 
     # Obtener archivos y separarlos segun lago y organizacion(o los dos juntos)
-    # print(selectlake)
+    
     app_workspace = app.get_app_workspace()
     file_path = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[0])
     file_path_byu = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[1])
