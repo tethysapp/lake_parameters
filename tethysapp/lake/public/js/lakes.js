@@ -16,8 +16,9 @@ $(function() {
 })
 
 $(function() {
-  $("#select-parameter").change(function() {
-    lake_param = $("#select-parameter option:selected").val()
+  $("#parameter2").change(function() {
+    lake_param = document.getElementById('parameter2').value
+    lake_name = document.getElementById('select-lake').value
     console.log(lake_param)
     param_fraction()
   })
@@ -82,13 +83,16 @@ function param_fraction() {
   $.ajax({
     url: "/apps/lake/controllers/param_fraction/",
     type: "GET",
-    data: { lake_param: lake_param },
+    data: { lake_name: lake_name,
+            lake_param: lake_param
+          },
     error: function(xhr, status, error) {
       var err = JSON.parse(xhr.responseText)
       console.log(err.Message)
       $(".loading").remove()
     },
     success: function(result) {
+      console.log("Si se pudo enviar ", lake_param)
       select_fraction = result['fraction']
       select_max = result['maximum']
       $("#fraction2").empty();
@@ -97,12 +101,12 @@ function param_fraction() {
         $("#fraction2").append(newHtml);
       })
       $("#fraction2").selectpicker("refresh");
-      $("#maximum").empty();
-      select_max['options'].forEach(function(x){
-        let newHtml2 = `<option>${(x[0])}</option>`
-        $("#maximum").append(newHtml2);
-      })
-      $("#maximum").selectpicker("refresh");
+      // $("#maximum").empty();
+      // select_max['options'].forEach(function(x){
+      //   let newHtml2 = `<option>${(x[0])}</option>`
+      //   $("#maximum").append(newHtml2);
+      // })
+      // $("#maximum").selectpicker("refresh");
       $(".loading").remove()
     }
   })
@@ -130,9 +134,8 @@ function lake_parameter() {
       $(".loading").remove()
     },
     success: function(result) {
-      console.log("Si se pudo enviar. ", lake_name)
+      console.log("Si se pudo enviar ", lake_name)
       select_parameter = result['parameter']
-      console.log(select_parameter)
       $("#parameter2").empty();
       select_parameter['options'].forEach(function(x){
         let newHtml = `<option>${x[0]}</option>`

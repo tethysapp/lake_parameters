@@ -58,7 +58,7 @@ def data(request):
                               options=[('All', 'all'), ('AWQMS', 'awqms'), ('BYU', 'byu')],
                               initial=['']
                               )
-    select_bdl = SelectInput(display_text='Select a value for Data below Detection Limit',
+    select_bdl = SelectInput(display_text='Select a Minimum Limit Value',
                              name='select-bdl',
                              multiple=False,
                              options=[('0', '0'), ('Detection Limit', '1'), ('1/2 Detection Limit', '0.5')],
@@ -94,19 +94,23 @@ def get_lake(request):
 def param_fraction(request):
     # to get the fraction and the maximum
     get_data = request.GET
+    lake_name = get_data.get('lake_name')
     lake_param = get_data.get('lake_param')
+    print (lake_param)
+    print (lake_name)
     context ={}
-    context['fraction'] = fraction(lake_param)
-    context['maximum'] = maximum(lake_param)
-    print(context)
+    context['fraction'] = fraction(lake_name,lake_param)
+    context['maximum'] = maximum(lake_name,lake_param)
     return JsonResponse(context)
 
-def fraction(lake_param):
-    if lake_param =='Phosphate-phosphorus' or lake_param =='Nitrogen' or lake_param =='Magnesium':
+def fraction(lake_name, lake_param):
+    dataLake = getFiles(lake_name).get('all')
+    dp = dataLake['Sample Fraction'] == 'total'
+    if len(dp) > 0:
         fraction_list = [('',''), ('Total', 'total'), ('Dissolved', 'dissolved')]
     else:
         fraction_list = [('','')]
-    select_fraction = SelectInput(display_text='Select Fraction (only for some parameters)',
+    select_fraction = SelectInput(display_text='Select Fraction',
                               name='select-fraction',
                               multiple=False,
                               options=fraction_list,
@@ -115,11 +119,9 @@ def fraction(lake_param):
     context=select_fraction
     return context
 
-def maximum(lake_param):
-    if lake_param =='Phosphate-phosphorus' or lake_param =='Nitrogen' or lake_param =='Magnesium':
-        fraction_list = [('',''), ('Total', 'total'), ('Dissolved', 'dissolved')]
-    else:
-        fraction_list = [('','')]
+def maximum(lake_name, lake_param):
+    dataLake = getFiles(lake_name).get(lake_data)
+
     select_max = SelectInput(display_text='Select a maximum value',
                              name='select-max',
                              multiple=False,
@@ -133,27 +135,21 @@ def lake_parameter(request):
     # to get the parameters of the lake
     get_data = request.GET
     lake_name = get_data.get('lake_name')
-    context ={}
-    context['parameter'] = parameter(lake_name)
-    print(context)
-    return JsonResponse(context)
-
-def parameter(lake_name):
     dataLake = getFiles(lake_name).get('all')
     chl = {'Chlorophyll a, uncorrected for pheophytin':'Chlorophyll a','Chlorophyll a, corrected for pheophytin':'Chlorophyll a','Chlorophyll a, free of pheophytin':'Chlorophyll a'}
     dataLake = dataLake.replace(chl)
     # print(dataLake)
     parameter_list1 = dataLake['Characteristic Name'].unique()
     parameter_list = list(zip(*([parameter_list1] + [parameter_list1])))
-    print(parameter_list)
     select_parameter = SelectInput(display_text='Select Parameter',
                               name='select-parameter',
                               multiple=False,
                               options=parameter_list,
                               initial=['']
                               )
-    context=select_parameter
-    return context
+    context ={}
+    context['parameter'] = select_parameter
+    return JsonResponse(context)
 
 @login_required()
 def charact_data(request):
@@ -172,7 +168,7 @@ def charact_data(request):
 def getFiles(lake_name):
 
     # Obtener archivos y separarlos segun lago y organizacion(o los dos juntos)
-    
+
     app_workspace = app.get_app_workspace()
     file_path = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[0])
     file_path_byu = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[1])

@@ -8,7 +8,7 @@
 {% block styles %}
     {{ block.super }}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
-    <link href="{% static 'lake/css/map.css' %}" rel="stylesheet"/>
+    <link href="{% static 'lake/css/main.css' %}" rel="stylesheet"/>
 {% endblock %}
 
 {% block title %}
@@ -31,38 +31,35 @@
 
 {% block app_navigation_items %}
   {{ block.super}}
-  {% url 'lake:home' as home_url %}
   {% url 'lake:instructions' as instructions_url %}
   {% url 'lake:data' as data_url %}
-  {% url 'lake:lakes' as lakes_url %}
-  {% url 'lake:charact' as charact_url %}
   <li class="title"></li>
-  <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
-  <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li>
+  <!-- <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li> -->
   <li class="{% if request.path == data_url %}active{% endif %}"><a href="{{ data_url }}">Search Data</a></li>
   <br>
-  {% if request.path == data_url %}
   {% gizmo select_input select_lake %}
   {% gizmo select_input select_data %}
-  <li>Select Parameter</li>
+  <li><b>Select Parameter</li>
   <select id="parameter2" class="selectpicker" >
   <option > No Parameter Selected . . .</option>
   </select>
-  <li>Select Fraction <br>(only for some parameters)</li>
+  <br>
+  <br>
+
+  <li>Select Fraction <br></li>
   <select id="fraction2" class="selectpicker" >
   <option > No Parameter Selected . . .</option>
   </select>
   <br>
   <br>
   {% gizmo select_input select_bdl %}
-  <li>Select a Maximum Limit Value <br>(only for some parameters)</li>
+  <li>Select a Maximum Limit Value <br></li>
   <select id="maximum" class="selectpicker" >
   <option > No Parameter Selected . . .</option>
   </select>
   <br>
   <br>
   <input type="button" onclick="searchButton();" name="search-button" class="btn btn-default" value="Search Data">
-  {% endif %}
 {% endblock %}
 
 
@@ -75,6 +72,9 @@
 {% block content_dependent_styles %}
   {{ block.super }}
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet"/> 
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+  integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+  crossorigin=""/>
   <link href="{% static 'lake/css/main.css' %}" rel="stylesheet"/>
 {% endblock %}
 
@@ -83,4 +83,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 <script src="{% static 'lake/js/lakes.js' %}" type="text/javascript"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+  integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+  crossorigin=""></script>
+<script src="{% static 'lake/js/L.TileLayer.BetterWMS.js' %}" type="text/javascript"></script>
 {% endblock %}

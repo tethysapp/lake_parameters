@@ -7,7 +7,7 @@ class Lake(TethysAppBase):
     """
 
     name = 'Water Quality - Utah Lakes'
-    index = 'lake:home'
+    index = 'lake:data'
     icon = 'lake/images/lake.png'
     package = 'lake'
     root_url = 'lake'
@@ -24,11 +24,6 @@ class Lake(TethysAppBase):
         UrlMap = url_map_maker(self.root_url)
 
         url_maps = (
-            UrlMap(
-                name='home',
-                url='lake/home',
-                controller='lake.controllers.home'
-            ),
             UrlMap(
                 name='instructions',
                 url='lake/instructions',
