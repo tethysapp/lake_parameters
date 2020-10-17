@@ -11,6 +11,15 @@ $(function() {
     lake_name = $("#select-lake option:selected").val()
     console.log(lake_name)
     get_lake()
+    // lake_parameter()
+  })
+})
+
+$(function() {
+  $("#select-data").change(function() {
+    lake_name = document.getElementById('select-lake').value
+    lake_data = document.getElementById('select-data').value
+    console.log(lake_data)
     lake_parameter()
   })
 })
@@ -30,7 +39,7 @@ function searchButton() {
   lake_param = document.getElementById('parameter2').value
   param_fract = document.getElementById('fraction2').value
   param_bdl = document.getElementById('select-bdl').value
-  param_max = document.getElementById('maximum').value
+  param_max = document.getElementById('select-max').value
   console.log(param_fract)
   console.log(param_bdl)
   console.log(param_max)
@@ -94,7 +103,7 @@ function param_fraction() {
     success: function(result) {
       console.log("Si se pudo enviar ", lake_param)
       select_fraction = result['fraction']
-      select_max = result['maximum']
+      // select_max = result['maximum']
       $("#fraction2").empty();
       select_fraction['options'].forEach(function(x){
         let newHtml = `<option>${x[0]}</option>`
@@ -127,7 +136,9 @@ function lake_parameter() {
   $.ajax({
     url: "/apps/lake/controllers/lake_parameter/",
     type: "GET",
-    data: { lake_name: lake_name },
+    data: { lake_name: lake_name,
+            lake_data: lake_data,
+          },
     error: function(xhr, status, error) {
       var err = JSON.parse(xhr.responseText)
       console.log(err.Message)

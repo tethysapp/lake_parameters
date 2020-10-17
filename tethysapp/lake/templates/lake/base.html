@@ -45,20 +45,12 @@
   </select>
   <br>
   <br>
-
   <li>Select Fraction <br></li>
   <select id="fraction2" class="selectpicker" >
   <option > No Parameter Selected . . .</option>
   </select>
-  <br>
-  <br>
   {% gizmo select_input select_bdl %}
-  <li>Select a Maximum Limit Value <br></li>
-  <select id="maximum" class="selectpicker" >
-  <option > No Parameter Selected . . .</option>
-  </select>
-  <br>
-  <br>
+  {% gizmo select_input select_max %}
   <input type="button" onclick="searchButton();" name="search-button" class="btn btn-default" value="Search Data">
 {% endblock %}
 

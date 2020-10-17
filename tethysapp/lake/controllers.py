@@ -24,20 +24,6 @@ LAKE_FILES = {
     "salt": ["awqms_salt.csv", "byu_salt.csv"]
 }
 
-PARAM_MAX = {
-    "Chlorophyll a": [('Unlimited', '0')],
-    'Dissolved oxygen (DO)': [('Unlimited', '0')],
-    'Phosphate-phosphorus': [('Unlimited', '0'), ('5', '5'), ('2', '2'), ('1', '1')],
-    'Nitrogen': [('Unlimited', '0'), ('10', '10'), ('5', '5'), ('2', '2')],
-    'Magnesium': [('Unlimited', '0'), ('5', '5'), ('2', '2'), ('1', '1')],
-    'Orthophosphate': [('',''), ('Unlimited', '0'), ('5', '5'), ('2', '2'), ('1', '1')],
-    'pH': [('Unlimited', '0')],
-    'Temperature, water': [('Unlimited', '0')],
-    'Turbidity': [('Unlimited', '0')],
-    'Depth, Secchi disk depth': [('Unlimited', '0')],
-    'Total dissolved solids': [('Unlimited', '0')]
-}
-
 @login_required()
 def home(request):
     context = {
@@ -55,9 +41,15 @@ def data(request):
     select_data = SelectInput(display_text='Select Data',
                               name='select-data',
                               multiple=False,
-                              options=[('All', 'all'), ('AWQMS', 'awqms'), ('BYU', 'byu')],
+                              options=[('',''), ('All', 'all'), ('AWQMS', 'awqms'), ('BYU', 'byu')],
                               initial=['']
                               )
+    select_max = SelectInput(display_text='Select a maximum value',
+                                 name='select-max',
+                                 multiple=False,
+                                 options=[('All', '0'), ('4 Stand Deviation', '4'), ('3 Stand Deviation', '3'), ('2 Stand Deviation', '2'), ('1 Stand Deviation', '1')],
+                                 initial=[('All', '0')]
+                                 )
     select_bdl = SelectInput(display_text='Select a Minimum Limit Value',
                              name='select-bdl',
                              multiple=False,
@@ -73,6 +65,7 @@ def data(request):
     context['lake_map'] = getstations['lake_map']
     context['select_lake'] = select_lake
     context['select_data'] = select_data
+    context['select_max'] = select_max
     context['select_bdl'] = select_bdl
 
     return render(request, 'lake/data.html', context)
@@ -100,12 +93,18 @@ def param_fraction(request):
     print (lake_name)
     context ={}
     context['fraction'] = fraction(lake_name,lake_param)
-    context['maximum'] = maximum(lake_name,lake_param)
     return JsonResponse(context)
 
 def fraction(lake_name, lake_param):
     dataLake = getFiles(lake_name).get('all')
-    dp = dataLake['Sample Fraction'] == 'total'
+    param = dataLake['Characteristic Name']==lake_param
+    print (param)
+    dataParam = dataLake[param]
+    print(dataParam)
+    dp1 = dataParam['Sample Fraction'] == 'Dissolved'
+    print(dp1)
+    dp = dataParam[dp1]
+    print(dp)
     if len(dp) > 0:
         fraction_list = [('',''), ('Total', 'total'), ('Dissolved', 'dissolved')]
     else:
@@ -119,27 +118,19 @@ def fraction(lake_name, lake_param):
     context=select_fraction
     return context
 
-def maximum(lake_name, lake_param):
-    dataLake = getFiles(lake_name).get(lake_data)
-
-    select_max = SelectInput(display_text='Select a maximum value',
-                             name='select-max',
-                             multiple=False,
-                             options=PARAM_MAX.get(lake_param),
-                             initial=['']
-                             )
-    context=select_max
-    return context
-
 def lake_parameter(request):
     # to get the parameters of the lake
     get_data = request.GET
     lake_name = get_data.get('lake_name')
-    dataLake = getFiles(lake_name).get('all')
+    lake_data = get_data.get('lake_data')
+    print(lake_data)
+    dataLake = getFiles(lake_name).get(lake_data)
+    print(dataLake)
     chl = {'Chlorophyll a, uncorrected for pheophytin':'Chlorophyll a','Chlorophyll a, corrected for pheophytin':'Chlorophyll a','Chlorophyll a, free of pheophytin':'Chlorophyll a'}
     dataLake = dataLake.replace(chl)
     # print(dataLake)
     parameter_list1 = dataLake['Characteristic Name'].unique()
+    parameter_list1.sort()
     parameter_list = list(zip(*([parameter_list1] + [parameter_list1])))
     select_parameter = SelectInput(display_text='Select Parameter',
                               name='select-parameter',
@@ -247,10 +238,23 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     else:
         row_all = row_param
 
-        # erase below maximum
-    if param_max != 'Unlimited' and param_max != '':
-        m = float(param_max)
-        maxim = row_all['Result Value']<m
+        # erase above maximum
+    # if param_max != 'Unlimited' and param_max != '':
+    #     m = float(param_max)
+    #     maxim = row_all['Result Value']<m
+    #     row = row_all[maxim]
+    # else:
+    #     row = row_all
+
+    stan_dev = np.std(row_all['Result Value'])
+    mean = np.mean(row_all['Result Value'])
+    print(stan_dev)
+    print(mean)
+    if param_max != '0':
+        m=float(param_max)
+        y=mean+(stan_dev*m)
+        print (y)
+        maxim = row_all['Result Value'] <= y
         row = row_all[maxim]
     else:
         row = row_all
@@ -306,26 +310,9 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     return context
 
 def completeSeries(df):
-    # print(df)
+
     # Completar el time series para los graficos
     df['Date'] = pd.to_datetime(df['Activity Start Date'])
-
-    # df = df.sort_values(by=['Date'])
-    #
-    # dateslist = df['Date'].tolist()
-    # inidate = dateslist[0]
-    # findate = dateslist[-1]
-    # alldates = []
-    # curdate = inidate
-    # while curdate <= findate:
-    #     alldates.append(curdate)
-    #     curdate = curdate + timedelta(days=1)
-    #
-    # df2 = pd.DataFrame(alldates, columns=['Date'])
-    #
-    # dfjoin = df2.merge(df, on='Date', how='left')
-    # value = dfjoin['Result Value']
-    # dates = dfjoin['Date']
 
     value = df['Result Value']
     dates = df['Date']
