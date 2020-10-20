@@ -259,56 +259,58 @@ function set_map() {
 
     var station = d.options.station;
     console.log(station);
-  var trace = {
-    type: "scatter",
-    mode: "lines",
-    name: station + '<br>Station '.concat(location),
-    text: name,
-    x: timeseriesObject['dates'],
-    y: timeseriesObject['values'],
-  }
-
-  var data = [trace];
-
-  var layout = {
-    title: param_fract+' '+characteristic,
-    showlegend: true,
-    legend:{
-      xanchor:"center",
-      yanchor:"top",
-      y:-0.6, // play with it
-      x:0.5   // play with it
-    },
-    xaxis: {
-      autorange: true,
-      range: ['1989-01-01', '2020-08-01'],
-      rangeselector: {buttons: [
-          {
-            count: 6,
-            label: '6m',
-            step: 'month',
-            stepmode: 'backward'
-          },
-          {
-            count: 12,
-            label: '12m',
-            step: 'month',
-            stepmode: 'backward'
-          },
-          {step: 'all'}
-        ]},
-      rangeslider: {range: ['1989-01-01', '2020-08-01']},
-      type: 'date'
-    },
-    yaxis: {
-      title: {
-           text: 'value ('+unit+')'},
-      // autorange: true,
-      // range: [86.8700008333, 138.870004167],
-      type: 'linear'
+    var trace = {
+      type: "scatter",
+      mode: "lines",
+      name: station + '<br>Station '.concat(location),
+      text: name,
+      x: timeseriesObject['dates'],
+      y: timeseriesObject['values'],
     }
-  };
 
-  Plotly.plot('timeseries_plot', data, layout);
+    var data = [trace];
+
+    var layout = {
+      title: param_fract+' '+characteristic,
+      showlegend: true,
+      legend:{
+        xanchor:"center",
+        yanchor:"top",
+        y:-0.6, // play with it
+        x:0.5   // play with it
+      },
+      xaxis: {
+        autorange: true,
+        range: ['1989-01-01', '2020-08-01'],
+        rangeselector: {buttons: [
+            {
+              count: 6,
+              label: '6m',
+              step: 'month',
+              stepmode: 'backward'
+            },
+            {
+              count: 12,
+              label: '12m',
+              step: 'month',
+              stepmode: 'backward'
+            },
+            {step: 'all'}
+          ]},
+        rangeslider: {range: ['1989-01-01', '2020-08-01']},
+        type: 'date'
+      },
+      yaxis: {
+        title: {
+             text: 'value ('+unit+')'},
+        // autorange: true,
+        // range: [86.8700008333, 138.870004167],
+        type: 'linear'
+      }
+
+    };
+    var config = {responsive: true}
+
+  Plotly.plot('timeseries_plot', data, layout, config);
   }
 }
