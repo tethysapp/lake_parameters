@@ -103,19 +103,12 @@ function param_fraction() {
     success: function(result) {
       console.log("Si se pudo enviar ", lake_param)
       select_fraction = result['fraction']
-      // select_max = result['maximum']
       $("#fraction2").empty();
       select_fraction['options'].forEach(function(x){
         let newHtml = `<option>${x[0]}</option>`
         $("#fraction2").append(newHtml);
       })
       $("#fraction2").selectpicker("refresh");
-      // $("#maximum").empty();
-      // select_max['options'].forEach(function(x){
-      //   let newHtml2 = `<option>${(x[0])}</option>`
-      //   $("#maximum").append(newHtml2);
-      // })
-      // $("#maximum").selectpicker("refresh");
       $(".loading").remove()
     }
   })

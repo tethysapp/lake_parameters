@@ -14,7 +14,12 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
   crossorigin=""/>
-
+  <style>
+    .column {
+      float: left;
+      width: 50%;
+      }
+  </style>
 {% endblock %}
 
 {% block scripts %}
@@ -50,14 +55,11 @@ set_map()
 {% endblock %}
 
 {% block app_content %}
-
-<div id="mapid" class="mapid">
+<div class="column">
+<div id="mapid" class="mapid"></div>
 </div>
 <!-- </div> -->
-<h3>{{fraction}} {{characteristic}}</h3>
-
-<div id="timeseries_plot" class="chart">
-</div>
+<div id="timeseries_plot" class="column"></div>
 {% endblock %}
 
 {% block after_app_content %}

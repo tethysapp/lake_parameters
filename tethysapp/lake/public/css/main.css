@@ -13,61 +13,21 @@ flex-direction: row;
 padding: 0 0 0 0;
 /* position: fixed; */
 }
-
 #mapid{
-  width: 100%;
-  height: 100%;
-  /* position: fixed; */
-  flex:1 1 50%;
-  order: 1;
-  overflow-y: hidden;
+width: 100%;
+height: 100%;
+/* position: fixed; */
+flex:1 1 70%;
+order: 1;
+overflow-y: hidden;
 }
-
 #chart{
-  flex: 1 1 50%;
-  order: 2;
-  width: 100%;
-  height: 100%;
-  /* display: none !important; */
-  display: none;
-  /* visibility: hidden; */
-  overflow-y: scroll;
-}
-
-/* #chart {
-    height: 40%;
-    padding: 1px;
-} */
-
-.load {
-    height: 100%;
-    text-align: center;
-    vertical-align: baseline;
-}
-
-#options{
-  padding-left: 2%;
-  flex: 1 1 20%;
-  order: 1;
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-}
-
-#variables_id{
-  /* padding-top: 2%; */
-  padding-left: 2%;
-  flex: 1 1 30%;
-  order: 1;
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-  overflow-x: scroll;
-}
-
-#plots{
-  flex: 1 1 50%;
-  order: 3;
-  width: 100%;
-  height: 100%;
+flex: 1 1 30%;
+order: 2;
+width: 100%;
+height: 100%;
+/* display: none !important; */
+display: none;
+/* visibility: hidden; */
+overflow-y: scroll;
 }

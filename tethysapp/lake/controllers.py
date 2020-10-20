@@ -238,14 +238,6 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     else:
         row_all = row_param
 
-        # erase above maximum
-    # if param_max != 'Unlimited' and param_max != '':
-    #     m = float(param_max)
-    #     maxim = row_all['Result Value']<m
-    #     row = row_all[maxim]
-    # else:
-    #     row = row_all
-
     stan_dev = np.std(row_all['Result Value'])
     mean = np.mean(row_all['Result Value'])
     print(stan_dev)
