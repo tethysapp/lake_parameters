@@ -21,6 +21,7 @@ from .utils import download
 
 LAKE_FILES = {
     "utah": ["awqms_utah.csv", "byu_utah.csv"],
+    "deer": ["awqms_deer.csv", "byu_deer.csv"],
     "salt": ["awqms_salt.csv", "byu_salt.csv"]
 }
 
@@ -35,7 +36,7 @@ def data(request):
     select_lake = SelectInput(display_text='Select a Lake',
                               name='select-lake',
                               multiple=False,
-                              options=[('',''), ('Utah Lake', 'utah'), ('Great Salt Lake', 'salt')],
+                              options=[('',''), ('Utah Lake', 'utah'), ('Great Salt Lake', 'salt'), ('Deer Creek Reservoir', 'deer')],
                               initial=['']
                               )
     select_data = SelectInput(display_text='Select Data',
@@ -80,6 +81,7 @@ def instructions(request):
 def get_lake(request):
     get_data = request.GET
     lake_name = get_data.get('lake_name')
+    #print (lake_name)
     context = getStations(lake_name)
     return JsonResponse(context)
 
@@ -89,8 +91,8 @@ def param_fraction(request):
     get_data = request.GET
     lake_name = get_data.get('lake_name')
     lake_param = get_data.get('lake_param')
-    print (lake_param)
-    print (lake_name)
+    #print (lake_param)
+    #print (lake_name)
     context ={}
     context['fraction'] = fraction(lake_name,lake_param)
     return JsonResponse(context)
@@ -98,13 +100,13 @@ def param_fraction(request):
 def fraction(lake_name, lake_param):
     dataLake = getFiles(lake_name).get('all')
     param = dataLake['Characteristic Name']==lake_param
-    print (param)
+    #print (param)
     dataParam = dataLake[param]
-    print(dataParam)
+    #print(dataParam)
     dp1 = dataParam['Sample Fraction'] == 'Dissolved'
-    print(dp1)
+    #print(dp1)
     dp = dataParam[dp1]
-    print(dp)
+    #print(dp)
     if len(dp) > 0:
         fraction_list = [('',''), ('Total', 'total'), ('Dissolved', 'dissolved')]
     else:
@@ -123,14 +125,15 @@ def lake_parameter(request):
     get_data = request.GET
     lake_name = get_data.get('lake_name')
     lake_data = get_data.get('lake_data')
-    print(lake_data)
+    #print(lake_data)
     dataLake = getFiles(lake_name).get(lake_data)
-    print(dataLake)
+    #print(dataLake)
     chl = {'Chlorophyll a, uncorrected for pheophytin':'Chlorophyll a','Chlorophyll a, corrected for pheophytin':'Chlorophyll a','Chlorophyll a, free of pheophytin':'Chlorophyll a'}
     dataLake = dataLake.replace(chl)
     # print(dataLake)
-    parameter_list1 = dataLake['Characteristic Name'].unique()
+    parameter_list1 = dataLake['Characteristic Name'].unique().tolist()
     parameter_list1.sort()
+    parameter_list1.insert(0, ' ')
     parameter_list = list(zip(*([parameter_list1] + [parameter_list1])))
     select_parameter = SelectInput(display_text='Select Parameter',
                               name='select-parameter',
@@ -151,7 +154,7 @@ def charact_data(request):
     param_max = get_data.get('param_max')
     param_fract = get_data.get('param_fract')
     param_bdl = get_data.get('param_bdl')
-    print (lake_name)
+
     # context = {}
     context = getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     return JsonResponse(context)
@@ -229,8 +232,8 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     dataLake = dataLake.replace(chl)
     param = dataLake['Characteristic Name'] == lake_param
     row_param = dataLake[param]
-    # print(row_param)
-
+    row_param['Result Value']=row_param['Result Value'].astype('float64')
+    print(row_param['Result Value'])
         # check Total-Dissolved
     if param_fract == 'Dissolved' or param_fract == 'Total':
         fract = row_param['Sample Fraction'] == param_fract
@@ -238,13 +241,15 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     else:
         row_all = row_param
 
+    #print(row_all)
     stan_dev = np.std(row_all['Result Value'])
     mean = np.mean(row_all['Result Value'])
     print(stan_dev)
     print(mean)
     if param_max != '0':
         m=float(param_max)
-        y=mean+(stan_dev*m)
+        sd=float(stan_dev)
+        y=mean+(sd*m)
         print (y)
         maxim = row_all['Result Value'] <= y
         row = row_all[maxim]

@@ -9,7 +9,6 @@ var markers = []
 $(function() {
   $("#select-lake").change(function() {
     lake_name = $("#select-lake option:selected").val()
-    $( "#timeseries_plot" ).empty()
     console.log(lake_name)
     get_lake()
     // lake_parameter()
@@ -20,7 +19,6 @@ $(function() {
   $("#select-data").change(function() {
     lake_name = document.getElementById('select-lake').value
     lake_data = document.getElementById('select-data').value
-    $( "#timeseries_plot" ).empty()
     console.log(lake_data)
     lake_parameter()
   })
@@ -31,7 +29,6 @@ $(function() {
     lake_param = document.getElementById('parameter2').value
     lake_name = document.getElementById('select-lake').value
     console.log(lake_param)
-    $( "#timeseries_plot" ).empty()
     param_fraction()
   })
 })
@@ -48,6 +45,7 @@ function searchButton() {
   console.log(param_max)
   plotted = []
   $( "#timeseries_plot" ).empty()
+  console.log(timeseries_plot)
   charact_data()
 }
 
