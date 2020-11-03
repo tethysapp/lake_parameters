@@ -167,8 +167,8 @@ def getFiles(lake_name):
     file_path = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[0])
     file_path_byu = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[1])
 
-    dataLake_awqms = pd.read_csv(file_path)
-    dataLake_byu = pd.read_csv(file_path_byu)
+    dataLake_awqms = pd.read_csv(file_path, encoding= 'unicode_escape')
+    dataLake_byu = pd.read_csv(file_path_byu, encoding= 'unicode_escape')
     dataLake_byu['Organization ID'] = 'BYU'
 
     fields = ['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude',
