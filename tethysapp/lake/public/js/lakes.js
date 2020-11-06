@@ -30,6 +30,7 @@ $(function() {
     lake_param = document.getElementById('parameter2').value
     lake_name = document.getElementById('select-lake').value
     console.log(lake_param)
+    par.style.display = 'block';
     param_fraction()
   })
 })
@@ -112,7 +113,15 @@ function param_fraction() {
         let newHtml = `<option>${x[0]}</option>`
         $("#fraction2").append(newHtml);
       })
-      $("#fraction2").selectpicker("refresh");
+      let length = select_fraction['options'].length
+      console.log(length)
+      if(length==1){
+        par.style.display = 'none';
+      }
+      else{
+        par.style.display = 'block';
+        $("#fraction2").selectpicker("refresh");
+      }
       $(".loading").remove()
     }
   })
@@ -326,7 +335,7 @@ function set_map() {
         Plotly.plot('timeseries_plot', data, layout, config);
       }
       if(count==0){
-        Plotly.newPlot('timeseries_plot', data, layout, config);  
+        Plotly.newPlot('timeseries_plot', data, layout, config);
       count = count+1
       }
     }
