@@ -5,6 +5,7 @@ let param_bdl
 let param_max
 let fraction_list
 var markers = []
+var count = 0
 
 $(function() {
   $("#select-lake").change(function() {
@@ -34,6 +35,7 @@ $(function() {
 })
 
 function searchButton() {
+  count = 0
   lake_name = document.getElementById('select-lake').value
   lake_data = document.getElementById('select-data').value
   lake_param = document.getElementById('parameter2').value
@@ -320,8 +322,13 @@ function set_map() {
 
       };
       var config = {responsive: true}
-
-    Plotly.plot('timeseries_plot', data, layout, config);
+      if(count>0){
+        Plotly.plot('timeseries_plot', data, layout, config);
+      }
+      if(count==0){
+        Plotly.newPlot('timeseries_plot', data, layout, config);  
+      count = count+1
+      }
     }
   }
 }
