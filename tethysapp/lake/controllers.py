@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import reverse
+from django.shortcuts import render_to_response
 from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import MapView, Button
 from tethys_sdk.gizmos import TimeSeries, SelectInput
@@ -18,6 +19,9 @@ import math
 from .app import Lake as app
 from pandas import DataFrame
 from .utils import download
+import urllib.request
+import urllib.error
+import urllib.parse
 
 LAKE_FILES = {
     "utah": ["awqms_utah.csv", "byu_utah.csv"],
@@ -45,7 +49,7 @@ def data(request):
                               options=[('',''), ('All', 'all'), ('AWQMS', 'awqms'), ('BYU', 'byu')],
                               initial=['']
                               )
-    select_max = SelectInput(display_text='Select a maximum value',
+    select_max = SelectInput(display_text='Select a Maximum Value',
                                  name='select-max',
                                  multiple=False,
                                  options=[('All', '0'), ('4 Stand Deviation', '4'), ('3 Stand Deviation', '3'), ('2 Stand Deviation', '2'), ('1 Stand Deviation', '1')],
@@ -54,7 +58,7 @@ def data(request):
     select_bdl = SelectInput(display_text='Select a Minimum Limit Value',
                              name='select-bdl',
                              multiple=False,
-                             options=[('0', '0'), ('Detection Limit', '1'), ('1/2 Detection Limit', '0.5')],
+                             options=[('0', '0'), ('Reporting Limit', '1'), ('1/2 Reporting Limit', '0.5')],
                              initial=[('0', '0')]
                              )
 
@@ -127,9 +131,9 @@ def lake_parameter(request):
     lake_data = get_data.get('lake_data')
     #print(lake_data)
     dataLake = getFiles(lake_name).get(lake_data)
-    #print(dataLake)
-    chl = {'Chlorophyll a, uncorrected for pheophytin':'Chlorophyll a','Chlorophyll a, corrected for pheophytin':'Chlorophyll a','Chlorophyll a, free of pheophytin':'Chlorophyll a'}
-    dataLake = dataLake.replace(chl)
+    #read all the chlorophyll a as one parameter called Chlorophyll a
+        #chl = {'Chlorophyll a, uncorrected for pheophytin':'Chlorophyll a','Chlorophyll a, corrected for pheophytin':'Chlorophyll a','Chlorophyll a, free of pheophytin':'Chlorophyll a'}
+        #dataLake = dataLake.replace(chl)
     # print(dataLake)
     parameter_list1 = dataLake['Characteristic Name'].unique().tolist()
     parameter_list1.sort()
@@ -228,20 +232,20 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     # Obtener datos segun el parametro y su fraccion, mandar datos con el timeseries completo
     dataLakeAll = getFiles(lake_name).get('all')
     dataLake = getFiles(lake_name).get(lake_data)
-    chl = {'Chlorophyll a, uncorrected for pheophytin':'Chlorophyll a','Chlorophyll a, corrected for pheophytin':'Chlorophyll a','Chlorophyll a, free of pheophytin':'Chlorophyll a'}
-    dataLake = dataLake.replace(chl)
+    #chl = {'Chlorophyll a, uncorrected for pheophytin':'Chlorophyll a','Chlorophyll a, corrected for pheophytin':'Chlorophyll a','Chlorophyll a, free of pheophytin':'Chlorophyll a'}
+    #dataLake = dataLake.replace(chl)
     param = dataLake['Characteristic Name'] == lake_param
     row_param = dataLake[param]
     row_param['Result Value']=row_param['Result Value'].astype('float64')
-    print(row_param['Result Value'])
+    #print(row_param['Result Value'])
         # check Total-Dissolved
     if param_fract == 'Dissolved' or param_fract == 'Total':
         fract = row_param['Sample Fraction'] == param_fract
         row_all = row_param[fract]
     else:
         row_all = row_param
+    row_param.to_csv('row_param.csv', index=False, encoding='utf-8')
 
-    #print(row_all)
     stan_dev = np.std(row_all['Result Value'])
     mean = np.mean(row_all['Result Value'])
     print(stan_dev)
@@ -260,7 +264,6 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     x=float(param_bdl)
     row['DeLiVal']=row['Detection Limit Value1']*x
     row['Result Value'].fillna(row['DeLiVal'], inplace=True)
-
     locations = row['Monitoring Location ID'].unique()
     unit = row['Result Unit'].unique()
     unit = ''.join(unit)
@@ -269,6 +272,7 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     #context['fraction'] = fraction
     context['unit'] = unit
     context['csvLake'] = dataLake
+    context['csvParameter'] = row_param
 
     lake_map = MapView(
         height='100%',

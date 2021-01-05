@@ -35,6 +35,48 @@ $(function() {
   })
 })
 
+function downloadButton() {
+  lake_name = document.getElementById('select-lake').value
+  lake_data = document.getElementById('select-data').value
+  lake_param = document.getElementById('parameter2').value
+  param_fract = document.getElementById('fraction2').value
+  param_bdl = document.getElementById('select-bdl').value
+  param_max = document.getElementById('select-max').value
+  var loading = L.control({
+      position: 'topleft'
+  });
+
+  loading.onAdd = function(mymap) {
+      var div = L.DomUtil.create('div', 'info loading');
+      div.innerHTML += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='/static/lake/images/loading.gif'>";
+      return div;
+  };
+  loading.addTo(mymap);
+
+  $.ajax({
+    url: "/apps/lake/controllers/charact_data/",
+    type: "GET",
+    data: { lake_name: lake_name,
+            lake_data: lake_data,
+            lake_param: lake_param,
+            param_fract: param_fract,
+            param_max: param_max,
+            param_bdl: param_bdl
+          },
+    error: function(xhr, status, error) {
+      var err = JSON.parse(xhr.responseText)
+      console.log(err.Message)
+      $(".loading").remove()
+    },
+    success: function(result) {
+      csvParameter = result['csvParameter']
+      characteristic = lake_param
+      console.log(csvParameter)
+      $(".loading").remove()
+    }
+  })
+}
+
 function searchButton() {
   count = 0
   lake_name = document.getElementById('select-lake').value
@@ -202,7 +244,7 @@ function charact_data() {
       alldata = result["all_data"]
       console.log(characteristic)
       console.log(unit)
-
+      document.getElementById("down").style.visibility = "visible";
       set_map()
       $(".loading").remove()
     }
@@ -240,9 +282,16 @@ function set_map() {
     var inlake = location_data["type"]
     var station = location_data["station"]
     if (loc == "BYU") {
+      if(inlake == "Lake"){
+        var marker = L.marker(coords, { title: locat, custom: data, icon: iconMiller, station:station})
+          .addTo(mymap).bindPopup(chart)
+        markers.push(marker)
+      }
+      else{
       var marker = L.marker(coords, { title: locat, custom: data, icon: iconMiller, station:station})
         .addTo(mymap).bindPopup(chart)
       markers.push(marker)
+      }
     } else if (loc == "UTAHDWQ_WQX") {
       if(inlake == "Lake"){
         var marker = L.marker(coords, { title: locat, custom: data, icon: iconAwqms, station:station})

@@ -18,6 +18,7 @@
     .column {
       float: left;
       width: 50%;
+      height: 90%;
       }
   </style>
 {% endblock %}
@@ -57,6 +58,10 @@ set_map()
 {% block app_content %}
 <div class="column">
 <div id="mapid" class="mapid"></div>
+<div id="down" class="down" style="visibility: hidden" display="inline-block">
+<input type="button" onclick="downloadButton();" name="download-button" class="btn btn-default" value="Download Parameter Data">
+<h4>{characteristic}</h4>
+</div>
 </div>
 <!-- </div> -->
 <div id="timeseries_plot" class="column js-plotly-plot"></div>
