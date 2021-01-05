@@ -16,7 +16,7 @@ resource_files += find_resource_files('tethysapp/' + app_package + '/workspaces'
 
 setup(
     name=release_package,
-    version='0.0.5',
+    version='0.0.6',
     description='Utah Lakes Water Quality',
     long_description='',
     keywords='',
