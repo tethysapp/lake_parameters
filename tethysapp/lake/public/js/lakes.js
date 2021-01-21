@@ -329,7 +329,7 @@ function charact_data() {
       allstations_coords = result["all_coords_stations"]
       allstations = result["all_data"]
       unit = result['unit']
-      characteristic = lake_param
+      characteristic = result["characteristic"]
       difcoords = result["dif_coords_stations"]
       alldata = result["all_data"]
       console.log(characteristic)
