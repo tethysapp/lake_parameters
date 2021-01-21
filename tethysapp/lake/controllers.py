@@ -244,7 +244,7 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
         row_all = row_param[fract]
     else:
         row_all = row_param
-    row_param.to_csv('row_param.csv', index=False, encoding='utf-8')
+    #row_param.to_csv('row_param.csv', index=False, encoding='utf-8')
 
     stan_dev = np.std(row_all['Result Value'])
     mean = np.mean(row_all['Result Value'])
@@ -272,7 +272,8 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     #context['fraction'] = fraction
     context['unit'] = unit
     context['csvLake'] = dataLake
-    context['csvParameter'] = row_param
+    context['csvParameter'] = row_all
+    context['csvGraph'] = row
 
     lake_map = MapView(
         height='100%',

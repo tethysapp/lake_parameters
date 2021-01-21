@@ -48,7 +48,7 @@ var mymap = L.map('mapid')
   ).addTo(mymap)
 set_map()
 </script>
-
+<script src="{% static 'lake/js/lakes.js' %}" type="text/javascript"></script>
 {% endblock %}
 
 {% block header_buttons %}
@@ -58,13 +58,16 @@ set_map()
 {% block app_content %}
 <div class="column">
 <div id="mapid" class="mapid"></div>
+<h4>{{lake_param}}</h4>
 <div id="down" class="down" style="visibility: hidden" display="inline-block">
 <input type="button" onclick="downloadButton();" name="download-button" class="btn btn-default" value="Download Parameter Data">
-<h4>{characteristic}</h4>
 </div>
 </div>
 <!-- </div> -->
-<div id="timeseries_plot" class="column js-plotly-plot"></div>
+<div id="timeseries_plot" class="column js-plotly-plot">
+<input type="button" onclick="downloadButton2();" name="download-button2" class="btn btn-default" value="Download Graph Data">
+</div>
+
 {% endblock %}
 
 {% block after_app_content %}

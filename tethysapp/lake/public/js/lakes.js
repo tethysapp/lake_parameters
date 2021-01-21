@@ -4,6 +4,7 @@ let lake_param
 let param_bdl
 let param_max
 let fraction_list
+var characteristic
 var markers = []
 var count = 0
 
@@ -45,14 +46,12 @@ function downloadButton() {
   var loading = L.control({
       position: 'topleft'
   });
-
   loading.onAdd = function(mymap) {
       var div = L.DomUtil.create('div', 'info loading');
       div.innerHTML += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='/static/lake/images/loading.gif'>";
       return div;
   };
   loading.addTo(mymap);
-
   $.ajax({
     url: "/apps/lake/controllers/charact_data/",
     type: "GET",
@@ -69,9 +68,99 @@ function downloadButton() {
       $(".loading").remove()
     },
     success: function(result) {
-      csvParameter = result['csvParameter']
-      characteristic = lake_param
-      console.log(csvParameter)
+      var csvParameter = JSON.parse(result['csvParameter']) // convert to dict
+      var header = Object.keys(csvParameter) // grab the columns for header
+      var csvData = [];
+      csvData.push(header);
+      var lines = []
+      for (var i = 0; i < header.length; i++){ //data
+        var new_col_vals = []
+        var new_col_names = Object.keys(csvParameter[header[i]])
+        for (var j = 0; j < new_col_names.length; j++){ //data
+          new_col_vals.push(csvParameter[header[i]][new_col_names[j]])
+        }
+        lines.push(new_col_vals)
+      }
+      lines = lines[0].map((_, colIndex) => lines.map(row => row[colIndex]));
+      console.log(lines);
+      for (var i = 0; i < lines.length; i++){ //data
+        csvData.push(lines[i]);
+      }
+      var csvFile = csvData.map(e=>e.map(a=>'"'+((a||"").toString().replace(/"/gi,'""'))+'"').join(",")).join("\r\n"); //quote all fields, escape quotes by doubling them.
+      var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+      var link = document.createElement("a");
+      var url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", lake_param.replace(/[^a-z0-9_.-]/gi,'_') + ".csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      $(".loading").remove()
+    }
+  })
+}
+
+function downloadButton2() {
+  lake_name = document.getElementById('select-lake').value
+  lake_data = document.getElementById('select-data').value
+  lake_param = document.getElementById('parameter2').value
+  param_fract = document.getElementById('fraction2').value
+  param_bdl = document.getElementById('select-bdl').value
+  param_max = document.getElementById('select-max').value
+  var loading = L.control({
+      position: 'topleft'
+  });
+  loading.onAdd = function(mymap) {
+      var div = L.DomUtil.create('div', 'info loading');
+      div.innerHTML += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='/static/lake/images/loading.gif'>";
+      return div;
+  };
+  loading.addTo(mymap);
+  $.ajax({
+    url: "/apps/lake/controllers/charact_data/",
+    type: "GET",
+    data: { lake_name: lake_name,
+            lake_data: lake_data,
+            lake_param: lake_param,
+            param_fract: param_fract,
+            param_max: param_max,
+            param_bdl: param_bdl
+          },
+    error: function(xhr, status, error) {
+      var err = JSON.parse(xhr.responseText)
+      console.log(err.Message)
+      $(".loading").remove()
+    },
+    success: function(result) {
+      var csvGraph = JSON.parse(result['csvGraph']) // convert to dict
+      var header = Object.keys(csvGraph) // grab the columns for header
+      var csvGraphic = [];
+      csvGraphic.push(header);
+      var lines = []
+      for (var i = 0; i < header.length; i++){ //data
+        var new_col_vals = []
+        var new_col_names = Object.keys(csvGraph[header[i]])
+        for (var j = 0; j < new_col_names.length; j++){ //data
+          new_col_vals.push(csvGraph[header[i]][new_col_names[j]])
+        }
+        lines.push(new_col_vals)
+      }
+      lines = lines[0].map((_, colIndex) => lines.map(row => row[colIndex]));
+      console.log(lines);
+      for (var i = 0; i < lines.length; i++){ //data
+        csvGraphic.push(lines[i]);
+      }
+      var csvFile2 = csvGraphic.map(e=>e.map(a=>'"'+((a||"").toString().replace(/"/gi,'""'))+'"').join(",")).join("\r\n"); //quote all fields, escape quotes by doubling them.
+      var blob = new Blob([csvFile2], { type: 'text/csv;charset=utf-8;' });
+      var link = document.createElement("a");
+      var url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", lake_param.replace(/[^a-z0-9_.-]/gi,'_') + "graph.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       $(".loading").remove()
     }
   })
@@ -88,6 +177,7 @@ function searchButton() {
   console.log(param_fract)
   console.log(param_bdl)
   console.log(param_max)
+  console.log(lake_param)
   plotted = []
   $( "#timeseries_plot" ).empty()
   console.log(timeseries_plot)
@@ -307,7 +397,6 @@ function set_map() {
   }
 
   function chart(d) {
-
     var location = d.options.title;
     var timeseriesObject = d.options.custom;
     var timeseriesCorrectedY=[];
@@ -389,4 +478,5 @@ function set_map() {
       }
     }
   }
+  // down2.style.display = 'block';
 }
