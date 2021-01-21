@@ -335,6 +335,7 @@ function charact_data() {
       console.log(characteristic)
       console.log(unit)
       document.getElementById("down").style.visibility = "visible";
+      document.getElementById("char").innerHTML = characteristic;
       set_map()
       $(".loading").remove()
     }

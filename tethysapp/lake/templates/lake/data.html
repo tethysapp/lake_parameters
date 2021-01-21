@@ -58,13 +58,14 @@ set_map()
 {% block app_content %}
 <div class="column">
 <div id="mapid" class="mapid"></div>
-<div id="down" class="down" style="visibility: hidden" display="inline-block">
-<h4>{{characteristic}}</h4>
+<div id="char" class="char" style="width: 49%; float:left;"></div>
+<div id="down" class="down" style="visibility: hidden; width: 49%; float: right;" display="inline-block">
 <input type="button" onclick="downloadButton();" name="download-button" class="btn btn-default" value="Download Parameter Data">
 </div>
 </div>
 <!-- </div> -->
-<div id="timeseries_plot" class="column js-plotly-plot">
+<div id="timeseries_plot" class="column js-plotly-plot"></div>
+<div id="down2" class="down2" style="visibility: hidden" display="inline-block">
 <input type="button" onclick="downloadButton2();" name="download-button2" class="btn btn-default" value="Download Graph Data">
 </div>
 
