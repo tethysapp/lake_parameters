@@ -159,8 +159,9 @@ def charact_data(request):
     param_fract = get_data.get('param_fract')
     param_bdl = get_data.get('param_bdl')
 
-    # context = {}
+    context = {}
     context = getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
+    print(context['csvParameter']['Result Value'].head(20))
     return JsonResponse(context)
 
 def getFiles(lake_name):
@@ -229,6 +230,7 @@ def getStations(lake_name):
     return context
 
 def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl):
+
     # Obtener datos segun el parametro y su fraccion, mandar datos con el timeseries completo
     dataLakeAll = getFiles(lake_name).get('all')
     dataLake = getFiles(lake_name).get(lake_data)
@@ -236,8 +238,8 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     #dataLake = dataLake.replace(chl)
     param = dataLake['Characteristic Name'] == lake_param
     row_param = dataLake[param]
-    row_param['Result Value']=row_param['Result Value'].astype('float64')
-    #print(row_param['Result Value'])
+    #row_param['Result Value']=row_param['Result Value'].astype('float64')
+
         # check Total-Dissolved
     if param_fract == 'Dissolved' or param_fract == 'Total':
         fract = row_param['Sample Fraction'] == param_fract
@@ -246,33 +248,37 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
         row_all = row_param
     #row_param.to_csv('row_param.csv', index=False, encoding='utf-8')
 
-    stan_dev = np.std(row_all['Result Value'])
-    mean = np.mean(row_all['Result Value'])
-    print(stan_dev)
-    print(mean)
+        # Add values to the No Detected, acording the selected bdl
+    context = {}
+    context['csvParameter'] = row_all
+    print(context['csvParameter']['Sample Fraction'].head(20))
+    x=float(param_bdl)
+    avoid_changes = row_all['Characteristic Name'] == lake_param
+    row_min = row_all[avoid_changes]
+    row_min['Result Value'] = row_min['Result Value'].astype('float64')
+    row_min['Result Value'].fillna(row_min['Detection Limit Value1']*x, inplace=True)
+    stan_dev = np.std(row_min['Result Value'])
+    mean = np.mean(row_min['Result Value'])
+    #print(stan_dev)
+    #print(mean)
     if param_max != '0':
         m=float(param_max)
         sd=float(stan_dev)
         y=mean+(sd*m)
         print (y)
-        maxim = row_all['Result Value'] <= y
-        row = row_all[maxim]
+        maxim = row_min['Result Value'] <= y
+        row = row_min[maxim]
     else:
-        row = row_all
+        row = row_min
+    #print(row['Result Value'].head(20))
 
-        # Add values to the No Detected, acording the selected bdl
-    x=float(param_bdl)
-    row['DeLiVal']=row['Detection Limit Value1']*x
-    row['Result Value'].fillna(row['DeLiVal'], inplace=True)
     locations = row['Monitoring Location ID'].unique()
     unit = row['Result Unit'].unique()
     unit = ''.join(unit)
-    context = {}
     context['characteristic'] = lake_param
-    #context['fraction'] = fraction
+    context['fraction'] = param_fract
     context['unit'] = unit
     context['csvLake'] = dataLake
-    context['csvParameter'] = row_all
     context['csvGraph'] = row
 
     lake_map = MapView(

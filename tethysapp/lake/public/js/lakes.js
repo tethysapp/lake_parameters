@@ -70,6 +70,7 @@ function downloadButton() {
     success: function(result) {
       var csvParameter = JSON.parse(result['csvParameter']) // convert to dict
       var header = Object.keys(csvParameter) // grab the columns for header
+      console.log(header)
       var csvData = [];
       csvData.push(header);
       var lines = []
@@ -82,8 +83,7 @@ function downloadButton() {
         lines.push(new_col_vals)
       }
       lines = lines[0].map((_, colIndex) => lines.map(row => row[colIndex]));
-      console.log(lines);
-      for (var i = 0; i < lines.length; i++){ //data
+        for (var i = 0; i < lines.length; i++){ //data
         csvData.push(lines[i]);
       }
       var csvFile = csvData.map(e=>e.map(a=>'"'+((a||"").toString().replace(/"/gi,'""'))+'"').join(",")).join("\r\n"); //quote all fields, escape quotes by doubling them.
@@ -330,12 +330,13 @@ function charact_data() {
       allstations = result["all_data"]
       unit = result['unit']
       characteristic = result["characteristic"]
+      fraction = result["fraction"]
       difcoords = result["dif_coords_stations"]
       alldata = result["all_data"]
       console.log(characteristic)
       console.log(unit)
       document.getElementById("down").style.visibility = "visible";
-      document.getElementById("char").innerHTML = characteristic;
+      document.getElementById("char").innerHTML = fraction + ' ' + characteristic;
       set_map()
       $(".loading").remove()
     }
@@ -479,5 +480,4 @@ function set_map() {
       }
     }
   }
-  // down2.style.display = 'block';
 }

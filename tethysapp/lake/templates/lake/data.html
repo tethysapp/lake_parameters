@@ -17,7 +17,7 @@
   <style>
     .column {
       float: left;
-      width: 50%;
+      width: 70%;
       height: 90%;
       }
   </style>
@@ -64,9 +64,9 @@ set_map()
 </div>
 </div>
 <!-- </div> -->
-<div id="timeseries_plot" class="column js-plotly-plot"></div>
-<div id="down2" class="down2" style="visibility: hidden" display="inline-block">
-<input type="button" onclick="downloadButton2();" name="download-button2" class="btn btn-default" value="Download Graph Data">
+<div id="down2" class="down2" display="inline-block" style="width: 100%;">
+<div id="timeseries_plot" class="column js-plotly-plot" style="width: 100%;"></div>
+<input type="button" onclick="downloadButton2();" name="download-button2" class="btn btn-default" style="float: right;" value="Download Graph Data">
 </div>
 
 {% endblock %}
