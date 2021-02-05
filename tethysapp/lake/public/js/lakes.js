@@ -180,6 +180,8 @@ function searchButton() {
   console.log(lake_param)
   plotted = []
   $( "#timeseries_plot" ).empty()
+  document.getElementById("char2").innerHTML = 'To create a graph, click on some stations';
+  document.getElementById("down2").style.visibility = "visible";
   console.log(timeseries_plot)
   charact_data()
 }
