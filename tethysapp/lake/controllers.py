@@ -6,6 +6,7 @@ from tethys_sdk.gizmos import MapView, Button
 from tethys_sdk.gizmos import TimeSeries, SelectInput
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, timedelta
+from hs_restclient import HydroShare, HydroShareAuthBasic
 
 from csv import writer as csv_writer
 import plotly.graph_objs as go
@@ -29,6 +30,12 @@ LAKE_FILES = {
     "salt": ["awqms_salt.csv", "byu_salt.csv"]
 }
 
+lake_list = [('',''), ('Utah Lake', 'utah'), ('Great Salt Lake', 'salt'), ('Deer Creek Reservoir', 'deer')]
+
+dataLake={}
+values_awqms={}
+values_byu={}
+
 @login_required()
 def home(request):
     context = {
@@ -40,7 +47,7 @@ def data(request):
     select_lake = SelectInput(display_text='Select a Lake',
                               name='select-lake',
                               multiple=False,
-                              options=[('',''), ('Utah Lake', 'utah'), ('Great Salt Lake', 'salt'), ('Deer Creek Reservoir', 'deer')],
+                              options=lake_list,
                               initial=['']
                               )
     select_data = SelectInput(display_text='Select Data',
@@ -52,7 +59,7 @@ def data(request):
     select_max = SelectInput(display_text='Select a Maximum Value',
                                  name='select-max',
                                  multiple=False,
-                                 options=[('All', '0'), ('4 Stand Deviation', '4'), ('3 Stand Deviation', '3'), ('2 Stand Deviation', '2'), ('1 Stand Deviation', '1')],
+                                 options=[('All', '0'), ('4 Standard Deviations', '4'), ('3 Standard Deviations', '3'), ('2 Standard Deviations', '2'), ('1 Standard Deviation', '1')],
                                  initial=[('All', '0')]
                                  )
     select_bdl = SelectInput(display_text='Select a Minimum Limit Value',
@@ -85,7 +92,6 @@ def instructions(request):
 def get_lake(request):
     get_data = request.GET
     lake_name = get_data.get('lake_name')
-    #print (lake_name)
     context = getStations(lake_name)
     return JsonResponse(context)
 
@@ -95,8 +101,7 @@ def param_fraction(request):
     get_data = request.GET
     lake_name = get_data.get('lake_name')
     lake_param = get_data.get('lake_param')
-    #print (lake_param)
-    #print (lake_name)
+
     context ={}
     context['fraction'] = fraction(lake_name,lake_param)
     return JsonResponse(context)
@@ -104,13 +109,9 @@ def param_fraction(request):
 def fraction(lake_name, lake_param):
     dataLake = getFiles(lake_name).get('all')
     param = dataLake['Characteristic Name']==lake_param
-    #print (param)
     dataParam = dataLake[param]
-    #print(dataParam)
     dp1 = dataParam['Sample Fraction'] == 'Dissolved'
-    #print(dp1)
     dp = dataParam[dp1]
-    #print(dp)
     if len(dp) > 0:
         fraction_list = [('',''), ('Total', 'total'), ('Dissolved', 'dissolved')]
     else:
@@ -129,12 +130,10 @@ def lake_parameter(request):
     get_data = request.GET
     lake_name = get_data.get('lake_name')
     lake_data = get_data.get('lake_data')
-    #print(lake_data)
     dataLake = getFiles(lake_name).get(lake_data)
     #read all the chlorophyll a as one parameter called Chlorophyll a
         #chl = {'Chlorophyll a, uncorrected for pheophytin':'Chlorophyll a','Chlorophyll a, corrected for pheophytin':'Chlorophyll a','Chlorophyll a, free of pheophytin':'Chlorophyll a'}
         #dataLake = dataLake.replace(chl)
-    # print(dataLake)
     parameter_list1 = dataLake['Characteristic Name'].unique().tolist()
     parameter_list1.sort()
     parameter_list1.insert(0, ' ')
@@ -167,15 +166,25 @@ def charact_data(request):
 def getFiles(lake_name):
 
     # Obtener archivos y separarlos segun lago y organizacion(o los dos juntos)
+    awqms=LAKE_FILES.get(lake_name)[0]
+    byu=LAKE_FILES.get(lake_name)[1]
 
-    app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[0])
-    file_path_byu = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[1])
+    #using hydroshare files
+    url1 = 'https://www.hydroshare.org/resource/cf0133c4d4a14a7f938918707abb4e05/data/contents/{0}'.format(awqms)
+    file_path = requests.get(url1, verify=False).content
+    url2 = 'https://www.hydroshare.org/resource/cf0133c4d4a14a7f938918707abb4e05/data/contents/{0}'.format(byu)
+    file_path_byu = requests.get(url2, verify=False).content
+    dataLake_awqms = pd.read_csv(io.StringIO(file_path.decode('utf-8')))
+    dataLake_byu = pd.read_csv(io.StringIO(file_path_byu.decode('utf-8')))
 
-    dataLake_awqms = pd.read_csv(file_path, encoding= 'unicode_escape')
-    dataLake_byu = pd.read_csv(file_path_byu, encoding= 'unicode_escape')
+    #using app files
+    # app_workspace = app.get_app_workspace()
+    # file_path = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[0])
+    # file_path_byu = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[1])
+    # dataLake_awqms = pd.read_csv(file_path, encoding= 'unicode_escape')
+    # dataLake_byu = pd.read_csv(file_path_byu, encoding= 'unicode_escape')
+
     dataLake_byu['Organization ID'] = 'BYU'
-
     fields = ['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude',
               'Monitoring Location Type', 'Characteristic Name', 'Sample Fraction', 'Result Value', 'Result Unit', 'Detection Condition', 'Detection Limit Value1', 'Detection Limit Unit1']
 
@@ -183,7 +192,6 @@ def getFiles(lake_name):
     values_byu = dataLake_byu[fields]
     dataLake_all = [values_awqms, values_byu]
     dataLake = pd.concat(dataLake_all, ignore_index=True)
-    # print(dataLake)
     context = {
         'all': dataLake,
         'awqms': values_awqms,
@@ -259,8 +267,6 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     row_min['Result Value'].fillna(row_min['Detection Limit Value1']*x, inplace=True)
     stan_dev = np.std(row_min['Result Value'])
     mean = np.mean(row_min['Result Value'])
-    #print(stan_dev)
-    #print(mean)
     if param_max != '0':
         m=float(param_max)
         sd=float(stan_dev)
@@ -270,7 +276,6 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
         row = row_min[maxim]
     else:
         row = row_min
-    #print(row['Result Value'].head(20))
 
     locations = row['Monitoring Location ID'].unique()
     unit = row['Result Unit'].unique()
@@ -305,7 +310,6 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
             valuesFin, alldates = completeSeries(charac)
             responseObject['values'] = valuesFin
             responseObject['dates'] = alldates
-            # print(responseObject)
             context['all_data'][dataname] = {'coords': [lat, lon], 'org': organization, 'type': in_out_lake, 'station': station, 'data': responseObject}
     lats = dataLakeAll['Monitoring Location Latitude'].unique()
     lons = dataLakeAll['Monitoring Location Longitude'].unique()
