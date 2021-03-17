@@ -113,23 +113,13 @@ function downloadButton2() {
       return div;
   };
   loading.addTo(mymap);
-
-  // var graph_data_obj = Object.assign({},graph_data);
-  // console.log(graph_data_obj)
-  // const header = ['Station','Date','Value'] // grab the columns for header
-
-
+  console.log(graph_data);
   var csvGraphic = {};
-  const header2 = ['Station','Date','Value']
+  const header2 = ['Station','Date','Value','Unit']
   for (var i = 0; i < header2.length; i++){
     csvGraphic[header2[i]]=[]
     for (var j = 0; j < graph_data.length; j++){
-      // if (csvGraphic[header2[i]].length<=0){
-      //   csvGraphic[header2[i]].push(graph_data[j][i]);
-      // }
-      // else {
-        csvGraphic[header2[i]].push(graph_data[j][i]);
-      // }
+      csvGraphic[header2[i]].push(graph_data[j][i]);
     }
     var newArr=[];
     for(var z=0;z<csvGraphic[header2[i]].length; ++z){
@@ -142,7 +132,6 @@ function downloadButton2() {
     }
     csvGraphic[header2[i]]=newArr2
    }
-  // header2.forEach((header2,i) => csvGraphic[header2] = graph_data[i]);
 
   var header = Object.keys(csvGraphic) // grab the columns for header
   console.log(csvGraphic)
@@ -160,19 +149,22 @@ function downloadButton2() {
   lines = lines[0].map((_, colIndex) => lines.map(row => row[colIndex]));
     for (var i = 0; i < lines.length; i++){ //data
     csvGraph.push(lines[i]);
+    csvGraph[i][2] = csvGraph[i][2].toString();
   }
+
+  console.log(csvGraph[20][2])
+  console.log(typeof(csvGraph[20][2]))
   var csvFile = csvGraph.map(e=>e.map(a=>'"'+((a||"").toString().replace(/"/gi,'""'))+'"').join(",")).join("\r\n"); //quote all fields, escape quotes by doubling them.
   var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
   var link = document.createElement("a");
   var url = URL.createObjectURL(blob);
   link.setAttribute("href", url);
-  link.setAttribute("download", lake_param.replace(/[^a-z0-9_.-]/gi,'_') + "plot.csv");
+  link.setAttribute("download", param_fract.replace(/[^a-z0-9_.-]/gi,'_') + lake_param.replace(/[^a-z0-9_.-]/gi,'_') + "plot.csv");
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
       $(".loading").remove()
-
 }
 
 function searchButton() {
@@ -344,8 +336,7 @@ function charact_data() {
       fraction = result["fraction"]
       difcoords = result["dif_coords_stations"]
       alldata = result["all_data"]
-      console.log(characteristic)
-      console.log(unit)
+      console.log(alldata)
       document.getElementById("down").style.visibility = "visible";
       document.getElementById("char").innerHTML = fraction + ' ' + characteristic;
       set_map()
@@ -413,16 +404,6 @@ function set_map() {
   function chart(d) {
     var location = d.options.title;
     var timeseriesObject = d.options.custom;
-    var timeseriesCorrectedY=[];
-    timeseriesObject['values'].forEach(function(x){
-      if(x < 0){
-        timeseriesCorrectedY.push(NaN);
-      }
-      else{
-        timeseriesCorrectedY.push(x);
-      }
-    });
-
     var station = d.options.station;
     var p = plotted.includes(station)
     console.log(p)
@@ -435,50 +416,22 @@ function set_map() {
       var trace = {
         type: "scatter",
         mode: "lines",
-        name: station.concat(location),
+        name: station+ ' ' +location,
         text: name,
         x: timeseriesObject['dates'],
         y: timeseriesObject['values'],
       }
-
       var data = [trace];
       var dd = timeseriesObject['dates'].length
-
       const stat = [];
+      const u = [];
       for (let i=0; i<dd; i++){
         stat[i] = station
+        u[i] = unit
       };
-      const data_download = [stat,timeseriesObject['dates'],timeseriesObject['values']]
+      const data_download = [stat,timeseriesObject['dates'],timeseriesObject['values'],u]
 
       graph_data.push(data_download);
-      console.log(graph_data);
-      // graph_data = graph_data.concat(data_download);
-
-
-      // if(graph_data.lengh<0){
-      //   graph_data = graph_data.concat(data_download);
-      // }
-      // console.log(graph_data);
-      // if(graph_data.lengh>0){
-      //   for (i=0; i<dd; i++){
-      //     graph_data[i][0].concat(data_download[i][0]);
-      //     graph_data[i][1].concat(data_download[i][1]);
-      //     graph_data[i][2].concat(data_download[i][2]);
-      //   }
-      // }
-
-      // const data_download = (station = [], date = [], value = []) => {
-      //   let graph_data=[]
-      //    for(let i = 0; i < value.length; i++) {
-      //       graph_data.push({
-      //          station: stat[i],
-      //          date: timeseriesObject['dates'][i],
-      //          value: timeseriesObject['values'][i]
-      //       });
-      //    }
-      //    return graph_data;
-      // };
-
       console.log(graph_data);
       var layout = {
         title: param_fract+' '+characteristic,
@@ -486,6 +439,9 @@ function set_map() {
         legend:{
           xanchor:"center",
           yanchor:"top",
+          font:{
+            size:12
+          },
           y:-0.6, // play with it
           x:0.5   // play with it
         },
