@@ -6,6 +6,8 @@ let param_max
 let fraction_list
 var characteristic
 var markers = []
+var plotted = []
+var graph_data = []
 var count = 0
 
 $(function() {
@@ -70,7 +72,7 @@ function downloadButton() {
     success: function(result) {
       var csvParameter = JSON.parse(result['csvParameter']) // convert to dict
       var header = Object.keys(csvParameter) // grab the columns for header
-      console.log(header)
+      console.log(csvParameter)
       var csvData = [];
       csvData.push(header);
       var lines = []
@@ -91,7 +93,7 @@ function downloadButton() {
       var link = document.createElement("a");
       var url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", lake_param.replace(/[^a-z0-9_.-]/gi,'_') + ".csv");
+      link.setAttribute("download", lake_name.replace(/[^a-z0-9_.-]/gi,'_') +"_"+ lake_data.replace(/[^a-z0-9_.-]/gi,'_') +"_"+ param_fract.replace(/[^a-z0-9_.-]/gi,'_') + lake_param.replace(/[^a-z0-9_.-]/gi,'_') + ".csv");
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
@@ -102,12 +104,6 @@ function downloadButton() {
 }
 
 function downloadButton2() {
-  lake_name = document.getElementById('select-lake').value
-  lake_data = document.getElementById('select-data').value
-  lake_param = document.getElementById('parameter2').value
-  param_fract = document.getElementById('fraction2').value
-  param_bdl = document.getElementById('select-bdl').value
-  param_max = document.getElementById('select-max').value
   var loading = L.control({
       position: 'topleft'
   });
@@ -117,53 +113,66 @@ function downloadButton2() {
       return div;
   };
   loading.addTo(mymap);
-  $.ajax({
-    url: "/apps/lake/controllers/charact_data/",
-    type: "GET",
-    data: { lake_name: lake_name,
-            lake_data: lake_data,
-            lake_param: lake_param,
-            param_fract: param_fract,
-            param_max: param_max,
-            param_bdl: param_bdl
-          },
-    error: function(xhr, status, error) {
-      var err = JSON.parse(xhr.responseText)
-      console.log(err.Message)
-      $(".loading").remove()
-    },
-    success: function(result) {
-      var csvGraph = JSON.parse(result['csvGraph']) // convert to dict
-      var header = Object.keys(csvGraph) // grab the columns for header
-      var csvGraphic = [];
-      csvGraphic.push(header);
-      var lines = []
-      for (var i = 0; i < header.length; i++){ //data
-        var new_col_vals = []
-        var new_col_names = Object.keys(csvGraph[header[i]])
-        for (var j = 0; j < new_col_names.length; j++){ //data
-          new_col_vals.push(csvGraph[header[i]][new_col_names[j]])
-        }
-        lines.push(new_col_vals)
-      }
-      lines = lines[0].map((_, colIndex) => lines.map(row => row[colIndex]));
-      console.log(lines);
-      for (var i = 0; i < lines.length; i++){ //data
-        csvGraphic.push(lines[i]);
-      }
-      var csvFile2 = csvGraphic.map(e=>e.map(a=>'"'+((a||"").toString().replace(/"/gi,'""'))+'"').join(",")).join("\r\n"); //quote all fields, escape quotes by doubling them.
-      var blob = new Blob([csvFile2], { type: 'text/csv;charset=utf-8;' });
-      var link = document.createElement("a");
-      var url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", lake_param.replace(/[^a-z0-9_.-]/gi,'_') + "graph.csv");
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      $(".loading").remove()
+
+  // var graph_data_obj = Object.assign({},graph_data);
+  // console.log(graph_data_obj)
+  // const header = ['Station','Date','Value'] // grab the columns for header
+
+
+  var csvGraphic = {};
+  const header2 = ['Station','Date','Value']
+  for (var i = 0; i < header2.length; i++){
+    csvGraphic[header2[i]]=[]
+    for (var j = 0; j < graph_data.length; j++){
+      // if (csvGraphic[header2[i]].length<=0){
+      //   csvGraphic[header2[i]].push(graph_data[j][i]);
+      // }
+      // else {
+        csvGraphic[header2[i]].push(graph_data[j][i]);
+      // }
     }
-  })
+    var newArr=[];
+    for(var z=0;z<csvGraphic[header2[i]].length; ++z){
+      newArr = newArr.concat(csvGraphic[header2[i]][z]);
+    }
+    csvGraphic[header2[i]]=newArr
+    var newArr2={};
+    for(var z=0;z<csvGraphic[header2[i]].length; ++z){
+      newArr2[z] = csvGraphic[header2[i]][z];
+    }
+    csvGraphic[header2[i]]=newArr2
+   }
+  // header2.forEach((header2,i) => csvGraphic[header2] = graph_data[i]);
+
+  var header = Object.keys(csvGraphic) // grab the columns for header
+  console.log(csvGraphic)
+  var csvGraph = [];
+  csvGraph.push(header);
+  var lines = []
+  for (var i = 0; i < header.length; i++){ //data
+    var new_col_vals = []
+    var new_col_names = Object.keys(csvGraphic[header[i]])
+    for (var j = 0; j < new_col_names.length; j++){ //data
+      new_col_vals.push(csvGraphic[header[i]][new_col_names[j]])
+    }
+    lines.push(new_col_vals)
+  }
+  lines = lines[0].map((_, colIndex) => lines.map(row => row[colIndex]));
+    for (var i = 0; i < lines.length; i++){ //data
+    csvGraph.push(lines[i]);
+  }
+  var csvFile = csvGraph.map(e=>e.map(a=>'"'+((a||"").toString().replace(/"/gi,'""'))+'"').join(",")).join("\r\n"); //quote all fields, escape quotes by doubling them.
+  var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+  var link = document.createElement("a");
+  var url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", lake_param.replace(/[^a-z0-9_.-]/gi,'_') + "plot.csv");
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+      $(".loading").remove()
+
 }
 
 function searchButton() {
@@ -180,7 +189,7 @@ function searchButton() {
   console.log(lake_param)
   plotted = []
   $( "#timeseries_plot" ).empty()
-  document.getElementById("char2").innerHTML = 'To create a graph, click on some stations';
+  document.getElementById("char2").innerHTML = 'To create a plot, click on some stations';
   document.getElementById("down2").style.visibility = "visible";
   console.log(timeseries_plot)
   charact_data()
@@ -368,7 +377,8 @@ function set_map() {
   })
 
   for (var locat in allstations) {
-    var plotted = []
+    plotted = []
+    graph_data = []
     var location_data = allstations[locat]
     var coords = location_data["coords"]
 		var data = location_data['data']
@@ -425,14 +435,51 @@ function set_map() {
       var trace = {
         type: "scatter",
         mode: "lines",
-        name: station + '<br>Station '.concat(location),
+        name: station.concat(location),
         text: name,
         x: timeseriesObject['dates'],
         y: timeseriesObject['values'],
       }
 
       var data = [trace];
+      var dd = timeseriesObject['dates'].length
 
+      const stat = [];
+      for (let i=0; i<dd; i++){
+        stat[i] = station
+      };
+      const data_download = [stat,timeseriesObject['dates'],timeseriesObject['values']]
+
+      graph_data.push(data_download);
+      console.log(graph_data);
+      // graph_data = graph_data.concat(data_download);
+
+
+      // if(graph_data.lengh<0){
+      //   graph_data = graph_data.concat(data_download);
+      // }
+      // console.log(graph_data);
+      // if(graph_data.lengh>0){
+      //   for (i=0; i<dd; i++){
+      //     graph_data[i][0].concat(data_download[i][0]);
+      //     graph_data[i][1].concat(data_download[i][1]);
+      //     graph_data[i][2].concat(data_download[i][2]);
+      //   }
+      // }
+
+      // const data_download = (station = [], date = [], value = []) => {
+      //   let graph_data=[]
+      //    for(let i = 0; i < value.length; i++) {
+      //       graph_data.push({
+      //          station: stat[i],
+      //          date: timeseriesObject['dates'][i],
+      //          value: timeseriesObject['values'][i]
+      //       });
+      //    }
+      //    return graph_data;
+      // };
+
+      console.log(graph_data);
       var layout = {
         title: param_fract+' '+characteristic,
         showlegend: true,
