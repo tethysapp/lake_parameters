@@ -170,19 +170,19 @@ def getFiles(lake_name):
     byu=LAKE_FILES.get(lake_name)[1]
 
     #using hydroshare files
-    # url1 = 'https://www.hydroshare.org/resource/cf0133c4d4a14a7f938918707abb4e05/data/contents/{0}'.format(awqms)
-    # file_path = requests.get(url1, verify=False).content
-    # url2 = 'https://www.hydroshare.org/resource/cf0133c4d4a14a7f938918707abb4e05/data/contents/{0}'.format(byu)
-    # file_path_byu = requests.get(url2, verify=False).content
-    # dataLake_awqms = pd.read_csv(io.StringIO(file_path.decode('utf-8')))
-    # dataLake_byu = pd.read_csv(io.StringIO(file_path_byu.decode('utf-8')))
+    url1 = 'https://www.hydroshare.org/resource/cf0133c4d4a14a7f938918707abb4e05/data/contents/{0}'.format(awqms)
+    file_path = requests.get(url1, verify=False).content
+    url2 = 'https://www.hydroshare.org/resource/cf0133c4d4a14a7f938918707abb4e05/data/contents/{0}'.format(byu)
+    file_path_byu = requests.get(url2, verify=False).content
+    dataLake_awqms = pd.read_csv(io.StringIO(file_path.decode('utf-8')))
+    dataLake_byu = pd.read_csv(io.StringIO(file_path_byu.decode('utf-8')))
 
     #using app files
-    app_workspace = app.get_app_workspace()
-    file_path = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[0])
-    file_path_byu = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[1])
-    dataLake_awqms = pd.read_csv(file_path, encoding= 'unicode_escape')
-    dataLake_byu = pd.read_csv(file_path_byu, encoding= 'unicode_escape')
+    # app_workspace = app.get_app_workspace()
+    # file_path = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[0])
+    # file_path_byu = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[1])
+    # dataLake_awqms = pd.read_csv(file_path, encoding= 'unicode_escape')
+    # dataLake_byu = pd.read_csv(file_path_byu, encoding= 'unicode_escape')
 
     dataLake_byu['Organization ID'] = 'BYU'
     fields = ['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude',
