@@ -170,19 +170,19 @@ def getFiles(lake_name):
     byu=LAKE_FILES.get(lake_name)[1]
 
     #using hydroshare files
-    url1 = 'https://www.hydroshare.org/resource/cf0133c4d4a14a7f938918707abb4e05/data/contents/{0}'.format(awqms)
-    file_path = requests.get(url1, verify=False).content
-    url2 = 'https://www.hydroshare.org/resource/cf0133c4d4a14a7f938918707abb4e05/data/contents/{0}'.format(byu)
-    file_path_byu = requests.get(url2, verify=False).content
-    dataLake_awqms = pd.read_csv(io.StringIO(file_path.decode('utf-8')))
-    dataLake_byu = pd.read_csv(io.StringIO(file_path_byu.decode('utf-8')))
+    # url1 = 'https://www.hydroshare.org/resource/cf0133c4d4a14a7f938918707abb4e05/data/contents/{0}'.format(awqms)
+    # file_path = requests.get(url1, verify=False).content
+    # url2 = 'https://www.hydroshare.org/resource/cf0133c4d4a14a7f938918707abb4e05/data/contents/{0}'.format(byu)
+    # file_path_byu = requests.get(url2, verify=False).content
+    # dataLake_awqms = pd.read_csv(io.StringIO(file_path.decode('utf-8')))
+    # dataLake_byu = pd.read_csv(io.StringIO(file_path_byu.decode('utf-8')))
 
     #using app files
-    # app_workspace = app.get_app_workspace()
-    # file_path = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[0])
-    # file_path_byu = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[1])
-    # dataLake_awqms = pd.read_csv(file_path, encoding= 'unicode_escape')
-    # dataLake_byu = pd.read_csv(file_path_byu, encoding= 'unicode_escape')
+    app_workspace = app.get_app_workspace()
+    file_path = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[0])
+    file_path_byu = os.path.join(app_workspace.path, LAKE_FILES.get(lake_name)[1])
+    dataLake_awqms = pd.read_csv(file_path, encoding= 'unicode_escape')
+    dataLake_byu = pd.read_csv(file_path_byu, encoding= 'unicode_escape')
 
     dataLake_byu['Organization ID'] = 'BYU'
     fields = ['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude',
@@ -248,7 +248,7 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     row_param = dataLake[param]
     #row_param['Result Value']=row_param['Result Value'].astype('float64')
 
-        # check Total-Dissolved
+# check Total-Dissolved
     if param_fract == 'Dissolved' or param_fract == 'Total':
         fract = row_param['Sample Fraction'] == param_fract
         row_all = row_param[fract]
@@ -256,15 +256,16 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
         row_all = row_param
     #row_param.to_csv('row_param.csv', index=False, encoding='utf-8')
 
-        # Add values to the No Detected, acording the selected bdl
+# Add values to the No Detected, acording the selected bdl
     context = {}
     context['csvParameter'] = row_all
-    #print(context['csvParameter']['Result Value'].head(20))
     x=float(param_bdl)
     avoid_changes = row_all['Characteristic Name'] == lake_param
     row_min = row_all[avoid_changes]
     row_min['Result Value'] = row_min['Result Value'].astype('float64')
     row_min['Result Value'].fillna(row_min['Detection Limit Value1']*x, inplace=True)
+
+#max values with estandard deviation
     stan_dev = np.std(row_min['Result Value'])
     mean = np.mean(row_min['Result Value'])
     if param_max != '0':
@@ -277,7 +278,10 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     else:
         row = row_min
 
-    locations = row['Monitoring Location ID'].unique()
+# average same day
+    row = row.groupby(['Organization ID','Characteristic Name','Sample Fraction','Monitoring Location ID','Activity Start Date','Monitoring Location Latitude','Monitoring Location Longitude','Monitoring Location Type','Result Unit'], as_index=False).agg({'Result Value':'mean', 'Detection Condition':'first', 'Detection Limit Value1':'first', 'Detection Limit Unit1':'first'})
+    row['Activity Start Date'] = pd.to_datetime(row['Activity Start Date'])
+    row.sort_values(by = ['Activity Start Date'], inplace=True, ascending=True)
     unit = row['Result Unit'].unique()
     unit = ''.join(unit)
     context['characteristic'] = lake_param
@@ -285,7 +289,7 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     context['unit'] = unit
     #context['csvLake'] = dataLake
     context['csvGraph'] = row
-    print(context['csvGraph']['Result Value'].head(20))
+    #print(context['csvGraph']['Result Value'].head(20))
     lake_map = MapView(
         height='100%',
         width='100%',
@@ -294,7 +298,8 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     )
     context['lake_map'] = lake_map
     context['all_data'] = {}
-
+#station locations
+    locations = row['Monitoring Location ID'].unique()
     for location in locations:
         df = dataLake[dataLake['Monitoring Location ID'] == location]
         if len(df) > 0:
