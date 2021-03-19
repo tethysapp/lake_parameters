@@ -3,7 +3,7 @@ from tethys_sdk.base import TethysAppBase, url_map_maker
 
 class Lake(TethysAppBase):
     """
-    Tethys app class for Utah Lake Parameters.
+    Tethys app class for Water Quality - Utah Lakes.
     """
 
     name = 'Water Quality - Utah Lakes'
@@ -12,8 +12,8 @@ class Lake(TethysAppBase):
     package = 'lake'
     root_url = 'lake'
     color = '#0c8fab'
-    description = 'Utah Lakes Water Parameters is an App that allows you to see the value distribution of a chosen parameter through the Utah Lake in the time'
-    tags = '"Hydrology", "Utah Lake"'
+    description = 'The Water Quality - Utah Lakes (WQ-UL) Web Application helps users understand what data are available in the AWQMS and BYU database, to provide easy access to the available data, to present the data in spatial (maps) and temporal (time series graphs) forms, and to help the users screen the data sources before export.'
+    tags = '"Hydrology", "Utah Lakes", "Web Application", "Water Quality", "Tethys App"'
     enable_feedback = False
     feedback_emails = []
 
