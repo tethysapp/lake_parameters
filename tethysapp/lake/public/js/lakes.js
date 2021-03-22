@@ -152,8 +152,6 @@ function downloadButton2() {
     csvGraph[i][2] = csvGraph[i][2].toString();
   }
 
-  console.log(csvGraph[20][2])
-  console.log(typeof(csvGraph[20][2]))
   var csvFile = csvGraph.map(e=>e.map(a=>'"'+((a||"").toString().replace(/"/gi,'""'))+'"').join(",")).join("\r\n"); //quote all fields, escape quotes by doubling them.
   var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
   var link = document.createElement("a");
@@ -357,6 +355,11 @@ function set_map() {
     iconSize: [15, 12]
   })
 
+  let iconBYU = L.icon({
+    iconUrl: byu2ImgUrl,
+    iconSize: [15, 12]
+  })
+
   let iconAwqms = L.icon({
     iconUrl: raindropImgUrl,
     iconSize: [15, 15]
@@ -378,7 +381,7 @@ function set_map() {
     var station = location_data["station"]
     if (loc == "BYU") {
       if(inlake == "Lake"){
-        var marker = L.marker(coords, { title: locat, custom: data, icon: iconMiller, station:station})
+        var marker = L.marker(coords, { title: locat, custom: data, icon: iconBYU, station:station})
           .addTo(mymap).bindPopup(chart)
         markers.push(marker)
       }
@@ -416,7 +419,7 @@ function set_map() {
       var trace = {
         type: "scatter",
         mode: "lines",
-        name: station+ ' ' +location,
+        name: station+ ' ' +location+ '    ',
         text: name,
         x: timeseriesObject['dates'],
         y: timeseriesObject['values'],

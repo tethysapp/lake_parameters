@@ -32,6 +32,7 @@ var difcoords = {{dif_coords_stations|safe}}
 var allstations = {{all_stations|safe}}
 var imgUrl = "{% static 'lake/images/lake.jpg' %}"
 var byuImgUrl = "{% static '/lake/images/byu.png' %}"
+var byu2ImgUrl = "{% static '/lake/images/byu2.png' %}"
 var raindropImgUrl = "{% static '/lake/images/raindrop2.png' %}"
 var raindrop2ImgUrl = "{% static '/lake/images/raindrop4.png' %}"
 var mymap = L.map('mapid')
@@ -84,13 +85,9 @@ set_map()
           <h5 class="modal-title" id="help-modal-label">Instructions</h5>
         </div>
         <div class="modal-body">
-          <p>You can add custom buttons to the app header using the <code>header_buttons</code> block. Use anchor/link tags for the button and wrap it in a div with the class <code>header-button</code>. For buttons with the gliphyicons, add the <code>glyphicon-button</code> class as well.</p>
-          <p>Ever have trouble using a modal in a Tethys app? Use the <code>after_app_content</code> block for modal content to allow them to function properly. See: <a href="https://getbootstrap.com/javascript/#modals">Bootstrap Modals</a></p>
-          <p>Add tooltips to any element by adding the <code>data-toggle</code>, <code>data-placement</code>, and <code>title</code> attributes to the button. See: <a href="https://getbootstrap.com/javascript/#tooltips">Bootstrap Tooltips</a></p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+          <p><b>Select a Minimum Limit Value:</b> If the water quality parameter was found to be below the detection limit, you have the option to fill that data with a 0, with ½ the reporting limit value, or with the detection limit value. This change will be reflected in this plot and the plot data, not in the parameter data. </p>
+          <p><b>Select a Maximum Value:</b> This selection allows you to choose to work with all the data or to filter high outlier values, removing values that are above 1, 2, 3, or 4 standard deviations. This change will be reflected in this plot and the plot data, not in the parameter data.</p>
+          <p><b>More than one sample at a station on the same day:</b> If there are more than one sample at the same station on the same day, the plot shows the average value. This change will be reflected in this plot and the plot data, not in the parameter data.</p>
         </div>
       </div>
     </div>

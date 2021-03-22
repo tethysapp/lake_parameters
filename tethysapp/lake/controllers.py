@@ -17,6 +17,7 @@ import io
 import json
 import os
 import math
+import statistics as st
 from .app import Lake as app
 from pandas import DataFrame
 from .utils import download
@@ -157,7 +158,6 @@ def charact_data(request):
     param_max = get_data.get('param_max')
     param_fract = get_data.get('param_fract')
     param_bdl = get_data.get('param_bdl')
-
     context = {}
     context = getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     print(context['csvGraph']['Result Value'].head(20))
@@ -282,6 +282,7 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     row = row.groupby(['Organization ID','Characteristic Name','Sample Fraction','Monitoring Location ID','Activity Start Date','Monitoring Location Latitude','Monitoring Location Longitude','Monitoring Location Type','Result Unit'], as_index=False).agg({'Result Value':'mean', 'Detection Condition':'first', 'Detection Limit Value1':'first', 'Detection Limit Unit1':'first'})
     row['Activity Start Date'] = pd.to_datetime(row['Activity Start Date'])
     row.sort_values(by = ['Activity Start Date'], inplace=True, ascending=True)
+
     unit = row['Result Unit'].unique()
     unit = ''.join(unit)
     context['characteristic'] = lake_param
@@ -333,9 +334,9 @@ def completeSeries(df):
 
     value = df['Result Value']
     dates = df['Date']
-
     datesString = []
     valuesNumpy = value.to_numpy(value)
+
     valuesNoNan = np.nan_to_num(valuesNumpy, nan=-999)
     valuesFin = valuesNoNan.tolist()
     for datesX in dates:
