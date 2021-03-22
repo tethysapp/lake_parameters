@@ -35,7 +35,7 @@
   {% url 'lake:data' as data_url %}
   <li class="title"></li>
   <!-- <li class="{% if request.path == instructions_url %}active{% endif %}"><a href="{{ instructions_url }}">Instructions</a></li> -->
-  <li class="{% if request.path == data_url %}active{% endif %}"><a href="{{ data_url }}">Search Data</a></li>
+  <li class="{% if request.path == data_url %}active{% endif %}"><a href="{{ data_url }}">Clean Data</a></li>
   <br>
   {% gizmo select_input select_lake %}
   {% gizmo select_input select_data %}
