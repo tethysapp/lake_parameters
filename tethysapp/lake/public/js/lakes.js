@@ -419,7 +419,7 @@ function set_map() {
       var trace = {
         type: "scatter",
         mode: "lines",
-        name: station+ ' ' +location+ '    ',
+        name: station+ ' ' +location+ '      ',
         text: name,
         x: timeseriesObject['dates'],
         y: timeseriesObject['values'],
