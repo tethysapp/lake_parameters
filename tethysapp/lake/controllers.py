@@ -249,22 +249,23 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     #row_param['Result Value']=row_param['Result Value'].astype('float64')
 
 # check Total-Dissolved
-    if param_fract == 'Dissolved' or param_fract == 'Total':
+    if param_fract == 'Dissolved':
         fract = row_param['Sample Fraction'] == param_fract
         row_all = row_param[fract]
     else:
         row_all = row_param
     #row_param.to_csv('row_param.csv', index=False, encoding='utf-8')
 
-# Add values to the No Detected, acording the selected bdl
     context = {}
     context['csvParameter'] = row_all
+
+# Add values to the No Detected, acording the selected bdl
     x=float(param_bdl)
     avoid_changes = row_all['Characteristic Name'] == lake_param
     row_min = row_all[avoid_changes]
     row_min['Result Value'] = row_min['Result Value'].astype('float64')
     row_min['Result Value'].fillna(row_min['Detection Limit Value1']*x, inplace=True)
-
+    # print(row_min['Result Value'].head(20))
 #max values with estandard deviation
     stan_dev = np.std(row_min['Result Value'])
     mean = np.mean(row_min['Result Value'])
@@ -279,9 +280,48 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
         row = row_min
 
 # average same day
-    row = row.groupby(['Organization ID','Characteristic Name','Sample Fraction','Monitoring Location ID','Activity Start Date','Monitoring Location Latitude','Monitoring Location Longitude','Monitoring Location Type','Result Unit'], as_index=False).agg({'Result Value':'mean', 'Detection Condition':'first', 'Detection Limit Value1':'first', 'Detection Limit Unit1':'first'})
-    row['Activity Start Date'] = pd.to_datetime(row['Activity Start Date'])
-    row.sort_values(by = ['Activity Start Date'], inplace=True, ascending=True)
+# #Fill the empty Sample Fraction
+#     row['Sample Fraction'] = row['Sample Fraction'].fillna('Total') #<<< Comment this out if you want to have different averages for 'Total' and None
+# #Select all columns except Result Value
+#     dfunique = row[['Activity Start Date', 'Organization ID', 'Monitoring Location ID', 'Monitoring Location Name', 'Monitoring Location Latitude', 'Monitoring Location Longitude', 'Monitoring Location Type',
+#     'Characteristic Name', 'Sample Fraction', 'Result Unit']]
+#     print(dfunique)
+# #Delete the duplicates to get only all the possible combinations
+#     dfunique = dfunique.drop_duplicates()
+#     print(dfunique)
+#     values2 = []
+#     for index, rows in dfunique.iterrows():
+#     #Select from original df using all distinctive columns in dfunique
+#         dfi = row
+#         for column in dfunique.columns:
+#             dfi = dfi[(dfi[column] == rows[column])]
+#             values2.append(dfi['Result Value'].mean())
+#     print(values2)
+# #Assign the new column values
+#     dfunique['Result Value'] = values2
+
+
+    # print(row['Activity Start Date'].head(20))
+    # locations = row['Monitoring Location ID'].unique()
+    # for location in locations:
+    #     df2 = row[row['Monitoring Location ID'] == location]
+    #     fechas = df2['Activity Start Date'].unique()
+    #     for fecha in fechas:
+    #         df3 = df2[df2['Activity Start Date'] == fecha]
+    #         # print('promediar')
+    #         # print(df3['Result Value'])
+    #         if len(df3) > 1:
+    #             prom = df3['Result Value'].mean()
+    #             df2['Result Value'] = prom
+    #         print(df2['Result Value'])
+    #
+    # print(row['Result Value'].head(20))
+    # row.drop_duplicates(subset=['Monitoring Location ID','Activity Start Date'], keep='last')
+    dfunique = row[['Activity Start Date', 'Monitoring Location ID', 'Result Value']]
+    dfunique = dfunique.groupby(['Monitoring Location ID','Activity Start Date'], as_index=False).mean()
+    dfunique['Activity Start Date'] = pd.to_datetime(dfunique['Activity Start Date'])
+    dfunique.sort_values(by = ['Activity Start Date'], inplace=True, ascending=True)
+    print(dfunique)
 
     unit = row['Result Unit'].unique()
     unit = ''.join(unit)
@@ -289,7 +329,7 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     context['fraction'] = param_fract
     context['unit'] = unit
     #context['csvLake'] = dataLake
-    context['csvGraph'] = row
+    context['csvGraph'] = dfunique
     #print(context['csvGraph']['Result Value'].head(20))
     lake_map = MapView(
         height='100%',
@@ -300,7 +340,7 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
     context['lake_map'] = lake_map
     context['all_data'] = {}
 #station locations
-    locations = row['Monitoring Location ID'].unique()
+    locations = dfunique['Monitoring Location ID'].unique()
     for location in locations:
         df = dataLake[dataLake['Monitoring Location ID'] == location]
         if len(df) > 0:
@@ -310,8 +350,8 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
             in_out_lake = df['Monitoring Location Type'].tolist()[0]
             station = df['Monitoring Location Name'].tolist()[0]
             dataname = str(location)
-            charac_id = row['Monitoring Location ID'] == location
-            charac = row[charac_id]
+            charac_id = dfunique['Monitoring Location ID'] == location
+            charac = dfunique[charac_id]
             responseObject = {}
             valuesFin, alldates = completeSeries(charac)
             responseObject['values'] = valuesFin
