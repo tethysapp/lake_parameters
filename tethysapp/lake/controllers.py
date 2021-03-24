@@ -66,7 +66,7 @@ def data(request):
     select_bdl = SelectInput(display_text='Select a Minimum Limit Value',
                              name='select-bdl',
                              multiple=False,
-                             options=[('0', '0'), ('Reporting Limit', '1'), ('1/2 Reporting Limit', '0.5')],
+                             options=[('0', '0'), ('Detection Limit', '1'), ('1/2 Detection Limit', '0.5')],
                              initial=[('0', '0')]
                              )
 
@@ -258,6 +258,7 @@ def getData(lake_name, lake_data, lake_param, param_fract, param_max, param_bdl)
 
     context = {}
     context['csvParameter'] = row_all
+    print(context['csvParameter'].head(23487))
 
 # Add values to the No Detected, acording the selected bdl
     x=float(param_bdl)
